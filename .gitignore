@@ -1,0 +1,12 @@
+# planilhas e dashboards com dados reais nunca vão para o repositório
+*.xlsx
+*.xlsm
+*.xls
+~$*
+Odata_CapEx_Control*.html
+Comparativo_*.html
+Comparativo_*.json
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

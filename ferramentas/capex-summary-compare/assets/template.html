@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparativo CapEx Summary</title>
+<style>
+  :root{--blue:#07497E;--lblue:#76AEF4;--green:#11BF79;--lime:#D3ED63;--purple:#522582;--navy:#0E2147;
+        --g1:#D9D9D6;--g5:#B1B3B3;--g8:#888B8D;--bg:#F5F6F7;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Kumbh Sans',Arial,Helvetica,sans-serif;background:var(--bg);color:#1d2430;font-size:13px}
+  header{background:var(--blue);color:#fff;padding:18px 28px}
+  header h1{margin:0;font-size:20px;font-weight:700}
+  header .sub{margin-top:6px;font-size:12px;opacity:.9;line-height:1.6}
+  header .sub b{font-weight:600}
+  nav{display:flex;gap:4px;padding:0 28px;background:#fff;border-bottom:1px solid var(--g1);position:sticky;top:0;z-index:5}
+  nav button{border:0;background:none;padding:12px 14px;font:inherit;font-weight:600;color:var(--g8);cursor:pointer;border-bottom:3px solid transparent}
+  nav button.on{color:var(--blue);border-bottom-color:var(--blue)}
+  main{padding:20px 28px 40px;max-width:1500px}
+  .warn{background:#fff;border-left:4px solid var(--purple);padding:10px 14px;margin-bottom:14px;border-radius:4px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+  .kpi{background:#fff;border-radius:8px;padding:14px 16px;border:1px solid var(--g1)}
+  .kpi .l{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--g8);font-weight:600}
+  .kpi .v{font-size:22px;font-weight:700;color:var(--blue);margin-top:4px}
+  .kpi .s{font-size:12px;color:var(--g8);margin-top:2px}
+  .card{background:#fff;border:1px solid var(--g1);border-radius:8px;padding:16px 18px;margin-bottom:18px}
+  .card h2{margin:0 0 12px;font-size:15px;color:var(--blue)}
+  .card h2 .n{color:var(--g8);font-weight:400;font-size:13px}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:7px 8px;border-bottom:1px solid #eceded;text-align:left;vertical-align:top}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--g8);background:#fafafa;position:sticky;top:44px;cursor:pointer;white-space:nowrap}
+  td.r,th.r{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+  tr.click{cursor:pointer} tr.click:hover td{background:#f3f8fd}
+  .up{color:var(--purple);font-weight:600}.dn{color:#0b8a57;font-weight:600}.z{color:var(--g5)}
+  .tag{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;font-weight:600;margin:1px 3px 1px 0}
+  .t-new{background:#e3f7ee;color:#0b8a57}.t-rem{background:#ece6f3;color:var(--purple)}
+  .t-att{background:#e8f1fd;color:var(--blue)}.t-past{background:var(--lime);color:var(--navy)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .filters input,.filters select{padding:6px 8px;border:1px solid var(--g5);border-radius:5px;font:inherit}
+  .detail td{background:#fbfcfd;font-size:12px}
+  .muted{color:var(--g8)}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--g8);margin-bottom:6px}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:4px;vertical-align:-2px}
+  svg text{font-family:inherit}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:1000px){.grid2{grid-template-columns:1fr}}
+  .empty{color:var(--g8);font-style:italic;padding:6px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>Comparativo CapEx Summary &mdash; Cons &times; PROD</h1>
+  <div class="sub" id="sub"></div>
+</header>
+<nav id="nav"></nav>
+<main id="main"></main>
+<script>
+const D = __DATA__;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function fm(v, d=2){ if(v==null||isNaN(v)) return '<span class="z">&ndash;</span>';
+  const a=Math.abs(v); let s;
+  if(a>=1e6) s=(v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d})+' M';
+  else if(a>=1e3) s=(v/1e3).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' k';
+  else s=v.toLocaleString('pt-BR',{maximumFractionDigits:0});
+  return s; }
+function fd(v){ if(v==null||isNaN(v)||Math.abs(v)<0.5) return '<span class="z">0</span>';
+  return `<span class="${v>0?'up':'dn'}">${v>0?'▲ +':'▼ '}${fm(v)}</span>`; }
+function fpct(v){ return v==null?'<span class="z">&ndash;</span>':(v*100).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%'; }
+function fval(m,v){ return m==='% Procured'?fpct(v):fm(v); }
+function fdel(m,d){ if(m==='% Procured') return `<span class="${d>0?'up':'dn'}">${d>0?'+':''}${(d*100).toLocaleString('pt-BR',{maximumFractionDigits:1})} p.p.</span>`; return fd(d); }
+
+// ---------- cabeçalho
+$('#sub').innerHTML = `Base: <b>${esc(D.old.file)}</b> (corte ${esc(D.old.cutoff||'?')}, ${D.old.n} linhas de projeto)<br>
+ Atual: <b>${esc(D.new.file)}</b> (corte ${esc(D.new.cutoff||'?')}, ${D.new.n} linhas de projeto)<br>
+ Gerado em ${esc(D.generated)} &middot; tolerância US$ ${D.tol} &middot; valores em US$`;
+
+const tabs = [['resumo','Resumo'],['novos','Novos e removidos'],['alt','Valores alterados'],['curva','Curva mensal']];
+$('#nav').innerHTML = tabs.map(([k,l])=>`<button data-t="${k}">${l}</button>`).join('');
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.t));
+
+function sumC(m,w){ return D.by_country.reduce((s,c)=>s+(c[m][w]||0),0); }
+
+// ---------- Resumo
+function vResumo(){
+  const k = m => { const o=sumC(m,'old'), n=sumC(m,'new'); return `<div class="kpi"><div class="l">${m}</div><div class="v">${fm(n)}</div><div class="s">${fd(n-o)} vs. base (${fm(o)})</div></div>`; };
+  const past = D.curve_changes.filter(c=>c.past.length).length;
+  let h = '';
+  if(D.same_cutoff===false) h += `<div class="warn">As duas versões têm datas de corte diferentes (${esc(D.old.cutoff)} &times; ${esc(D.new.cutoff)}). Parte da variação de <b>Spend to Date</b> pode ser só o avanço do mês.</div>`;
+  if(D.errors_new.length) h += `<div class="warn">${D.errors_new.length} linha(s) da versão atual têm erro de fórmula (ex.: #REF!): ${D.errors_new.slice(0,6).map(e=>esc(e.key)+' ('+e.errors.join(', ')+')').join('; ')}${D.errors_new.length>6?'…':''}</div>`;
+  h += `<div class="kpis">${k('EFC')}${k('Total Budget')}${k('Spend to Date')}${k('Remaining Capex')}</div>`;
+  h += `<div class="kpis">
+    <div class="kpi"><div class="l">Projetos novos</div><div class="v">${D.added.length}</div><div class="s">${D.renames.length} possível(is) renomeação(ões)</div></div>
+    <div class="kpi"><div class="l">Projetos removidos</div><div class="v">${D.removed.length}</div><div class="s">existiam só na base</div></div>
+    <div class="kpi"><div class="l">Projetos com valores alterados</div><div class="v">${D.changed.length}</div><div class="s">métricas ou atributos</div></div>
+    <div class="kpi"><div class="l">Curva mensal alterada</div><div class="v">${D.curve_changes.length}</div><div class="s">${past} com mudança em mês já realizado (≤ ${esc(D.cut_month)})</div></div></div>`;
+  h += `<div class="card"><h2>Por país</h2><table><thead><tr><th>País</th><th class="r">Projetos</th>
+    <th class="r">EFC base</th><th class="r">EFC atual</th><th class="r">Δ EFC</th><th class="r">Δ Total Budget</th><th class="r">Δ Spend to Date</th><th class="r">Δ Remaining</th></tr></thead><tbody>`;
+  D.by_country.filter(c=>c.n_new||c.n_old||['EFC','Total Budget','Spend to Date','Remaining Capex'].some(m=>c[m].old||c[m].new)).forEach(c=>{ h+=`<tr><td>${esc(c.country)}</td><td class="r">${c.n_new}${c.n_new!==c.n_old?` <span class="muted">(${c.n_old})</span>`:''}</td>
+    <td class="r">${fm(c.EFC.old)}</td><td class="r">${fm(c.EFC.new)}</td><td class="r">${fd(c.EFC.new-c.EFC.old)}</td>
+    <td class="r">${fd(c['Total Budget'].new-c['Total Budget'].old)}</td><td class="r">${fd(c['Spend to Date'].new-c['Spend to Date'].old)}</td><td class="r">${fd(c['Remaining Capex'].new-c['Remaining Capex'].old)}</td></tr>`; });
+  const tot = m=>sumC(m,'new')-sumC(m,'old');
+  h += `<tr style="font-weight:700"><td>Total</td><td class="r">${D.new.n}${D.new.n!==D.old.n?` <span class="muted">(${D.old.n})</span>`:''}</td><td class="r">${fm(sumC('EFC','old'))}</td><td class="r">${fm(sumC('EFC','new'))}</td><td class="r">${fd(tot('EFC'))}</td><td class="r">${fd(tot('Total Budget'))}</td><td class="r">${fd(tot('Spend to Date'))}</td><td class="r">${fd(tot('Remaining Capex'))}</td></tr></tbody></table></div>`;
+  h = h.replace('</tbody></table></div>', '</tbody></table><div class="muted" style="margin-top:8px">Totais lidos das linhas "Total" de cada bloco da planilha (as fórmulas de Total não incluem todas as linhas de projeto, por exemplo "Expansion"). Coluna Projetos: atual (base).</div></div>');
+  const bl = D.by_block.filter(b=>b.status||['Total Budget','EFC','Spend to Date','Remaining Capex'].some(m=>Math.abs(b[m].new-b[m].old)>=D.tol));
+  h += `<div class="card"><h2>Blocos (sites) com total alterado <span class="n">(${bl.length})</span></h2>${bl.length?`<table><thead><tr><th>Bloco</th><th>País</th><th class="r">EFC base</th><th class="r">EFC atual</th><th class="r">Δ EFC</th><th class="r">Δ Total Budget</th><th class="r">Δ Spend to Date</th><th class="r">Δ Remaining</th></tr></thead><tbody>${bl.map(b=>`<tr><td>${esc(b.block)}${b.status?` <span class="tag ${b.status==='novo'?'t-new':'t-rem'}">${b.status}</span>`:''}</td><td>${esc(b.country)}</td><td class="r">${fm(b.EFC.old)}</td><td class="r">${fm(b.EFC.new)}</td><td class="r">${fd(b.EFC.new-b.EFC.old)}</td><td class="r">${fd(b['Total Budget'].new-b['Total Budget'].old)}</td><td class="r">${fd(b['Spend to Date'].new-b['Spend to Date'].old)}</td><td class="r">${fd(b['Remaining Capex'].new-b['Remaining Capex'].old)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">Nenhum.</div>'}</div>`;
+  const top = D.changed.filter(c=>c.deltas.EFC).sort((a,b)=>Math.abs(b.deltas.EFC.d)-Math.abs(a.deltas.EFC.d)).slice(0,10);
+  h += `<div class="card"><h2>Maiores variações de EFC <span class="n">(top 10)</span></h2>${top.length?barChart(top.map(c=>({l:c.site+' · '+c.project,v:c.deltas.EFC.d}))):'<div class="empty">Nenhuma variação de EFC.</div>'}</div>`;
+  return h;
+}
+function barChart(items){
+  const W=900,rh=26,lw=300,H=items.length*rh+10, mx=Math.max(...items.map(i=>Math.abs(i.v)))||1, mid=lw+(W-lw-90)/2, half=(W-lw-90)/2;
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px"><line x1="${mid}" x2="${mid}" y1="0" y2="${H}" stroke="#B1B3B3"/>`;
+  items.forEach((it,i)=>{ const y=i*rh+5, w=Math.abs(it.v)/mx*half, x=it.v>=0?mid:mid-w;
+    s+=`<text x="${lw-8}" y="${y+15}" text-anchor="end" font-size="12" fill="#1d2430">${esc(it.l.length>42?it.l.slice(0,41)+'…':it.l)}</text>
+    <rect x="${x}" y="${y+3}" width="${Math.max(w,1)}" height="16" rx="2" fill="${it.v>=0?'#522582':'#11BF79'}"/>
+    <text x="${it.v>=0?x+w+5:x-5}" y="${y+15}" font-size="11" text-anchor="${it.v>=0?'start':'end'}" fill="#888B8D">${(it.v>0?'+':'')+fm(it.v).replace(/<[^>]+>/g,'')}</text>`; });
+  return s+'</svg>';
+}
+
+// ---------- Novos e removidos
+function projTable(list, cls){
+  if(!list.length) return '<div class="empty">Nenhum.</div>';
+  let h=`<table><thead><tr><th>Site</th><th>Phase/Project</th><th>País</th><th>Bloco</th><th>Status</th><th>Commit?</th><th class="r">Total Budget</th><th class="r">EFC</th><th class="r">Spend to Date</th><th class="r">Remaining</th></tr></thead><tbody>`;
+  list.forEach(p=>{ h+=`<tr><td>${esc(p.site)}</td><td><span class="tag ${cls}">${cls==='t-new'?'novo':'removido'}</span>${esc(p.project)}</td><td>${esc(p.country)}</td><td class="muted">${esc(p.block)}</td><td>${esc(p.a.Other)}</td><td>${esc(p.a['Commit?'])}</td>
+    <td class="r">${fm(p.m['Total Budget'])}</td><td class="r">${fm(p.m.EFC)}</td><td class="r">${fm(p.m['Spend to Date'])}</td><td class="r">${fm(p.m['Remaining Capex'])}</td></tr>`; });
+  return h+'</tbody></table>';
+}
+function vNovos(){
+  let h='';
+  if(D.renames.length){ h+=`<div class="card"><h2>Possíveis renomeações <span class="n">— mesmo site e bloco; confirme com o dono da planilha</span></h2><table><thead><tr><th>Site</th><th>Nome na base</th><th>Nome na atual</th><th class="r">EFC base</th><th class="r">EFC atual</th></tr></thead><tbody>`;
+    D.renames.forEach(r=>{ const o=D.removed.find(p=>p.key===r.old), n=D.added.find(p=>p.key===r.new);
+      h+=`<tr><td>${esc(r.site)}</td><td>${esc(o.project)}</td><td>${esc(n.project)}</td><td class="r">${fm(o.m.EFC)}</td><td class="r">${fm(n.m.EFC)}</td></tr>`; });
+    h+='</tbody></table></div>'; }
+  h+=`<div class="card"><h2>Projetos novos <span class="n">(${D.added.length}) — existem só na versão atual</span></h2>${projTable(D.added,'t-new')}</div>`;
+  h+=`<div class="card"><h2>Projetos removidos <span class="n">(${D.removed.length}) — existiam só na base</span></h2>${projTable(D.removed,'t-rem')}</div>`;
+  return h;
+}
+
+// ---------- Valores alterados
+let altState={q:'',country:'',metric:'EFC',sort:'abs'};
+function vAlt(){
+  const countries=[...new Set(D.changed.map(c=>c.country))].sort();
+  const metrics=['EFC','Total Budget','EFC Non-Spec','EFC Spec','Spend to Date','Remaining Capex','% Procured'];
+  let h=`<div class="card"><h2>Projetos com valores alterados <span class="n">(${D.changed.length}) — clique numa linha para ver o detalhe</span></h2>
+  <div class="filters"><input id="fq" placeholder="Buscar site ou projeto" value="${esc(altState.q)}">
+  <select id="fc"><option value="">Todos os países</option>${countries.map(c=>`<option ${c===altState.country?'selected':''}>${esc(c)}</option>`).join('')}</select>
+  <select id="fm">${metrics.map(m=>`<option ${m===altState.metric?'selected':''} value="${m}">Ordenar por Δ ${m}</option>`).join('')}</select></div><div id="altBody"></div></div>`;
+  return h;
+}
+function drawAlt(){
+  const q=altState.q.toLowerCase(), M=altState.metric;
+  let L=D.changed.filter(c=>(!altState.country||c.country===altState.country)&&(!q||(c.site+' '+c.project).toLowerCase().includes(q)));
+  L.sort((a,b)=>Math.abs(b.deltas[M]?.d||0)-Math.abs(a.deltas[M]?.d||0));
+  let h=`<table><thead><tr><th>Site</th><th>Phase/Project</th><th>País</th><th class="r">Δ Total Budget</th><th class="r">Δ EFC</th><th class="r">Δ Spend to Date</th><th class="r">Δ Remaining</th><th>Outras mudanças</th></tr></thead><tbody>`;
+  if(!L.length) h+='<tr><td colspan="8" class="empty">Nada encontrado.</td></tr>';
+  L.forEach((c,i)=>{ const d=m=>c.deltas[m]?fd(c.deltas[m].d):'<span class="z">&ndash;</span>';
+    const extra=[]; Object.keys(c.attrs).forEach(a=>extra.push(`<span class="tag t-att">${esc(a)}</span>`));
+    ['EFC Non-Spec','EFC Spec','% Procured'].forEach(m=>{ if(c.deltas[m]) extra.push(`<span class="tag t-att">${m}</span>`); });
+    if(c.past_months) extra.push(`<span class="tag t-past">${c.past_months} mês(es) realizado(s)</span>`);
+    h+=`<tr class="click" data-i="${i}"><td>${esc(c.site)}</td><td>${esc(c.project)}</td><td>${esc(c.country)}</td><td class="r">${d('Total Budget')}</td><td class="r">${d('EFC')}</td><td class="r">${d('Spend to Date')}</td><td class="r">${d('Remaining Capex')}</td><td>${extra.join('')}</td></tr>`; });
+  $('#altBody').innerHTML=h+'</tbody></table>';
+  document.querySelectorAll('#altBody tr.click').forEach(tr=>tr.onclick=()=>{
+    const nx=tr.nextElementSibling; if(nx&&nx.classList.contains('detail')){nx.remove();return;}
+    const c=L[+tr.dataset.i]; let t=`<table><tr><th>Campo</th><th class="r">Base</th><th class="r">Atual</th><th class="r">Δ</th></tr>`;
+    Object.entries(c.deltas).forEach(([m,v])=>t+=`<tr><td>${m}</td><td class="r">${fval(m,v.old)}</td><td class="r">${fval(m,v.new)}</td><td class="r">${fdel(m,v.d)}</td></tr>`);
+    Object.entries(c.attrs).forEach(([m,v])=>t+=`<tr><td>${esc(m)}</td><td class="r">${esc(v.old)||'<span class="z">(vazio)</span>'}</td><td class="r">${esc(v.new)||'<span class="z">(vazio)</span>'}</td><td></td></tr>`);
+    t+=`</table><div class="muted" style="margin-top:6px">Linha ${c.row} na versão atual · bloco ${esc(c.block)}</div>`;
+    const r=document.createElement('tr'); r.className='detail'; r.innerHTML=`<td colspan="8">${t}</td>`; tr.after(r); });
+}
+
+// ---------- Curva mensal
+function lineChart(months, a, b){
+  const W=1000,H=280,pl=60,pr=10,pt=10,pb=40, n=months.length; if(!n) return '<div class="empty">Sem dados mensais.</div>';
+  const all=a.concat(b), mx=Math.max(...all,0), mn=Math.min(...all,0), sx=i=>pl+(n<2?0:i*(W-pl-pr)/(n-1)), sy=v=>pt+(mx-v)/((mx-mn)||1)*(H-pt-pb);
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%">`;
+  for(let k=0;k<=4;k++){ const v=mn+(mx-mn)*k/4, y=sy(v); s+=`<line x1="${pl}" x2="${W-pr}" y1="${y}" y2="${y}" stroke="#eceded"/><text x="${pl-6}" y="${y+4}" font-size="10" text-anchor="end" fill="#888B8D">${fm(v,1)}</text>`; }
+  const ci=months.indexOf(D.cut_month); if(ci>=0) s+=`<line x1="${sx(ci)}" x2="${sx(ci)}" y1="${pt}" y2="${H-pb}" stroke="#D3ED63" stroke-width="3"/><text x="${sx(ci)+4}" y="${pt+10}" font-size="10" fill="#0E2147">corte</text>`;
+  const step=Math.ceil(n/14); months.forEach((m,i)=>{ if(i%step===0) s+=`<text x="${sx(i)}" y="${H-pb+16}" font-size="10" text-anchor="middle" fill="#888B8D">${m}</text>`; });
+  const path=arr=>arr.map((v,i)=>(i?'L':'M')+sx(i).toFixed(1)+','+sy(v).toFixed(1)).join('');
+  s+=`<path d="${path(a)}" fill="none" stroke="#B1B3B3" stroke-width="2"/><path d="${path(b)}" fill="none" stroke="#07497E" stroke-width="2"/>`;
+  return s+'</svg>';
+}
+function vCurva(){
+  const C=D.curve; const diff=C.new.map((v,i)=>v-C.old[i]);
+  let h=`<div class="card"><h2>Curva mensal total &mdash; base &times; atual</h2><div class="legend"><span><i style="background:#B1B3B3"></i>Base (Cons)</span><span><i style="background:#07497E"></i>Atual (PROD)</span><span><i style="background:#D3ED63"></i>Mês de corte</span></div>${lineChart(C.months,C.old,C.new)}</div>`;
+  const md=C.months.map((m,i)=>({m,d:diff[i]})).filter(x=>Math.abs(x.d)>=D.tol);
+  h+=`<div class="grid2"><div class="card"><h2>Meses com diferença no total <span class="n">(${md.length})</span></h2>${md.length?`<table><thead><tr><th>Mês</th><th class="r">Base</th><th class="r">Atual</th><th class="r">Δ</th></tr></thead><tbody>${md.map(x=>{const i=C.months.indexOf(x.m);return `<tr><td>${x.m}${x.m<=D.cut_month?' <span class="tag t-past">realizado</span>':''}</td><td class="r">${fm(C.old[i])}</td><td class="r">${fm(C.new[i])}</td><td class="r">${fd(x.d)}</td></tr>`}).join('')}</tbody></table>`:'<div class="empty">Nenhuma.</div>'}</div>`;
+  const past=D.curve_changes.filter(c=>c.past.length);
+  h+=`<div class="card"><h2>Mudanças em meses já realizados <span class="n">(${past.length} projetos) — valores de meses ≤ ${esc(D.cut_month)} que mudaram</span></h2>${past.length?`<table><thead><tr><th>Projeto</th><th>Mês</th><th class="r">Base</th><th class="r">Atual</th><th class="r">Δ</th></tr></thead><tbody>${past.flatMap(c=>c.past.map(p=>`<tr><td>${esc(c.site+' · '+c.project)}</td><td>${p.m}</td><td class="r">${fm(p.old)}</td><td class="r">${fm(p.new)}</td><td class="r">${fd(p.d)}</td></tr>`)).join('')}</tbody></table>`:'<div class="empty">Nenhuma.</div>'}</div></div>`;
+  h+=`<div class="card"><h2>Projetos com curva alterada <span class="n">(${D.curve_changes.length}) — ordenado pelo volume remanejado; clique para ver os meses</span></h2><table><thead><tr><th>Projeto</th><th>País</th><th class="r">Meses alterados</th><th class="r">Volume remanejado</th><th class="r">Δ líquido</th></tr></thead><tbody>`;
+  D.curve_changes.forEach((c,i)=>h+=`<tr class="click" data-c="${i}"><td>${esc(c.site+' · '+c.project)}</td><td>${esc(c.country)}</td><td class="r">${c.n}</td><td class="r">${fm(c.abs)}</td><td class="r">${fd(c.net)}</td></tr>`);
+  if(!D.curve_changes.length) h+='<tr><td colspan="5" class="empty">Nenhum.</td></tr>';
+  return h+'</tbody></table></div>';
+}
+function bindCurva(){
+  document.querySelectorAll('tr[data-c]').forEach(tr=>tr.onclick=()=>{
+    const nx=tr.nextElementSibling; if(nx&&nx.classList.contains('detail')){nx.remove();return;}
+    const c=D.curve_changes[+tr.dataset.c];
+    const t=`<table><tr><th>Mês</th><th class="r">Base</th><th class="r">Atual</th><th class="r">Δ</th></tr>${c.months.map(p=>`<tr><td>${p.m}${p.m<=D.cut_month?' <span class="tag t-past">realizado</span>':''}</td><td class="r">${fm(p.old)}</td><td class="r">${fm(p.new)}</td><td class="r">${fd(p.d)}</td></tr>`).join('')}</table>`;
+    const r=document.createElement('tr'); r.className='detail'; r.innerHTML=`<td colspan="5">${t}</td>`; tr.after(r); });
+}
+
+function show(t){
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  const m=$('#main');
+  if(t==='resumo') m.innerHTML=vResumo();
+  if(t==='novos') m.innerHTML=vNovos();
+  if(t==='alt'){ m.innerHTML=vAlt(); drawAlt();
+    $('#fq').oninput=e=>{altState.q=e.target.value;drawAlt();};
+    $('#fc').onchange=e=>{altState.country=e.target.value;drawAlt();};
+    $('#fm').onchange=e=>{altState.metric=e.target.value;drawAlt();}; }
+  if(t==='curva'){ m.innerHTML=vCurva(); bindCurva(); }
+}
+show('resumo');
+</script>
+</body>
+</html>

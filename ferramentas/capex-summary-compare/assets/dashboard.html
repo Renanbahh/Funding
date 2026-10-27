@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Odata CapEx Control</title>
+<style>
+  :root{--spent:#1F6FD1;--spent2:#2D8CFF;--rem:#A77BC9;--panel:rgba(16,38,82,.72);--line:rgba(120,160,230,.25);--txt:#E8EEF8;--mut:#9FB0CC;--hdr:#1C5BA8}
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  /* tela de desenho fixa (1920 px de largura) escalada para caber em qualquer monitor, mantendo as proporções */
+  :root{--s:1;--appH:100vh}
+  html,body{overflow:hidden}
+  #app{position:absolute;top:0;left:0;width:1920px;height:var(--appH);transform-origin:0 0;transform:scale(var(--s))}
+  html,body{margin:0;height:100%}
+  body{font-family:'Kumbh Sans','Segoe UI',Arial,sans-serif;color:var(--txt);font-size:12px;
+       background:radial-gradient(ellipse at 85% 0%,#4A2470 0%,rgba(74,36,112,0) 45%),linear-gradient(160deg,#0A1A3A 0%,#0E2350 55%,#2A1850 100%)}
+  header{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:22px;padding:8px 16px;
+         background:linear-gradient(90deg,#0A1E45,#1A2E66 60%,#3A2266)}
+  .logo{font-size:22px;font-weight:700;letter-spacing:.5px;line-height:1}
+  .logo small{display:block;font-size:8px;font-weight:400;opacity:.8;letter-spacing:.3px}
+  .file{color:#7FB2FF;font-size:12px}
+  header h1{margin:0;font-size:20px;font-weight:500;text-align:center;grid-column:2}
+  .upd{font-size:11px;color:var(--txt)}
+  .odata{font-size:18px;font-weight:700;letter-spacing:6px;text-align:right;line-height:1}
+  .odata small{display:block;font-size:7px;letter-spacing:.2px;font-weight:400;opacity:.8}
+  .wrap{display:grid;grid-template-columns:220px 1fr 390px;gap:8px;padding:8px;height:calc(var(--appH) - 52px);min-height:620px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px}
+  .col{display:flex;flex-direction:column;gap:8px;min-height:0}
+  /* filtros */
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .fbox{padding:6px 6px 8px;min-height:0;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+  ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#3B5A92;border-radius:4px}::-webkit-scrollbar-track{background:transparent}
+  *{scrollbar-color:#3B5A92 transparent;scrollbar-width:thin}
+  .fbox h3{margin:0 0 4px;font-size:13px;font-weight:700}
+  .fbox .list{overflow:auto;flex:1}
+  .fbox label{display:flex;min-width:0;gap:6px;align-items:center;padding:3px 0;font-size:11px;white-space:nowrap;cursor:pointer;overflow:hidden;text-overflow:ellipsis}
+  .fbox input{accent-color:#2D8CFF;margin:0;flex:none}
+  .proj{flex:1;min-height:0}
+  .fbox.auto{flex:none}
+  /* teste: caixas de filtro da página 1 crescem com o mouse por cima */
+  #pg1 .fbox{position:relative;transform-origin:left top;transition:transform .18s ease, box-shadow .18s ease, background-color .18s ease;will-change:transform}
+  #pg1 .fbox:hover{transform:scale(1.28);z-index:30;background:#122B5C;box-shadow:0 10px 28px rgba(0,0,0,.55);border-color:#4A78C2}
+  #pg1 .fbox.proj{transform-origin:left bottom}   /* última caixa: cresce de baixo para cima */
+  #pg1 .fbox.proj:hover{transform:scale(1.14)}
+  .fbox.auto .list{overflow:visible;flex:none}
+  /* titulos */
+  .bar-title{display:flex;justify-content:space-between;align-items:center;background:var(--hdr);border-radius:8px;padding:4px 12px;font-size:14px;font-weight:700}
+  .dates{display:flex;gap:8px;margin:2px 0}
+  .dates input{background:transparent;color:var(--txt);border:1px solid #8FA6CC;border-radius:4px;padding:4px 6px;font:inherit;color-scheme:dark}
+  .chartbox{flex:1;min-height:0;padding:8px 10px;position:relative}
+  svg{display:block}
+  #line,#typeBars,#annual{position:relative;overflow:hidden}
+  #line>svg,#typeBars>svg,#annual>svg{position:absolute;top:0;left:0}
+  .hit{cursor:pointer}
+  tr.pick{cursor:pointer} tr.pick:hover td{filter:brightness(1.25)}
+  tr.dim td{opacity:.35}
+  tr.on td{box-shadow:inset 0 0 0 9999px rgba(45,140,255,.18)}
+  .tbar{cursor:pointer}
+  .chip{display:none;align-items:center;gap:6px;background:#2D8CFF;color:#fff;border:0;border-radius:12px;padding:3px 10px;font:inherit;font-size:11px;cursor:pointer}
+  .chip.on{display:inline-flex}
+  .hint{font-size:10px;color:var(--mut);align-self:center}
+  /* linha do tempo (mês a mês) — substitui as caixas de data visíveis */
+  .tl{position:relative;flex:1;height:50px;margin:0 22px 0 14px;min-width:300px;user-select:none;touch-action:none}
+  .tl-track{position:absolute;left:0;right:0;top:28px;height:4px;border-radius:2px;background:rgba(201,214,238,.35);cursor:pointer}
+  .tl-fill{position:absolute;top:28px;height:4px;border-radius:2px;background:#2D8CFF;pointer-events:none}
+  .tl-tick{position:absolute;top:25px;width:1px;height:10px;margin-left:-.5px;background:rgba(201,214,238,.45);pointer-events:none}
+  .tl-tick.y{height:16px;top:22px;width:2px;margin-left:-1px;background:rgba(201,214,238,.85)}
+  .tl-lab{position:absolute;top:38px;font-size:10px;color:#C9D6EE;transform:translateX(-50%);pointer-events:none;white-space:nowrap}
+  .tl-h{position:absolute;top:21px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:#E8EEF8;border:3px solid #2D8CFF;cursor:grab;box-shadow:0 1px 6px rgba(0,0,0,.5);z-index:2}
+  .tl-h:active{cursor:grabbing}
+  .tl-h span{position:absolute;bottom:21px;left:50%;background:#0A1A3A;border:1px solid #4A78C2;border-radius:4px;padding:1px 6px;font-size:11px;white-space:nowrap;pointer-events:none}
+  .tl-h[data-h=a] span{transform:translateX(-80%)} .tl-h[data-h=b] span{transform:translateX(-20%)}
+  .tl-h.drag{border-color:#fff}
+  svg text{fill:var(--txt);font-family:inherit}
+  .stack{display:flex;align-items:center;gap:8px;font-size:11px}
+  .stack .bar{flex:1;display:flex;height:18px}
+  .stack .bar div{display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;font-size:11px}
+  /* tabelas */
+  table{width:100%;border-collapse:collapse}
+  th{font-size:11px;font-weight:700;text-align:right;padding:5px 6px;position:sticky;top:0;background:#0D2350;cursor:pointer;white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  td{padding:4px 6px;text-align:right;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,.04);font-variant-numeric:tabular-nums}
+  td.tot{background:rgba(31,111,209,.35);font-weight:700}
+  tr.sum td{font-weight:700;background:#123068}
+  tbody tr.sum td{background:#123068}
+  #projTable tr.sum td{position:sticky;bottom:0;z-index:1}
+  tbody tr:nth-child(odd) td{background-color:rgba(255,255,255,.025)}
+  tbody tr:nth-child(odd) td.tot{background:rgba(31,111,209,.35)}
+  .scroll{overflow:auto;min-height:0}
+  .ptable{flex:1;min-height:0;display:flex;flex-direction:column;padding:4px}
+  .ptable td:first-child{max-width:170px;overflow:hidden;text-overflow:ellipsis}
+  #typeTable td{font-size:13.5px;padding:0 8px}
+  #typeTable tr.sum td{height:30px}
+  #typeTable{table-layout:fixed}
+  #typeTable th:first-child,#typeTable td:first-child{width:34%;overflow:hidden;text-overflow:ellipsis}
+  #typeTable th{font-size:12.5px;padding:0 8px;height:26px}
+  .bottom{display:grid;grid-template-columns:1.05fr 1fr;gap:8px;height:clamp(250px,calc(var(--appH) * .36),330px)}
+  .legend{display:flex;gap:14px;font-size:13px;padding:6px 10px 0}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+  .tip{position:fixed;pointer-events:none;background:#0A1A3A;border:1px solid #4A78C2;border-radius:6px;padding:6px 8px;font-size:11px;display:none;z-index:10}
+  .note{font-size:10px;color:var(--mut);padding:0 4px}
+  /* navegação entre páginas */
+  .pages{position:fixed;left:0;right:0;bottom:0;height:30px;display:flex;gap:2px;padding:0 10px;background:#081631;border-top:1px solid var(--line);z-index:6}
+  .pages button{background:transparent;border:0;color:var(--mut);font:inherit;font-weight:600;padding:0 16px;cursor:pointer;border-top:3px solid transparent}
+  .pages button:disabled{opacity:.35;cursor:not-allowed}
+  .pages button.on{color:#fff;border-top-color:#2D8CFF;background:rgba(45,140,255,.12)}
+  .wrap{height:calc(var(--appH) - 82px)!important}
+  .file2 div{font-size:12px;line-height:1.5}
+  .pink{color:#F07AC0}.blue{color:#6FB0FF}
+  /* página 3 — detalhes da comparação */
+  .wrap3{height:calc(var(--appH) - 82px);overflow:auto;padding:8px 10px 16px;display:flex;flex-direction:column;gap:8px}
+  .wrap3o{display:grid;grid-template-columns:220px 1fr;gap:8px;padding:8px 0 0 8px;height:calc(var(--appH) - 82px);min-height:620px}
+  .wrap3o .wrap3{height:auto;min-height:0;padding:0 10px 16px 0}
+  #pg3 .fbox{position:relative;transform-origin:left top;transition:transform .18s ease, box-shadow .18s ease;will-change:transform}
+  #pg3 .fbox:hover{transform:scale(1.28);z-index:30;background:#122B5C;box-shadow:0 10px 28px rgba(0,0,0,.55);border-color:#4A78C2}
+  #pg3 .fbox.proj{transform-origin:left bottom}
+  .kp{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
+  .kc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+  .kc .l{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);font-weight:700}
+  .kc .v{font-size:20px;font-weight:700;margin-top:2px}
+  .kc .s{font-size:11px;color:var(--mut);margin-top:1px}
+  .kc.cnt .v{color:#6FB0FF}
+  .row3{display:grid;gap:8px}
+  .box3{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+  .box3 h2{margin:0 0 6px;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .box3 h2 .n{font-size:11px;color:var(--mut);font-weight:400}
+  .box3 .scroll{max-height:300px}
+  #t3-country th{vertical-align:bottom;line-height:1.2}
+  #t3-country td,#t3-country th{padding:4px 7px}
+  .box3 td:first-child{max-width:260px;overflow:hidden;text-overflow:ellipsis}
+  .warn3{background:rgba(229,72,77,.12);border:1px solid rgba(229,72,77,.45);border-radius:8px;padding:6px 10px;font-size:12px}
+  .tg{display:inline-block;padding:0 7px;border-radius:9px;font-size:10px;font-weight:700;margin-right:4px}
+  .tg.new{background:rgba(91,192,122,.2);color:#7FDB9A}.tg.rem{background:rgba(229,72,77,.2);color:#FF8A8E}
+  .tg.ren{background:rgba(111,176,255,.2);color:#9CC8FF}.tg.att{background:rgba(167,123,201,.25);color:#D2B4EA}
+  .tg.past{background:#D3ED63;color:#0E2147}
+  .f3{display:flex;gap:6px}
+  .f3 input,.f3 select{background:#0A1830;color:var(--txt);border:1px solid #3B5A92;border-radius:5px;padding:3px 6px;font:inherit;font-size:11px;color-scheme:dark}
+  tr.det td{background:rgba(10,24,48,.9)!important;white-space:normal}
+  tr.exp{cursor:pointer} tr.exp:hover td{filter:brightness(1.25)}
+  .dl{color:var(--mut)}
+  /* página 4 — comparação sem FX */
+  .wrap4{display:grid;grid-template-columns:1fr 1fr 1.5fr;grid-template-rows:minmax(0,1fr) 185px;gap:8px;padding:8px;height:calc(var(--appH) - 82px);min-height:660px}
+  .sec4{display:flex;flex-direction:column;gap:6px;min-height:0}
+  .sec4 .ctab{flex:1}
+  .ctab th.sep,.ctab td.sep{border-left:2px solid rgba(255,255,255,.12)}
+  .bot4{grid-column:1 / span 3;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;min-height:0}
+  /* filtros da página 4 crescem com o mouse, de baixo para cima (ficam na base da tela) */
+  #pg4 .bot4 .fbox{position:relative;transform-origin:left bottom;transition:transform .18s ease, box-shadow .18s ease;will-change:transform}
+  #pg4 .bot4 .fbox:last-child{transform-origin:right bottom}
+  #pg4 .bot4 .fbox:hover{transform:scale(1.28);z-index:30;background:#122B5C;box-shadow:0 10px 28px rgba(0,0,0,.55);border-color:#4A78C2}
+  .bot4 .fbox{height:100%}
+  h1 small{font-size:12px;color:var(--mut);font-weight:400;margin-left:6px}
+  h1 .cutl{font-size:15px;font-weight:600;margin:0 10px}
+  /* página 5 — Building: Budget × (EFC + Contingency + Saving) */
+  .wrap5{display:grid;grid-template-columns:200px 1fr;gap:8px;padding:8px;height:calc(var(--appH) - 82px);min-height:620px}
+  .wrap5 .side .fbox{max-height:none}
+  #pg5 .fbox{position:relative;transform-origin:left top;transition:transform .18s ease, box-shadow .18s ease;will-change:transform}
+  #pg5 .fbox.grow{transform-origin:left bottom}   /* Site: última caixa, cresce de baixo para cima */
+  #pg5 .fbox:hover{transform:scale(1.25);z-index:30;background:#122B5C;box-shadow:0 10px 28px rgba(0,0,0,.55);border-color:#4A78C2}
+  .main5{display:flex;flex-direction:column;gap:8px;min-height:0}
+  .kp5{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+  .tool5{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 12px}
+  .tool5 .lg{display:flex;gap:14px;font-size:12px}
+  .tool5 .lg i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:5px;vertical-align:-2px}
+  .tool5 input,.tool5 select{background:#0A1830;color:var(--txt);border:1px solid #3B5A92;border-radius:5px;padding:4px 8px;font:inherit;color-scheme:dark}
+  .seg{display:inline-flex;border:1px solid #3B5A92;border-radius:6px;overflow:hidden}
+  .seg button{background:transparent;border:0;color:var(--mut);font:inherit;padding:4px 10px;cursor:pointer}
+  .seg button.on{background:#2D8CFF;color:#fff}
+  .list5{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;gap:8px;align-content:start;padding-right:4px}
+  .pc{background:rgba(6,18,40,.85);border:1px solid var(--line);border-radius:10px;padding:8px 12px 10px}
+  .pc.over{border-color:rgba(229,72,77,.6)}
+  .pc .hd{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+  .pc .hd b{font-size:13.5px}
+  .pc .hd .meta{font-size:11px;color:var(--mut)}
+  .pc .hd .res{margin-left:auto;font-size:12px;font-weight:700;text-align:right}
+  .pc.over{box-shadow:0 0 0 1px rgba(229,72,77,.6) inset}
+  .br{display:grid;grid-template-columns:70px 1fr 78px;align-items:center;gap:8px;margin-top:4px}
+  .br .nm{font-size:12px;color:#C9D6EE}
+  .br .val{font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+  .bar5{position:relative;height:22px;background:rgba(255,255,255,.04);border-radius:3px;overflow:visible}
+  .bar5 .s{position:absolute;top:0;height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden}
+  .bar5 .bud{background:#00A9CE;color:#062030;border-radius:3px}
+  .bar5 .efc{background:#A6A8AB;color:#1d2430;border-radius:3px 0 0 3px}
+  .bar5 .cont{background:#11BF79;color:#062818}
+  .bar5 .sav{background:#E3B53A;color:#3a2a00;border-radius:0 3px 3px 0}
+  .bar5 .ovr{background:repeating-linear-gradient(45deg,#E5484D 0 6px,#B5363A 6px 12px);color:#fff;border-radius:0 3px 3px 0}
+  .bar5 .mark{position:absolute;top:-3px;bottom:-3px;width:2px;background:#fff;opacity:.85}
+  /* página 0 — início: escolha dos arquivos e confirmação */
+  .wrap0{height:calc(var(--appH) - 82px);overflow:auto;display:flex;justify-content:center;padding:22px 16px 30px}
+  .home{width:min(1050px,100%);display:flex;flex-direction:column;gap:14px}
+  .home h2{margin:0;font-size:22px;font-weight:700}
+  .home .sub{color:var(--mut);font-size:13px;margin-top:-6px}
+  .fcard{border-radius:14px;padding:16px 18px;display:grid;grid-template-columns:150px 1fr;gap:10px 16px;align-items:center}
+  .fcard.pk{background:linear-gradient(135deg,rgba(176,58,134,.55),rgba(112,48,104,.45));border:1px solid #F07AC0}
+  .fcard.bl{background:linear-gradient(135deg,rgba(29,78,149,.65),rgba(16,48,110,.55));border:1px solid #6FB0FF}
+  .fcard .tt{grid-row:span 2;font-size:15px;font-weight:700;line-height:1.3}
+  .fcard .tt small{display:block;font-size:11px;font-weight:400;opacity:.85;margin-top:3px}
+  .fcard input[type=text]{width:100%;background:rgba(5,14,32,.65);color:var(--txt);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:9px 12px;font:inherit;font-size:13px}
+  .fcard.pk input[type=text]:focus{outline:2px solid #F07AC0}.fcard.bl input[type=text]:focus{outline:2px solid #6FB0FF}
+  .pickf{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .pickf label.btn{cursor:pointer;border-radius:8px;padding:7px 14px;font-weight:700;font-size:12.5px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08)}
+  .pickf label.btn:hover{background:rgba(255,255,255,.16)}
+  .pickf input[type=file]{display:none}
+  .pickf .fn{font-size:12.5px;opacity:.9}
+  .go{align-self:center;border:0;border-radius:12px;padding:13px 40px;font:inherit;font-size:16px;font-weight:800;color:#fff;cursor:pointer;
+      background:linear-gradient(90deg,#B03A86,#1D4E95);box-shadow:0 6px 20px rgba(0,0,0,.4);transition:transform .12s, filter .12s}
+  .go:hover{transform:translateY(-1px);filter:brightness(1.12)} .go:disabled{opacity:.5;cursor:default;transform:none}
+  .prog{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+  .prog .st{display:flex;gap:10px;align-items:center;padding:4px 0;font-size:13px}
+  .prog .st i{width:16px;height:16px;border-radius:50%;border:2px solid #3B5A92;flex:none}
+  .prog .st.run i{border-color:#2D8CFF;border-top-color:transparent;animation:spin .8s linear infinite}
+  .prog .st.ok i{background:#5BC07A;border-color:#5BC07A}.prog .st.err i{background:#E5484D;border-color:#E5484D}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .done{border-radius:14px;padding:16px 18px;background:rgba(6,18,40,.85);border:1px solid rgba(91,192,122,.55)}
+  .done .ok{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:800;color:#7FDB9A;margin-bottom:10px}
+  .done .ok b{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#5BC07A;color:#062818;font-size:15px}
+  .fl{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;padding:8px 12px;border-radius:10px;margin-top:6px;font-size:13px}
+  .fl.pk{background:rgba(176,58,134,.18);border-left:4px solid #F07AC0}.fl.bl{background:rgba(29,78,149,.28);border-left:4px solid #6FB0FF}
+  .fl .k{color:var(--mut)} .fl a{color:inherit;word-break:break-all}
+  .jump{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .jump button{background:#122B5C;border:1px solid #3B5A92;color:var(--txt);border-radius:8px;padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+  .jump button:hover{border-color:#6FB0FF}
+  .msg{border-radius:10px;padding:10px 14px;font-size:13px;background:rgba(229,72,77,.12);border:1px solid rgba(229,72,77,.45)}
+  .msg.info{background:rgba(111,176,255,.1);border-color:rgba(111,176,255,.45)}
+  .msg textarea{width:100%;margin-top:8px;background:#0A1830;color:var(--txt);border:1px solid #3B5A92;border-radius:6px;font:inherit;font-size:12px;padding:8px;min-height:70px}
+  /* página 2 — comparação */
+  .wrap2{display:grid;grid-template-columns:180px 1fr 180px;grid-template-rows:minmax(0,1fr) auto 250px;gap:8px;padding:8px;height:calc(var(--appH) - 82px);min-height:680px}
+  .ppanel{background:rgba(112,48,104,.5);border:1px solid rgba(240,122,192,.35);border-radius:10px}
+  .bpanel{background:rgba(16,48,110,.65);border:1px solid rgba(111,176,255,.35);border-radius:10px}
+  .side{display:flex;flex-direction:column;gap:6px;min-height:0}
+  .side .fbox{flex:none;max-height:158px}
+  .side .fbox label{padding:1px 0}
+  .side .fbox .list{overflow:auto}
+  .side .fbox.grow{flex:1;max-height:none}
+  .ppanel input{accent-color:#F07AC0}
+  .charts{display:flex;flex-direction:column;gap:8px;min-height:0}
+  .cbox{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;padding:6px 10px 4px}
+  .chead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;min-height:46px}
+  .card{border-radius:10px;padding:3px 14px 5px;text-align:center;min-width:110px}
+  .card small{display:block;font-size:10px;font-weight:700}
+  .card b{font-size:15px}
+  .pcard{background:#B03A86;border:1px solid #F07AC0}.bcard{background:#1D4E95;border:1px solid #6FB0FF}
+  .ctitle{display:flex;gap:28px;align-items:center;font-size:15px;font-weight:700;padding-top:6px}
+  .ctitle .lab{font-size:14px}
+  .cline{flex:1;min-height:0;position:relative;overflow:hidden}
+  .cline>svg{position:absolute;top:0;left:0}
+  .p2dates{display:flex;gap:8px;align-items:center;padding-top:4px}
+  .p2dates input{background:transparent;color:var(--txt);border:1px solid #D9D9D6;border-radius:4px;padding:4px 6px;font:inherit;color-scheme:dark}
+  .ctitle{flex:1;justify-content:center}
+  header .p2dates{padding-top:0}
+  /* filtros da página 2 crescem com o mouse por cima (mesmo efeito da página 1) */
+  #pg2 .side .fbox{position:relative;transition:transform .18s ease, box-shadow .18s ease, background-color .18s ease;will-change:transform}
+  #side-prev .fbox{transform-origin:left top} #side-cur .fbox{transform-origin:right top}
+  #side-prev .fbox.grow{transform-origin:left bottom} #side-cur .fbox.grow{transform-origin:right bottom}
+  #pg2 .side .fbox:hover{transform:scale(1.28);z-index:30;box-shadow:0 10px 28px rgba(0,0,0,.55)}
+  #side-prev .fbox:hover{background:#5A2452;border-color:#F07AC0}
+  #side-cur .fbox:hover{background:#122B5C;border-color:#6FB0FF}
+  #pg2 .side .fbox.grow:hover{transform:scale(1.2)}
+  .p2bar{grid-column:1 / span 3;display:flex;justify-content:space-between;align-items:center;background:var(--hdr);border-radius:8px;padding:4px 12px;font-size:15px;font-weight:700}
+  .tables{grid-column:1 / span 3;display:grid;grid-template-columns:1.25fr 1fr 1fr 1fr;gap:8px;min-height:0}
+  .ctab{background:rgba(6,18,40,.85);border:1px solid var(--line);border-radius:10px;overflow:auto;padding:4px}
+  .ctab th{background:#0A1830;vertical-align:bottom;line-height:1.25}
+  .ctab th.pv{color:#F07AC0}.ctab th.cu{color:#6FB0FF}
+  .ctab td.pv{color:#F07AC0}.ctab td.cu{color:#6FB0FF}
+  .ctab td:first-child{max-width:190px;overflow:hidden;text-overflow:ellipsis}
+  .ctab tr.sum td{position:sticky;bottom:0;background:#123068;color:var(--txt)}
+  .ar{width:14px;text-align:center;padding:4px 0}
+  .up{color:#5BC07A}.dn{color:#E5484D}.eq{color:var(--mut)}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <div style="display:flex;align-items:center;gap:26px"><div class="logo">Aligned<small>Adaptive Data Centers</small></div><div class="file" id="file"></div><div class="p2dates" id="hdrDates2" hidden><input type="date" id="d3" title="Data inicial"><input type="date" id="d4" title="Data final"><button class="chip" id="clearSel2" title="Limpar seleção (Esc)"></button></div></div>
+  <h1>Odata CapEx Control</h1>
+  <div class="upd" id="upd"></div>
+  <div class="odata">ODATA<small>An Aligned Data Centers Company</small></div>
+</header>
+<div class="wrap0" id="pg0" hidden>
+  <div class="home">
+    <h2>Comparação de arquivos de Funding (PLA-FOR-010)</h2>
+    <div class="sub">Informe o arquivo anterior (rosa) e o atual (azul) e clique em "Realizar comparação". Os arquivos são lidos só no seu navegador: nada é enviado para a internet. As abas Capex Comparison, Change Details, Comparison w/o FX e Building Budget passam a mostrar esses dois arquivos; a aba Odata CapEx Control mostra o arquivo atual.</div>
+    <div class="fcard pk">
+      <div class="tt">Arquivo anterior<small>versão consolidada (Cons)</small></div>
+      <input type="text" id="lnkPrev" placeholder="Cole aqui o link do SharePoint do arquivo anterior">
+      <div class="pickf"><label class="btn" for="filePrev">Selecionar arquivo do computador…</label><input type="file" id="filePrev" accept=".xlsx,.xlsm"><span class="fn" id="fnPrev">nenhum arquivo selecionado</span></div>
+    </div>
+    <div class="fcard bl">
+      <div class="tt">Arquivo atual<small>versão PROD</small></div>
+      <input type="text" id="lnkCur" placeholder="Cole aqui o link do SharePoint do arquivo atual">
+      <div class="pickf"><label class="btn" for="fileCur">Selecionar arquivo do computador…</label><input type="file" id="fileCur" accept=".xlsx,.xlsm"><span class="fn" id="fnCur">nenhum arquivo selecionado</span></div>
+    </div>
+    <button class="go" id="goCmp">Realizar comparação</button>
+    <div id="msg0"></div>
+    <div class="prog" id="prog0" hidden></div>
+    <div id="done0"></div>
+  </div>
+</div>
+<div class="wrap" id="pg1">
+  <!-- coluna de filtros -->
+  <div class="col">
+    <div class="fgrid">
+      <div class="panel fbox" style="height:170px"><h3>Country</h3><div class="list" id="f-country"></div></div>
+      <div class="panel fbox" style="height:170px"><h3>Other</h3><div class="list" id="f-other"></div></div>
+      <div class="panel fbox auto"><h3>Type</h3><div class="list" id="f-type"></div></div>
+      <div class="panel fbox auto"><h3>Category</h3><div class="list" id="f-cat"></div></div>
+    </div>
+    <div class="panel fbox proj"><h3>Project</h3><div class="list" id="f-p"></div></div>
+  </div>
+  <!-- centro -->
+  <div class="col">
+    <div class="bar-title"><span>Total in the period</span><span id="cut"></span></div>
+    <div class="dates"><input type="date" id="d1" hidden><input type="date" id="d2" hidden><button class="chip" id="clearSel" title="Limpar seleção (Esc)"></button><div class="tl" id="tl1" title="Arraste as bolinhas: a esquerda vai para o 1º dia do mês, a direita para o último dia"></div></div>
+    <div class="panel chartbox" style="display:flex;flex-direction:column;gap:6px">
+      <div class="stack" id="periodStack"></div>
+      <div id="line" style="flex:1;min-height:0"></div>
+    </div>
+    <div class="bottom">
+      <div class="panel" id="typePanel" style="padding:4px;overflow:hidden"><table id="typeTable"></table></div>
+      <div class="panel" style="display:flex;flex-direction:column"><div class="legend"><span><i style="background:var(--spent)"></i>Spent</span><span><i style="background:var(--rem)"></i>Remaining</span></div><div id="typeBars" style="flex:1;min-height:0;padding:0 8px 6px"></div></div>
+    </div>
+  </div>
+  <!-- direita -->
+  <div class="col">
+    <div class="panel ptable"><div class="scroll" style="flex:1"><table id="projTable"></table></div></div>
+    <div class="bar-title"><span>Annual total</span></div>
+    <div class="panel chartbox" style="flex:1.05;display:flex;flex-direction:column;gap:6px">
+      <div class="stack" id="annualStack"></div>
+      <div id="annual" style="flex:1;min-height:0"></div>
+    </div>
+  </div>
+</div>
+<div class="wrap2" id="pg2" hidden>
+  <div class="side" id="side-prev">
+    <div class="ppanel fbox"><h3>Country</h3><div class="list" id="f2-prev-country"></div></div>
+    <div class="ppanel fbox"><h3>Type</h3><div class="list" id="f2-prev-type2"></div></div>
+    <div class="ppanel fbox"><h3>Capex categorization</h3><div class="list" id="f2-prev-cat"></div></div>
+    <div class="ppanel fbox grow"><h3>Project Previous</h3><div class="list" id="f2-prev-p"></div></div>
+  </div>
+  <div class="charts">
+    <div class="ppanel cbox">
+      <div class="chead">
+        <div class="card pcard"><small>Incurred</small><b id="pInc"></b></div>
+        
+        <div class="ctitle"><span class="lab pink">Previous file - <span id="pCut"></span></span><span id="pTot"></span><span>N Projects:&nbsp; <span id="pN"></span></span></div>
+        <div class="card pcard"><small>Forecast</small><b id="pFc"></b></div>
+      </div>
+      <div class="cline" id="lineP"></div>
+    </div>
+    <div class="bpanel cbox">
+      <div class="chead">
+        <div class="card bcard"><small>Incurred</small><b id="cInc"></b></div>
+        <div class="ctitle"><span class="lab blue">Current file - <span id="cCut"></span></span><span id="cTot"></span><span>N Projects:&nbsp; <span id="cN"></span></span></div>
+        <div class="card bcard"><small>Forecast</small><b id="cFc"></b></div>
+      </div>
+      <div class="cline" id="lineC"></div>
+    </div>
+  </div>
+  <div class="side" id="side-cur">
+    <div class="bpanel fbox"><h3>Country</h3><div class="list" id="f2-cur-country"></div></div>
+    <div class="bpanel fbox"><h3>Type</h3><div class="list" id="f2-cur-type2"></div></div>
+    <div class="bpanel fbox"><h3>Capex categorization</h3><div class="list" id="f2-cur-cat"></div></div>
+    <div class="bpanel fbox grow"><h3>Project Current</h3><div class="list" id="f2-cur-p"></div></div>
+  </div>
+  <div class="p2bar"><span>Period Comparison</span><span class="hint" style="color:#C9D6EE">Clique num mês ou numa linha para filtrar · Ctrl+clique para vários</span></div>
+  <div class="tables">
+    <div class="ctab"><table id="t2-p"></table></div>
+    <div class="ctab"><table id="t2-type2"></table></div>
+    <div class="ctab"><table id="t2-cat"></table></div>
+    <div class="ctab"><table id="t2-country"></table></div>
+  </div>
+</div>
+<div class="wrap3o" id="pg3" hidden>
+  <div class="col">
+    <div class="fgrid">
+      <div class="panel fbox auto"><h3>Country</h3><div class="list" id="f3-country"></div></div>
+      <div class="panel fbox auto"><h3>Other</h3><div class="list" id="f3-other"></div></div>
+      <div class="panel fbox auto"><h3>Type</h3><div class="list" id="f3-type"></div></div>
+      <div class="panel fbox auto"><h3>Category</h3><div class="list" id="f3-cat"></div></div>
+    </div>
+    <div class="panel fbox proj"><h3>Project</h3><div class="list" id="f3-p"></div></div>
+  </div>
+  <div class="wrap3">
+  <div id="warn3"></div>
+  <div class="kp" id="kp3"></div>
+  <div class="row3" style="grid-template-columns:max-content minmax(340px,1fr)">
+    <div class="box3"><h2>By Country <span class="n">Budget · EFC (w/o FX) · Contingency · Saving — previous × current</span></h2><div class="scroll"><table id="t3-country"></table></div></div>
+    <div class="box3"><h2><span>Top 10 variations</span><span class="f3"><select id="tm3"></select></span></h2><div id="top3"></div></div>
+  </div>
+  <div class="row3" style="grid-template-columns:1fr 1fr">
+    <div class="box3"><h2>New, removed and possibly renamed projects <span class="n">renamed = same site and block; confirm with the sheet owner</span></h2><div class="scroll"><table id="t3-nr"></table></div></div>
+    <div class="box3"><h2>Sites with changes <span class="n" id="n3-site"></span></h2><div class="scroll"><table id="t3-site"></table></div></div>
+  </div>
+  <div class="box3"><h2><span>Projects with changed values <span class="n" id="n3-chg"></span></span>
+    <span class="f3"><input id="q3" placeholder="Search site or project"><select id="c3"></select><select id="m3"></select></span></h2>
+    <div class="scroll" style="max-height:420px"><table id="t3-chg"></table></div></div>
+  </div>
+</div>
+<div class="wrap4" id="pg4" hidden>
+  <div class="sec4"><div class="bar-title"><span>Budget</span><button class="chip" id="clearSel4" title="Limpar seleção (Esc)"></button></div><div class="ctab"><table id="t4-bud"></table></div></div>
+  <div class="sec4"><div class="bar-title"><span>EFC</span><span class="hint" style="color:#C9D6EE;font-weight:400">EFC w/o FX Variation</span></div><div class="ctab"><table id="t4-efc"></table></div></div>
+  <div class="sec4"><div class="bar-title"><span>Contingency</span><span class="hint" style="color:#C9D6EE;font-weight:400">Saving = Budget − EFC − Contingency</span></div><div class="ctab"><table id="t4-cont"></table></div></div>
+  <div class="bot4">
+    <div class="panel fbox"><h3>Country</h3><div class="list" id="f4-country"></div></div>
+    <div class="panel fbox"><h3>Other</h3><div class="list" id="f4-other"></div></div>
+    <div class="panel fbox"><h3>Type</h3><div class="list" id="f4-type2"></div></div>
+    <div class="panel fbox"><h3>Capex categorization</h3><div class="list" id="f4-cat"></div></div>
+  </div>
+</div>
+<div class="wrap5" id="pg5" hidden>
+  <div class="side">
+    <div class="panel fbox"><h3>Country</h3><div class="list" id="f5-country"></div></div>
+    <div class="panel fbox"><h3>Other</h3><div class="list" id="f5-other"></div></div>
+    <div class="panel fbox"><h3>Type</h3><div class="list" id="f5-type2"></div></div>
+    <div class="panel fbox grow"><h3>Site</h3><div class="list" id="f5-site"></div></div>
+  </div>
+  <div class="main5">
+    <div class="kp5" id="kp5"></div>
+    <div class="tool5">
+      <span class="seg" id="file5"><button data-f="cur" class="on">Current file</button><button data-f="prev">Previous file</button></span>
+      <span class="seg" id="scale5"><button data-s="own" class="on">Escala por projeto</button><button data-s="common">Escala comum</button></span>
+      <input id="q5" placeholder="Buscar projeto">
+      <select id="o5"><option value="n">Ordenar: nome</option><option value="bud">Ordenar: maior Budget</option><option value="sav">Ordenar: menor Saving (estouro primeiro)</option><option value="cont">Ordenar: maior Contingency</option><option value="pct">Ordenar: maior % do Budget consumido</option></select>
+      <span class="lg"><span><i style="background:#00A9CE"></i>Budget (Approved)</span><span><i style="background:#A6A8AB"></i>EFC</span><span><i style="background:#11BF79"></i>Contingency</span><span><i style="background:#E3B53A"></i>Saving</span><span><i style="background:#E5484D"></i>Estouro (Saving negativo)</span></span>
+    </div>
+    <div class="list5" id="list5"></div>
+  </div>
+</div>
+<nav class="pages"><button data-pg="0" class="on">Início</button><button data-pg="1">Odata CapEx Control</button><button data-pg="2">Capex Comparison</button><button data-pg="3">Change Details</button><button data-pg="4">Comparison w/o FX</button><button data-pg="5">Building Budget</button></nav>
+</div>
+<div class="tip" id="tip"></div>
+<script id="dash-data" type="application/json">__DATA__</script>
+<script>
+(()=>{   // tudo num escopo próprio: permite remontar a página com outros arquivos (document.write) sem conflito
+const GEN = window.__dashGen = (window.__dashGen||0) + 1;
+// cópia da página como foi carregada: base para abrir o dashboard com outros arquivos (página Início)
+const SRC = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+// dados embutidos; sem dados (página publicada vazia, ex.: GitHub Pages), só a aba Início funciona até a primeira comparação
+let ALL = null; try { ALL = JSON.parse(document.getElementById('dash-data').textContent); } catch(e) {}
+const EMPTY = !ALL || !ALL.cur;
+if(EMPTY){ const stub=()=>({file:'',last_update:'',file_date:'',cutoff:'2026-01',cutoff_label:'',months:['2026-01'],projects:[],generated:''});
+  ALL={cur:stub(), prev:stub(), cmp:{renames:[]}, meta:{}}; }
+// ajusta a tela ao monitor: escala pela largura (desenho de 1920 px) e usa toda a altura disponível
+const DESIGN_W=1920;
+function fit(){ const sc=window.innerWidth/DESIGN_W; document.documentElement.style.setProperty('--s',sc);
+  document.documentElement.style.setProperty('--appH',(window.innerHeight/sc)+'px'); }
+fit();
+const D = ALL.cur;   // página 1 usa só o arquivo PROD
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MPT = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const fM = v => (v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' M';
+const CUT = D.cutoff, CY = +CUT.slice(0,4);
+
+$('#file').textContent = D.file.replace(/\.xlsx?$/i,'');
+$('#upd').textContent = 'Last Update: ' + D.last_update;
+$('#cut').textContent = D.cutoff_label;
+// cada mês da planilha vale na data de fim do mês (ex.: 2026-01 -> 2026-01-31)
+const mEnd = m => { const [y,mo]=m.split('-').map(Number); return m+'-'+String(new Date(y,mo,0).getDate()).padStart(2,'0'); };
+const ME = D.months.map(mEnd);
+$('#d1').value = CY + '-01-01'; $('#d2').value = CY + '-12-31';
+$('#d1').min = $('#d2').min = D.months[0]+'-01'; $('#d1').max = $('#d2').max = ME.at(-1);
+
+// ---------- filtros (guardam o que foi DESmarcado; valores novos entram marcados)
+const F = {country:'country', other:'other', type:'type', cat:'cat', p:'p'};
+const off = Object.fromEntries(Object.keys(F).map(k=>[k,new Set()]));
+const uniq = (k, list) => [...new Set(list.map(p=>p[k]))].sort((a,b)=>a.localeCompare(b));
+function passes(p, skip){ return Object.keys(F).every(k => k===skip || !off[k].has(p[k])); }
+function drawFilter(k){
+  // filtros em cascata: cada caixa só mostra opções compatíveis com as caixas acima dela
+  const before = Object.keys(F).slice(0, Object.keys(F).indexOf(k));
+  const pool = D.projects.filter(p=>before.every(kk=>!off[kk].has(p[kk])));
+  const vals = uniq(k, pool);
+  const all = vals.every(v=>!off[k].has(v));
+  let h = `<label><input type="checkbox" data-all="${k}" ${all?'checked':''}>Selecionar tudo</label>`;
+  vals.forEach(v=>h+=`<label title="${esc(v)}"><input type="checkbox" data-k="${k}" value="${esc(v)}" ${off[k].has(v)?'':'checked'}>${esc(v)}</label>`);
+  const el = $('#f-'+k); el.innerHTML = h;
+  el.querySelectorAll('input[data-k]').forEach(i=>i.onchange=()=>{ i.checked?off[k].delete(i.value):off[k].add(i.value); refresh(); });
+  el.querySelector('[data-all]').onchange=e=>{ if(e.target.checked) off[k].clear(); else vals.forEach(v=>off[k].add(v)); refresh(); };
+}
+
+// ---------- cálculos
+function range(){ let a=$('#d1').value||D.months[0]+'-01', b=$('#d2').value||ME.at(-1); if(a>b)[a,b]=[b,a]; return [a,b]; }
+function idxIn(a,b){ return ME.map((d,i)=>d>=a&&d<=b?i:-1).filter(i=>i>=0); }
+function splitSum(p, idx){ let s=0,r=0; idx.forEach(i=>{ D.months[i]<=CUT ? s+=p.v[i] : r+=p.v[i]; }); return [s,r]; }
+
+// seleções feitas clicando nos visuais (filtro cruzado, como no Power BI)
+const selMonths = new Set(), selTypes = new Set(), selProj = new Set();
+function toggle(set, v, multi){
+  if(multi){ set.has(v)?set.delete(v):set.add(v); }
+  else if(set.size===1 && set.has(v)) set.clear();
+  else { set.clear(); set.add(v); }
+  refresh();
+}
+function pickMonth(m, multi){ toggle(selMonths, m, multi); }
+function clearSel(){ selMonths.clear(); selTypes.clear(); selProj.clear(); refresh(); }
+const isMulti = e => e.ctrlKey||e.metaKey||e.shiftKey;
+function refresh(){
+  Object.keys(F).forEach(drawFilter);
+  const sel = D.projects.filter(p=>passes(p));
+  const [a,b] = range(), idx = idxIn(a,b);
+  [...selMonths].forEach(m=>{ if(mEnd(m)<a||mEnd(m)>b) selMonths.delete(m); });
+  const fidx = selMonths.size ? idx.filter(i=>selMonths.has(D.months[i])) : idx;  // meses clicados no gráfico
+  const projOk = new Set(sel.map(p=>p.p)); [...selProj].forEach(v=>{ if(!projOk.has(v)) selProj.delete(v); });
+  const byT = p => !selTypes.size || selTypes.has(p.type), byP = p => !selProj.size || selProj.has(p.p);
+  const selAll = sel.filter(p=>byT(p)&&byP(p));           // usado pelos visuais que não originaram a seleção
+  const parts = [];
+  if(selMonths.size) parts.push([...selMonths].sort().map(m=>MPT[+m.slice(5)-1]+'/'+m.slice(2,4)).join(', '));
+  if(selTypes.size) parts.push([...selTypes].join(', '));
+  if(selProj.size) parts.push(selProj.size===1?[...selProj][0]:selProj.size+' projetos');
+  const c=$('#clearSel'); c.classList.toggle('on',parts.length>0); c.textContent = parts.length ? parts.join(' · ')+'  ✕' : '';
+  let S=0,R=0; selAll.forEach(p=>{ const [s,r]=splitSum(p,fidx); S+=s; R+=r; });
+  stack('#periodStack', S, R);
+  line(idx, selAll);
+  projTable(sel.filter(byT).map(p=>{ const [s,r]=splitSum(p,fidx); return {p:p.p,s,r,t:s+r}; }));
+  typeView(sel.filter(byP), fidx);
+  annual(selAll);
+}
+
+function stack(el, s, r){
+  const t=s+r, ws=t>0?Math.max(0,s)/(Math.max(0,s)+Math.max(0,r))*100:0;
+  $(el).innerHTML = `<div class="bar"><div style="width:${ws}%;background:var(--spent)">${ws>12?fM(s):''}</div><div style="width:${100-ws}%;background:var(--rem)">${100-ws>12?fM(r):''}</div></div><b>${fM(t)}</b>`;
+}
+
+// curva suave (Catmull-Rom -> Bézier)
+function smooth(pts){ if(pts.length<2) return pts.length?`M${pts[0][0]},${pts[0][1]}`:''; let d=`M${pts[0][0]},${pts[0][1]}`;
+  for(let i=0;i<pts.length-1;i++){ const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||p2;
+    d+=` C${p1[0]+(p2[0]-p0[0])/6},${p1[1]+(p2[1]-p0[1])/6} ${p2[0]-(p3[0]-p1[0])/6},${p2[1]-(p3[1]-p1[1])/6} ${p2[0]},${p2[1]}`; } return d; }
+
+function line(idx, sel){
+  const el=$('#line'), W=el.clientWidth||700, H=el.clientHeight||260, pl=24,pr=24,pt=34,pb=34;
+  if(!idx.length){ el.innerHTML='<div class="note">Sem meses no período.</div>'; return; }
+  const vals = idx.map(i=>sel.reduce((s,p)=>s+p.v[i],0));
+  const mx=Math.max(...vals,0), mn=Math.min(...vals,0);
+  const x=k=>pl+(idx.length<2?(W-pl-pr)/2:k*(W-pl-pr)/(idx.length-1)), y=v=>pt+(mx-v)/((mx-mn)||1)*(H-pt-pb);
+  const pts=vals.map((v,k)=>[x(k),y(v)]);
+  const cutK = idx.map(i=>D.months[i]).filter(m=>m<=CUT).length-1; // último mês realizado no período
+  const multiYear = D.months[idx[0]].slice(0,4)!==D.months[idx.at(-1)].slice(0,4);
+  let s=`<svg width="${W}" height="${H}"><defs>
+    <linearGradient id="gS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2D8CFF" stop-opacity=".55"/><stop offset="1" stop-color="#1F6FD1" stop-opacity=".15"/></linearGradient>
+    <linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A77BC9" stop-opacity=".6"/><stop offset="1" stop-color="#A77BC9" stop-opacity=".2"/></linearGradient></defs>`;
+  const base=y(Math.max(mn,0)), area=(p,g)=>p.length>1?`<path d="${smooth(p)} L${p.at(-1)[0]},${base} L${p[0][0]},${base}Z" fill="url(#${g})"/>`:'';
+  const sp = cutK>=0 ? pts.slice(0,cutK+1) : [], rp = pts.slice(Math.max(cutK,0));
+  if(sp.length) s+=area(sp,'gS'); if(cutK<pts.length-1) s+=area(rp,'gR');
+  if(sp.length>1) s+=`<path d="${smooth(sp)}" fill="none" stroke="#2D8CFF" stroke-width="3"/>`;
+  if(cutK<pts.length-1 && rp.length>1) s+=`<path d="${smooth(rp)}" fill="none" stroke="#A77BC9" stroke-width="3" stroke-dasharray="3 4"/>`;
+  const bw = idx.length<2 ? (W-pl-pr) : (W-pl-pr)/(idx.length-1), any=selMonths.size>0;
+  pts.forEach((p,k)=>{ const m=D.months[idx[k]]; if(selMonths.has(m)) s+=`<rect x="${p[0]-bw/2}" y="0" width="${bw}" height="${H-pb+4}" fill="rgba(255,255,255,.09)" rx="6"/>`; });
+  pts.forEach((p,k)=>{ const past=k<=cutK, m=D.months[idx[k]], lab=MPT[+m.slice(5)-1]+(multiYear?'/'+m.slice(2,4):''), op=(!any||selMonths.has(m))?1:.3;
+    s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${selMonths.has(m)?6.5:4.5}" fill="${past?'#2D8CFF':'#A77BC9'}" opacity="${op}" ${selMonths.has(m)?'stroke="#fff" stroke-width="2"':''}/>`;
+    if(idx.length<=24) s+=`<text x="${p[0]}" y="${p[1]-10}" font-size="11" text-anchor="middle" opacity="${op}" font-weight="${selMonths.has(m)?700:400}">${fM(vals[k])}</text>`;
+    const step=Math.ceil(idx.length/18); if(k%step===0) s+=`<text x="${p[0]}" y="${H-pb+16}" font-size="11" text-anchor="middle" fill="#C9D6EE">${lab}</text>`; });
+  if(!multiYear) s+=`<text x="${W/2}" y="${H-4}" font-size="11" text-anchor="middle" fill="#9FB0CC">${D.months[idx[0]].slice(0,4)}</text>`;
+  pts.forEach((p,k)=>{ const m=D.months[idx[k]]; s+=`<rect class="hit" x="${p[0]-bw/2}" y="0" width="${bw}" height="${H}" fill="transparent" data-m="${m}" data-t="${m}|${vals[k]}"/>`; });
+  el.innerHTML=s+'</svg>'; tips(el);
+  el.querySelectorAll('.hit').forEach(r=>r.onclick=e=>pickMonth(r.dataset.m, e.ctrlKey||e.metaKey||e.shiftKey));
+}
+
+let pSort={k:'t',d:-1};
+function projTable(rows){
+  rows.sort((a,b)=> pSort.k==='p' ? pSort.d*a.p.localeCompare(b.p) : pSort.d*(a[pSort.k]-b[pSort.k]));
+  const S=rows.reduce((x,r)=>x+r.s,0), R=rows.reduce((x,r)=>x+r.r,0), ar=k=>pSort.k===k?(pSort.d<0?' ▾':' ▴'):'';
+  let h=`<thead><tr><th data-s="p">Project&nbsp;&nbsp;<span style="font-size:13px">${rows.length}</span>${ar('p')}</th><th data-s="s">Spent${ar('s')}</th><th data-s="r">Remaining${ar('r')}</th><th data-s="t">Total${ar('t')}</th></tr></thead><tbody>`;
+  rows.forEach(r=>{ const st=selProj.size?(selProj.has(r.p)?'on':'dim'):''; h+=`<tr class="pick ${st}" data-v="${esc(r.p)}"><td title="${esc(r.p)}">${esc(r.p)}</td><td>${fM(r.s)}</td><td>${fM(r.r)}</td><td class="tot">${fM(r.t)}</td></tr>`; });
+  h+=`<tr class="sum"><td>Total</td><td>${fM(S)}</td><td>${fM(R)}</td><td>${fM(S+R)}</td></tr></tbody>`;
+  const t=$('#projTable'); t.innerHTML=h;
+  t.querySelectorAll('th').forEach(th=>th.onclick=()=>{ const k=th.dataset.s; pSort = pSort.k===k?{k,d:-pSort.d}:{k,d:k==='p'?1:-1}; refresh(); });
+  t.querySelectorAll('tr.pick').forEach(tr=>tr.onclick=e=>toggle(selProj, tr.dataset.v, isMulti(e)));
+}
+
+const TYPE_ORDER=['Spec','Spec - OFE','Non-Spec','Misc.','Expansion','Fitout','Non-spec'];
+function typeView(sel, idx){
+  const g={}; sel.forEach(p=>{ const [s,r]=splitSum(p,idx); const o=g[p.type]||(g[p.type]={s:0,r:0}); o.s+=s; o.r+=r; });
+  Object.keys(g).forEach(k=>{ if(Math.abs(g[k].s)<0.5&&Math.abs(g[k].r)<0.5) delete g[k]; });
+  const keys=Object.keys(g).sort((a,b)=>{ const ia=TYPE_ORDER.indexOf(a), ib=TYPE_ORDER.indexOf(b); return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b); });
+  let S=0,R=0, h=`<thead><tr><th>Type</th><th>Spent</th><th>Remaining</th><th>Total</th></tr></thead><tbody>`;
+  keys.forEach(k=>{ S+=g[k].s; R+=g[k].r; const st=selTypes.size?(selTypes.has(k)?'on':'dim'):''; h+=`<tr class="pick ${st}" data-v="${esc(k)}"><td>${esc(k)}</td><td>${fM(g[k].s)}</td><td>${fM(g[k].r)}</td><td class="tot">${fM(g[k].s+g[k].r)}</td></tr>`; });
+  $('#typeTable').innerHTML=h+`<tr class="sum"><td>Total</td><td>${fM(S)}</td><td>${fM(R)}</td><td>${fM(S+R)}</td></tr></tbody>`;
+  $('#typeTable').querySelectorAll('tr.pick').forEach(tr=>tr.onclick=e=>toggle(selTypes, tr.dataset.v, isMulti(e)));
+  // barras horizontais empilhadas
+  const el=$('#typeBars'), W=el.clientWidth||380, H=el.clientHeight||150, lw=100, rw=80;
+  // altura de linha única para a tabela e as barras: cabe tudo no quadro da tabela, sem barra de rolagem
+  const HDR=30, TOT=30, tp=$('#typePanel'), avail=(tp?tp.clientHeight-8:H)-HDR-TOT, rh=Math.max(16,Math.min(46,avail/Math.max(keys.length,1)));
+  const legH=el.previousElementSibling?el.previousElementSibling.offsetHeight:26, off=Math.max(0,4+HDR-legH);   // alinha a 1ª barra com a 1ª linha
+  const mx=Math.max(...keys.map(k=>Math.max(0,g[k].s)+Math.max(0,g[k].r)),1), sc=v=>Math.max(0,v)/mx*(W-lw-rw);
+  let s=`<svg width="${W}" height="${H}">`;
+  keys.forEach((k,i)=>{ const yy=off+i*rh, ws=sc(g[k].s), wr=sc(g[k].r), op=(!selTypes.size||selTypes.has(k))?1:.3, bh=Math.max(14,rh*.68), by=yy+(rh-bh)/2, ty=yy+rh/2+5;
+    s+=`<g class="tbar" data-v="${esc(k)}" opacity="${op}"><rect x="0" y="${yy}" width="${W}" height="${rh}" fill="transparent"/><text x="${lw-8}" y="${ty}" font-size="13.5" text-anchor="end">${esc(k)}</text>
+    <rect x="${lw}" y="${by}" width="${ws}" height="${bh}" fill="#1F6FD1" data-t="${esc(k)} · Spent|${g[k].s}"/>
+    <rect x="${lw+ws}" y="${by}" width="${wr}" height="${bh}" fill="#A77BC9" data-t="${esc(k)} · Remaining|${g[k].r}"/>
+    ${ws>62?`<text x="${lw+ws/2}" y="${ty}" font-size="12.5" text-anchor="middle">${fM(g[k].s).replace(',0 M',' M')}</text>`:''}
+    ${wr>62?`<text x="${lw+ws+wr/2}" y="${ty}" font-size="12.5" text-anchor="middle">${fM(g[k].r).replace(',0 M',' M')}</text>`:''}
+    <text x="${lw+ws+wr+8}" y="${ty}" font-size="13.5" font-weight="600">${(g[k].s+g[k].r)/1e6>=10?Math.round((g[k].s+g[k].r)/1e6)+' M':fM(g[k].s+g[k].r)}</text></g>`; });
+  el.innerHTML=s+'</svg>'; tips(el);
+  // tabela à esquerda com a mesma altura de linha das barras, para as linhas ficarem alinhadas
+  const th=$('#typeTable thead tr'); if(th) th.style.height=HDR+'px';
+  document.querySelectorAll('#typeTable tbody tr:not(.sum)').forEach(tr=>tr.style.height=rh+'px');
+  el.querySelectorAll('.tbar').forEach(b=>b.onclick=e=>toggle(selTypes, b.dataset.v, isMulti(e)));
+}
+
+function annual(sel){
+  const first=+D.months[0].slice(0,4), last=CY+4, years=[];
+  for(let yv=first; yv<=last; yv++) years.push(yv);
+  const g=years.map(()=>({s:0,r:0}));
+  D.months.forEach((m,i)=>{ const yv=+m.slice(0,4); if(yv>last) return; const k=years.indexOf(Math.max(yv,first)); const past=m<=CUT;
+    sel.forEach(p=>{ past? g[k].s+=p.v[i] : g[k].r+=p.v[i]; }); });
+  const S=g.reduce((a,o)=>a+o.s,0), R=g.reduce((a,o)=>a+o.r,0); stack('#annualStack',S,R);
+  const el=$('#annual'), W=el.clientWidth||360, H=el.clientHeight||230, pb=22, pt=18, bw=(W-10)/years.length;
+  const mx=Math.max(...g.map(o=>Math.max(0,o.s)+Math.max(0,o.r)),1), sc=v=>Math.max(0,v)/mx*(H-pb-pt);
+  let s=`<svg width="${W}" height="${H}">`;
+  years.forEach((yv,k)=>{ const x=5+k*bw+bw*.1, w=bw*.8, hs=sc(g[k].s), hr=sc(g[k].r), base=H-pb;
+    s+=`<rect x="${x}" y="${base-hs}" width="${w}" height="${hs}" fill="#1F6FD1" data-t="${yv} · Spent|${g[k].s}"/>
+        <rect x="${x}" y="${base-hs-hr}" width="${w}" height="${hr}" fill="#A77BC9" data-t="${yv} · Remaining|${g[k].r}"/>
+        <text x="${x+w/2}" y="${base-hs-hr-5}" font-size="10" text-anchor="middle">${fM(g[k].s+g[k].r)}</text>
+        <text x="${x+w/2}" y="${H-6}" font-size="10" text-anchor="middle" fill="#C9D6EE">${k===0?'Until '+yv:yv}</text>`; });
+  el.innerHTML=s+'</svg>'; tips(el);
+}
+
+function tips(el){ const t=$('#tip'); el.querySelectorAll('[data-t]').forEach(n=>{
+  n.onmousemove=e=>{ const [a,b]=n.dataset.t.split('|'); t.innerHTML=`${esc(a)}<br><b>${fM(+b)}</b>`; t.style.display='block'; t.style.left=e.clientX+12+'px'; t.style.top=e.clientY+12+'px'; };
+  n.onmouseleave=()=>t.style.display='none'; }); }
+
+
+// ---------- linha do tempo: bolinha esquerda = 1º dia do mês, direita = último dia do mês.
+// A escala é contínua: a marca do ano fica na virada (01/01), então 31/12/2025 coincide com a marca de 2026.
+function timeline(el, months, inA, inB, onChange){
+  const n=months.length;          // fronteiras 0..n (fronteira k = início do mês k; n = fim do último mês)
+  const X=k=>k/n*100;
+  let h='<div class="tl-track"></div><div class="tl-fill"></div>';
+  for(let k=0;k<=n;k++){ const m=k<n?months[k]:null, jan=m&&m.endsWith('-01'), end=k===n;
+    if(jan||end) h+=`<div class="tl-tick y" style="left:${X(k)}%"></div>`; else if(n<=72) h+=`<div class="tl-tick" style="left:${X(k)}%"></div>`;
+    if(jan) h+=`<div class="tl-lab" style="left:${X(k)}%">${m.slice(0,4)}</div>`;
+    if(end){ const y=+months[n-1].slice(0,4)+1; h+=`<div class="tl-lab" style="left:${X(k)}%">${y}</div>`; } }
+  h+='<div class="tl-h" data-h="a"><span></span></div><div class="tl-h" data-h="b"><span></span></div>';
+  el.innerHTML=h;
+  const H={a:el.querySelector('[data-h=a]'), b:el.querySelector('[data-h=b]')}, fill=el.querySelector('.tl-fill');
+  const toIdx=v=>{ const m=(v||'').slice(0,7); let i=months.indexOf(m); if(i<0) i = m<months[0]?0:n-1; return i; };
+  let ia=0, ib=n-1;                // mês inicial e mês final selecionados
+  const br=d=>d.slice(8)+'/'+d.slice(5,7)+'/'+d.slice(0,4);
+  function draw(){ const pa=X(ia), pb=X(ib+1);
+    H.a.style.left=pa+'%'; H.b.style.left=pb+'%'; fill.style.left=pa+'%'; fill.style.width=(pb-pa)+'%';
+    H.a.firstChild.textContent=br(months[ia]+'-01'); H.b.firstChild.textContent=br(mEnd(months[ib])); }
+  function sync(){ ia=toIdx(inA.value); ib=toIdx(inB.value); if(ia>ib)[ia,ib]=[ib,ia]; draw(); }
+  function commit(){ inA.value=months[ia]+'-01'; inB.value=mEnd(months[ib]); draw(); onChange(); }
+  const bnd=e=>{ const r=el.getBoundingClientRect(); return Math.max(0,Math.min(n,Math.round((e.clientX-r.left)/r.width*n))); };
+  Object.entries(H).forEach(([k,hd])=>{
+    hd.onpointerdown=e=>{ e.preventDefault(); hd.setPointerCapture(e.pointerId); hd.classList.add('drag');
+      hd.onpointermove=ev=>{ const b=bnd(ev);
+        if(k==='a'){ const v=Math.max(0,Math.min(b,ib)); if(v!==ia){ ia=v; draw(); } }
+        else { const v=Math.min(n-1,Math.max(b-1,ia)); if(v!==ib){ ib=v; draw(); } } };
+      hd.onpointerup=()=>{ hd.onpointermove=null; hd.onpointerup=null; hd.classList.remove('drag'); commit(); }; }; });
+  el.querySelector('.tl-track').onclick=e=>{ const b=bnd(e);
+    if(Math.abs(b-ia)<=Math.abs(b-(ib+1))) ia=Math.max(0,Math.min(b,ib)); else ib=Math.min(n-1,Math.max(b-1,ia)); commit(); };
+  sync();
+  return {sync};
+}
+const TL1 = timeline($('#tl1'), D.months.filter(m=>m<='2032-12'), $('#d1'), $('#d2'), ()=>refresh());   // escala até dez/2032
+$('#d1').onchange=$('#d2').onchange=()=>{ TL1.sync(); refresh(); };
+$('#clearSel').onclick=clearSel;
+
+// =====================================================================
+// PÁGINA 2 — Capex Comparison (arquivo anterior = Cons, atual = PROD)
+// =====================================================================
+const P2 = {prev: ALL.prev, cur: ALL.cur};
+const K2 = ['country','type2','cat','p'];
+const off2 = {prev:Object.fromEntries(K2.map(k=>[k,new Set()])), cur:Object.fromEntries(K2.map(k=>[k,new Set()]))};
+const sel2 = Object.fromEntries(['m',...K2].map(k=>[k,new Set()]));   // seleções por clique
+const sort2 = {p:{k:'abs',d:-1}, type2:{k:'abs',d:-1}, cat:{k:'abs',d:-1}, country:{k:'abs',d:-1}};
+const ME2 = {prev: P2.prev.months.map(mEnd), cur: P2.cur.months.map(mEnd)};
+const pass2 = (side,p,skip) => K2.every(k => k===skip || !off2[side][k].has(p[k]));
+const fM2 = v => (v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' M';
+
+function drawFilter2(side,k){
+  const before = K2.slice(0, K2.indexOf(k));   // cascata de cima para baixo
+  const data = P2[side].projects, pool = data.filter(p=>before.every(kk=>!off2[side][kk].has(p[kk])));
+  const vals = uniq(k, pool), o = off2[side][k], all = vals.every(v=>!o.has(v));
+  let h = `<label><input type="checkbox" data-all="1" ${all?'checked':''}>Selecionar tudo</label>`;
+  vals.forEach(v=>h+=`<label title="${esc(v)}"><input type="checkbox" value="${esc(v)}" ${o.has(v)?'':'checked'}>${esc(v)}</label>`);
+  const el = $(`#f2-${side}-${k}`); el.innerHTML = h;
+  el.querySelectorAll('input:not([data-all])').forEach(i=>i.onchange=()=>{ i.checked?o.delete(i.value):o.add(i.value); refresh2(); });
+  el.querySelector('[data-all]').onchange=e=>{ if(e.target.checked) o.clear(); else vals.forEach(v=>o.add(v)); refresh2(); };
+}
+function range2(){ let a=$('#d3').value||'1900-01-01', b=$('#d4').value||'2999-12-31'; if(a>b)[a,b]=[b,a]; return [a,b]; }
+function toggle2(k,v,multi){ const s=sel2[k];
+  if(multi){ s.has(v)?s.delete(v):s.add(v); } else if(s.size===1&&s.has(v)) s.clear(); else { s.clear(); s.add(v); }
+  refresh2(); }
+function clear2(){ Object.values(sel2).forEach(s=>s.clear()); refresh2(); }
+const okSel = (p, skip) => K2.every(k => k===skip || !sel2[k].size || sel2[k].has(p[k]));
+
+function refresh2(){
+  ['prev','cur'].forEach(side=>K2.forEach(k=>drawFilter2(side,k)));
+  const [a,b] = range2();
+  const S = {};
+  ['prev','cur'].forEach(side=>{
+    const d=P2[side], idx=ME2[side].map((e,i)=>e>=a&&e<=b?i:-1).filter(i=>i>=0);
+    const midx = sel2.m.size ? idx.filter(i=>sel2.m.has(d.months[i])) : idx;
+    S[side] = {d, idx, midx, base: d.projects.filter(p=>pass2(side,p))};
+  });
+  // seleção ativa
+  const parts=[]; if(sel2.m.size) parts.push([...sel2.m].sort().map(m=>MPT[+m.slice(5)-1]+'/'+m.slice(2,4)).join(', '));
+  K2.forEach(k=>{ if(sel2[k].size) parts.push(sel2[k].size===1?[...sel2[k]][0]:sel2[k].size+' itens'); });
+  const c=$('#clearSel2'); c.classList.toggle('on',parts.length>0); c.textContent=parts.length?parts.join(' · ')+'  ✕':'';
+  // gráficos e cartões
+  [['prev','P','#F07AC0','#C04A95'],['cur','C','#3D8BFF','#1F5FC0']].forEach(([side,L,c1,c2])=>{
+    const s=S[side], list=s.base.filter(p=>okSel(p)), cut=s.d.cutoff;
+    let inc=0, fc=0; list.forEach(p=>s.midx.forEach(i=>{ s.d.months[i]<=cut ? inc+=p.v[i] : fc+=p.v[i]; }));
+    $(`#${L.toLowerCase()}Inc`).textContent=fM2(inc); $(`#${L.toLowerCase()}Fc`).textContent=fM2(fc);
+    $(`#${L.toLowerCase()}Tot`).textContent=fM(inc+fc); $(`#${L.toLowerCase()}Cut`).textContent=s.d.cutoff_label;
+    $(`#${L.toLowerCase()}N`).textContent=list.length;
+    const vals=s.idx.map(i=>list.reduce((t,p)=>t+p.v[i],0));
+    line2(`#line${L}`, s.idx.map(i=>s.d.months[i]), vals, cut, c1, c2);
+  });
+  // tabelas
+  K2.forEach(k=>{
+    const g={};
+    ['prev','cur'].forEach(side=>{ const s=S[side];
+      s.base.filter(p=>okSel(p,k)).forEach(p=>{ const o=g[p[k]]||(g[p[k]]={prev:0,cur:0}); s.midx.forEach(i=>o[side]+=p.v[i]); }); });
+    table2(k, g);
+  });
+}
+
+function line2(sel, months, vals, cut, c1, c2){
+  const el=$(sel), W=el.clientWidth||700, H=el.clientHeight||180, pl=24,pr=24,pt=24,pb=30;
+  if(!months.length){ el.innerHTML='<div class="note">Sem meses no período.</div>'; return; }
+  const mx=Math.max(...vals,0), mn=Math.min(...vals,0);
+  const x=k=>pl+(months.length<2?(W-pl-pr)/2:k*(W-pl-pr)/(months.length-1)), y=v=>pt+(mx-v)/((mx-mn)||1)*(H-pt-pb);
+  const pts=vals.map((v,k)=>[x(k),y(v)]), cutK=months.filter(m=>m<=cut).length-1, base=y(Math.max(mn,0));
+  const multiYear=months[0].slice(0,4)!==months.at(-1).slice(0,4), id=sel.slice(1), any=sel2.m.size>0;
+  const bw = months.length<2 ? (W-pl-pr) : (W-pl-pr)/(months.length-1);
+  let s=`<svg width="${W}" height="${H}"><defs><linearGradient id="g${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}" stop-opacity=".5"/><stop offset="1" stop-color="${c2}" stop-opacity=".12"/></linearGradient></defs>`;
+  months.forEach((m,k)=>{ if(sel2.m.has(m)) s+=`<rect x="${pts[k][0]-bw/2}" y="0" width="${bw}" height="${H-pb+4}" fill="rgba(255,255,255,.09)" rx="6"/>`; });
+  const area=p=>p.length>1?`<path d="${smooth(p)} L${p.at(-1)[0]},${base} L${p[0][0]},${base}Z" fill="url(#g${id})"/>`:'';
+  const sp=cutK>=0?pts.slice(0,cutK+1):[], rp=pts.slice(Math.max(cutK,0));
+  if(sp.length>1){ s+=area(sp)+`<path d="${smooth(sp)}" fill="none" stroke="${c1}" stroke-width="3"/>`; }
+  if(cutK<pts.length-1&&rp.length>1){ s+=area(rp).replace('url(','url(').replace('fill="url','opacity=".55" fill="url')+`<path d="${smooth(rp)}" fill="none" stroke="${c1}" stroke-width="3" stroke-dasharray="3 5" opacity=".75"/>`; }
+  pts.forEach((p,k)=>{ const m=months[k], on=sel2.m.has(m), op=(!any||on)?1:.3, lab=MPT[+m.slice(5)-1]+(multiYear?'/'+m.slice(2,4):'');
+    s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${on?6:4}" fill="${c1}" opacity="${k>cutK?op*.75:op}" ${on?'stroke="#fff" stroke-width="2"':''}/>`;
+    if(months.length<=24) s+=`<text x="${p[0]}" y="${p[1]-9}" font-size="11" text-anchor="middle" opacity="${op}" font-weight="${on?700:400}">${fM(vals[k])}</text>`;
+    const step=Math.ceil(months.length/18); if(k%step===0) s+=`<text x="${p[0]}" y="${H-pb+15}" font-size="11" text-anchor="middle" fill="#C9D6EE">${lab}</text>`; });
+  if(!multiYear) s+=`<text x="${W/2}" y="${H-3}" font-size="11" text-anchor="middle" fill="#9FB0CC">${months[0].slice(0,4)}</text>`;
+  pts.forEach((p,k)=>s+=`<rect class="hit" x="${p[0]-bw/2}" y="0" width="${bw}" height="${H}" fill="transparent" data-m="${months[k]}" data-t="${months[k]}|${vals[k]}"/>`);
+  el.innerHTML=s+'</svg>'; tips(el);
+  el.querySelectorAll('.hit').forEach(r=>r.onclick=e=>toggle2('m', r.dataset.m, isMulti(e)));
+}
+
+const T2NAME = {p:'Project', type2:'Type', cat:'Category', country:'Country'};
+function arrow(d){ return Math.abs(d)<1 ? '<span class="eq">-</span>' : d>0 ? '<span class="up">▲</span>' : '<span class="dn">▼</span>'; }
+function table2(k, g){
+  let rows = Object.entries(g).map(([n,o])=>({n, prev:o.prev, cur:o.cur, d:o.cur-o.prev}))
+    .filter(r=>k!=='p' || Math.abs(r.prev)>=1 || Math.abs(r.cur)>=1);
+  const st=sort2[k], val=r=>st.k==='n'?r.n:st.k==='abs'?Math.abs(r.d):r[st.k];
+  rows.sort((a,b)=> st.k==='n' ? st.d*a.n.localeCompare(b.n) : st.d*(val(a)-val(b)));
+  const P=rows.reduce((t,r)=>t+r.prev,0), C=rows.reduce((t,r)=>t+r.cur,0), ar=key=>st.k===key?(st.d<0?' ▾':' ▴'):'';
+  let h=`<thead><tr><th data-s="n">${T2NAME[k]}${ar('n')}</th><th class="pv" data-s="prev">Capex<br>Previous${ar('prev')}</th><th class="cu" data-s="cur">Capex<br>Current${ar('cur')}</th><th class="ar"></th><th data-s="abs">Capex<br>Variation${ar('abs')}</th></tr></thead><tbody>`;
+  const any=sel2[k].size>0;
+  rows.forEach(r=>{ const cls=any?(sel2[k].has(r.n)?'on':'dim'):''; h+=`<tr class="pick ${cls}" data-v="${esc(r.n)}"><td title="${esc(r.n)}">${esc(r.n)}</td><td class="pv">${fM(r.prev)}</td><td class="cu">${fM(r.cur)}</td><td class="ar">${arrow(r.d)}</td><td>${fM(Math.abs(r.d))}</td></tr>`; });
+  h+=`<tr class="sum"><td>Total</td><td>${fM(P)}</td><td>${fM(C)}</td><td class="ar">${Math.abs(C-P)<1?'-':C>P?'▲':'▼'}</td><td>${fM(Math.abs(C-P))}</td></tr></tbody>`;
+  const t=$('#t2-'+k); t.innerHTML=h;
+  t.querySelectorAll('th').forEach(th=>th.onclick=()=>{ const s=th.dataset.s; if(!s) return; sort2[k]= st.k===s?{k:s,d:-st.d}:{k:s,d:s==='n'?1:-1}; refresh2(); });
+  t.querySelectorAll('tr.pick').forEach(tr=>tr.onclick=e=>toggle2(k, tr.dataset.v, isMulti(e)));
+}
+
+
+// =====================================================================
+// PÁGINA 3 — Change Details: Budget, EFC (sem FX), Contingency e Saving; novos, removidos e renomeados
+// (Spend to Date, Remaining e curva mensal ficam fora desta aba, a pedido do usuário)
+// =====================================================================
+const C3RAW = ALL.cmp;                    // usado só para as possíveis renomeações
+const MET3 = [['bud','Budget'],['efc','EFC'],['cont','Contingency'],['sav','Saving']];
+const SH3 = {bud:'Budget',efc:'EFC',cont:'Cont.',sav:'Saving'};   // rótulos curtos para a tabela By Country
+const F3=['country','other','type','cat','p'];
+const off3=Object.fromEntries(F3.map(k=>[k,new Set()]));
+const st3={q:'', c:'', m:'efc', top:'efc'};
+function agg3(list){ const m=new Map(); list.forEach(p=>{ const o=m.get(p.p)||{p:p.p, site:p.site, country:p.country, other:p.other, type:p.type, cat:p.cat, bud:0, efc:0, cont:0};
+  o.bud+=p.bud; o.efc+=p.efc; o.cont+=p.cont; m.set(p.p,o); }); m.forEach(o=>o.sav=o.bud-o.efc-o.cont); return m; }
+const PV3=agg3(ALL.prev.projects), CU3=agg3(ALL.cur.projects);
+const ALL3=[...new Set([...CU3.keys(),...PV3.keys()])].map(n=>CU3.get(n)||PV3.get(n));
+const kname=k=>k.replace(/ #\d+$/,'').replace(' | ',' ');
+function drawFilter3(k){
+  const before=F3.slice(0,F3.indexOf(k));
+  const pool=ALL3.filter(p=>before.every(kk=>!off3[kk].has(p[kk]))), vals=uniq(k,pool), o=off3[k], all=vals.every(v=>!o.has(v));
+  let h=`<label><input type="checkbox" data-all="1" ${all?'checked':''}>Selecionar tudo</label>`;
+  vals.forEach(v=>h+=`<label title="${esc(v)}"><input type="checkbox" value="${esc(v)}" ${o.has(v)?'':'checked'}>${esc(v)}</label>`);
+  const el=$('#f3-'+k); el.innerHTML=h;
+  el.querySelectorAll('input:not([data-all])').forEach(i=>i.onchange=()=>{ i.checked?o.delete(i.value):o.add(i.value); page3(); });
+  el.querySelector('[data-all]').onchange=e=>{ if(e.target.checked) o.clear(); else vals.forEach(v=>o.add(v)); page3(); };
+}
+function dv(d){ if(d==null||isNaN(d)) return '<span class="eq">–</span>';
+  return Math.abs(d)<1000?'<span class="eq">0</span>':`<span class="${d>0?'up':'dn'}">${d>0?'▲ +':'▼ '}${fM(d)}</span>`; }
+const v3=v=>v==null?'<span class="eq">–</span>':fM(v);
+let V3=null;
+function view3(){
+  const keep=ALL3.filter(p=>F3.every(k=>!off3[k].has(p[k]))).map(p=>p.p), K=new Set(keep);
+  const rows=keep.map(n=>{ const a=PV3.get(n), b=CU3.get(n), r={n, ref:b||a, a, b, d:{}};
+    MET3.forEach(([k])=>r.d[k]=(b?b[k]:0)-(a?a[k]:0));
+    r.attrs=a&&b?['country','other','type','cat'].filter(k=>a[k]!==b[k]).map(k=>({k, o:a[k], c:b[k]})):[];
+    const lim=Math.max(5e5, Math.abs((a||b).bud)*.05); r.big=!a||!b||MET3.some(([k])=>Math.abs(r.d[k])>=lim);
+    return r; });
+  const ren=C3RAW.renames.map(x=>({o:kname(x.old), c:kname(x.new), site:x.site})).filter(x=>K.has(x.o)||K.has(x.c));
+  return {rows, ren, added:rows.filter(r=>!r.a&&r.b), removed:rows.filter(r=>r.a&&!r.b), changed:rows.filter(r=>r.a&&r.b&&(MET3.some(([k])=>Math.abs(r.d[k])>=1000)||r.attrs.length))};
+}
+const sum3=(rows,side,k)=>rows.reduce((t,r)=>t+((side==='a'?r.a:r.b)?.[k]||0),0);
+function page3(){
+  F3.forEach(drawFilter3); V3=view3(); const R=V3.rows;
+  $('#warn3').innerHTML='';
+  const relev=R.filter(r=>r.a&&r.b&&r.big).length;
+  let k=MET3.map(([m,l])=>{ const o=sum3(R,'a',m), n=sum3(R,'b',m); return `<div class="kc"><div class="l">${l}</div><div class="v">${fM(n)}</div><div class="s">${dv(n-o)} vs previous</div></div>`; }).join('');
+  k+=`<div class="kc cnt"><div class="l">New projects</div><div class="v">${V3.added.length}</div><div class="s">only in current file</div></div>
+      <div class="kc cnt"><div class="l">Removed projects</div><div class="v">${V3.removed.length}</div><div class="s">only in previous file</div></div>
+      <div class="kc cnt"><div class="l">Possible renames</div><div class="v">${V3.ren.length}</div><div class="s">same site and block</div></div>
+      <div class="kc cnt"><div class="l">Relevant changes</div><div class="v" style="color:${relev?'#FF8A8E':'#5BC07A'}">${relev}</div><div class="s">≥ US$ 0,5 M or ≥ 5% of Budget</div></div>`;
+  $('#kp3').innerHTML=k;
+  // por país
+  const g={}; R.forEach(r=>{ const c=g[r.ref.country]||(g[r.ref.country]={c:r.ref.country, rows:[]}); c.rows.push(r); });
+  const C=Object.values(g).sort((x,y)=>sum3(y.rows,'b','bud')-sum3(x.rows,'b','bud'));
+  const hdr=`<thead><tr><th>Country</th><th>Projects</th>${MET3.map(([m])=>`<th class="pv">${SH3[m]}<br>Prev.</th><th class="cu">${SH3[m]}<br>Curr.</th><th>Δ</th>`).join('')}</tr></thead><tbody>`;
+  const line=(name,rows,cls='')=>`<tr class="${cls}"><td>${esc(name)}</td><td>${rows.filter(r=>r.b).length}${rows.filter(r=>r.a).length!==rows.filter(r=>r.b).length?` <span class="dl">(${rows.filter(r=>r.a).length})</span>`:''}</td>${MET3.map(([m])=>{ const o=sum3(rows,'a',m), n=sum3(rows,'b',m); return `<td class="pv">${fM(o)}</td><td class="cu">${fM(n)}</td><td>${dv(n-o)}</td>`; }).join('')}</tr>`;
+  $('#t3-country').innerHTML=hdr+C.map(c=>line(c.c,c.rows)).join('')+line('Total',R,'sum')+'</tbody>';
+  // top 10
+  $('#tm3').innerHTML=MET3.map(([m,l])=>`<option value="${m}" ${m===st3.top?'selected':''}>Δ ${l}</option>`).join('');
+  top3();
+  // novos / removidos / renomeados
+  const renN=new Set(V3.ren.flatMap(x=>[x.o,x.c]));
+  let h=`<thead><tr><th>Project</th><th>Status</th><th>Country</th><th>Budget</th><th>EFC</th><th>Contingency</th><th>Saving</th></tr></thead><tbody>`;
+  V3.ren.forEach(x=>{ const o=PV3.get(x.o), c=CU3.get(x.c)||o;
+    h+=`<tr><td title="${esc(x.o)} → ${esc(x.c)}"><span class="tg ren">renamed?</span>${esc(x.o)} → ${esc(x.c)}</td><td>${esc(c.other)}</td><td>${esc(c.country)}</td>${MET3.map(([m])=>`<td>${v3(c[m])} <span class="dl">(${v3(o?o[m]:null)})</span></td>`).join('')}</tr>`; });
+  V3.added.filter(r=>!renN.has(r.n)).forEach(r=>h+=nr3(r.b,'new'));
+  V3.removed.filter(r=>!renN.has(r.n)).forEach(r=>h+=nr3(r.a,'rem'));
+  if(!V3.added.length&&!V3.removed.length&&!V3.ren.length) h+='<tr><td colspan="7" class="dl">None.</td></tr>';
+  $('#t3-nr').innerHTML=h+'</tbody>';
+  // por site
+  const sg={}; R.forEach(r=>{ (sg[r.ref.site]=sg[r.ref.site]||[]).push(r); });
+  const S=Object.entries(sg).filter(([,rows])=>rows.some(r=>!r.a||!r.b||MET3.some(([m])=>Math.abs(r.d[m])>=1000)))
+    .sort((x,y)=>Math.abs(sum3(y[1],'b','efc')-sum3(y[1],'a','efc'))-Math.abs(sum3(x[1],'b','efc')-sum3(x[1],'a','efc')));
+  $('#n3-site').textContent=`(${S.length})`;
+  h=`<thead><tr><th>Site</th><th>Country</th>${MET3.map(([,l])=>`<th>Δ ${l}</th>`).join('')}<th>Projects changed</th></tr></thead><tbody>`;
+  S.forEach(([s,rows])=>h+=`<tr><td>${esc(s)}</td><td>${esc(rows[0].ref.country)}</td>${MET3.map(([m])=>`<td>${dv(sum3(rows,'b',m)-sum3(rows,'a',m))}</td>`).join('')}<td>${rows.filter(r=>!r.a||!r.b||MET3.some(([m])=>Math.abs(r.d[m])>=1000)).length}</td></tr>`);
+  if(!S.length) h+='<tr><td colspan="7" class="dl">None.</td></tr>';
+  $('#t3-site').innerHTML=h+'</tbody>';
+  // filtros da tabela de alterados
+  const cs=[...new Set(V3.changed.map(r=>r.ref.country))].sort();
+  $('#c3').innerHTML=`<option value="">All countries</option>`+cs.map(c=>`<option ${c===st3.c?'selected':''}>${esc(c)}</option>`).join('');
+  $('#m3').innerHTML=MET3.map(([m,l])=>`<option value="${m}" ${m===st3.m?'selected':''}>Sort by Δ ${l}</option>`).join('');
+  chg3();
+}
+function nr3(p,t){ return `<tr><td title="${esc(p.p)}"><span class="tg ${t}">${t==='new'?'new':'removed'}</span>${esc(p.p)}</td><td>${esc(p.other)}</td><td>${esc(p.country)}</td>${MET3.map(([m])=>`<td>${v3(p[m])}</td>`).join('')}</tr>`; }
+function top3(){
+  const M=st3.top, lab=MET3.find(x=>x[0]===M)[1];
+  const items=V3.rows.filter(r=>Math.abs(r.d[M])>=1000).sort((a,b)=>Math.abs(b.d[M])-Math.abs(a.d[M])).slice(0,10).map(r=>({l:r.n,v:r.d[M]}));
+  const el=$('#top3'); if(!items.length){ el.innerHTML=`<div class="dl">No ${lab} changes.</div>`; return; }
+  // espaço reservado dos dois lados para os rótulos de valor, para não encostar nos nomes do eixo
+  const W=el.clientWidth||600, rh=24, H=items.length*rh+6, lw=Math.min(240,W*.36), pad=72, mx=Math.max(...items.map(i=>Math.abs(i.v))), half=Math.max(20,(W-lw-2*pad)/2), mid=lw+pad+half;
+  let s=`<svg width="${W}" height="${H}"><line x1="${mid}" x2="${mid}" y1="0" y2="${H}" stroke="#3B5A92"/>`;
+  items.forEach((it,i)=>{ const y=i*rh+3, w=Math.abs(it.v)/mx*half, x=it.v>=0?mid:mid-w;
+    s+=`<text x="${lw-6}" y="${y+15}" font-size="11" text-anchor="end">${esc(it.l.length>38?it.l.slice(0,37)+'…':it.l)}</text>
+      <rect x="${x}" y="${y+3}" width="${Math.max(w,1.5)}" height="16" rx="2" fill="${it.v>=0?'#5BC07A':'#E5484D'}" data-t="${esc(it.l)} · Δ ${lab}|${it.v}"/>
+      <text x="${it.v>=0?x+w+5:x-5}" y="${y+15}" font-size="10.5" text-anchor="${it.v>=0?'start':'end'}" fill="#C9D6EE">${(it.v>0?'+':'')+fM(it.v)}</text>`; });
+  el.innerHTML=s+'</svg>'; tips(el);
+}
+function chg3(){
+  const q=st3.q.toLowerCase(), M=st3.m;
+  const L=V3.changed.filter(r=>(!st3.c||r.ref.country===st3.c)&&(!q||r.n.toLowerCase().includes(q))).sort((a,b)=>Math.abs(b.d[M])-Math.abs(a.d[M]));
+  $('#n3-chg').textContent=`(${L.length} of ${V3.changed.length}) · red = relevant change · click a row for previous × current`;
+  let h=`<thead><tr><th>Project</th><th>Country</th>${MET3.map(([,l])=>`<th>Δ ${l}</th>`).join('')}<th>Other changes</th></tr></thead><tbody>`;
+  L.forEach((r,i)=>{ const ex=r.attrs.map(a=>`<span class="tg att">${esc({country:'Country',other:'Other',type:'Type',cat:'Category'}[a.k])}</span>`);
+    h+=`<tr class="exp" data-i="${i}" ${r.big?'style="box-shadow:inset 3px 0 0 #E5484D"':''}><td title="${esc(r.n)}">${esc(r.n)}</td><td>${esc(r.ref.country)}</td>${MET3.map(([m])=>`<td>${dv(r.d[m])}</td>`).join('')}<td style="text-align:left">${ex.join('')}</td></tr>`; });
+  if(!L.length) h+='<tr><td colspan="7" class="dl">Nothing found.</td></tr>';
+  const t=$('#t3-chg'); t.innerHTML=h+'</tbody>';
+  t.querySelectorAll('tr.exp').forEach(tr=>tr.onclick=()=>{ const nx=tr.nextElementSibling; if(nx&&nx.classList.contains('det')){nx.remove();return;}
+    const r=L[+tr.dataset.i]; let d=`<table><tr><th>Field</th><th class="pv">Previous</th><th class="cu">Current</th><th>Δ</th></tr>`;
+    MET3.forEach(([m,l])=>d+=`<tr><td>${l}</td><td class="pv">${fM2(r.a[m])}</td><td class="cu">${fM2(r.b[m])}</td><td>${dv(r.d[m])}</td></tr>`);
+    r.attrs.forEach(a=>d+=`<tr><td>${esc({country:'Country',other:'Other',type:'Type',cat:'Category'}[a.k])}</td><td class="pv">${esc(a.o)}</td><td class="cu">${esc(a.c)}</td><td></td></tr>`);
+    const x=document.createElement('tr'); x.className='det'; x.innerHTML=`<td colspan="7">${d}</table></td>`; tr.after(x); });
+}
+$('#q3').oninput=e=>{st3.q=e.target.value;chg3();};
+$('#c3').onchange=e=>{st3.c=e.target.value;chg3();};
+$('#m3').onchange=e=>{st3.m=e.target.value;chg3();};
+$('#tm3').onchange=e=>{st3.top=e.target.value;top3();};
+
+// =====================================================================
+// PÁGINA 4 — Capex Comparison w/o FX Variation (Budget, EFC, Contingency, Saving)
+// =====================================================================
+const K4=['country','other','type2','cat'];
+const off4=Object.fromEntries(K4.map(k=>[k,new Set()])); off4.type2.add('Expansion');   // padrão do Power BI: sem Expansion
+const sel4=new Set();
+const sort4={bud:{k:'abs',d:-1}, efc:{k:'abs',d:-1}, cont:{k:'abs',d:-1}, sum:{k:'sav',d:1}};
+const pass4=p=>K4.every(k=>!off4[k].has(p[k]));
+const sav=p=>p.bud-p.efc-p.cont;
+function drawFilter4(k){
+  const before=K4.slice(0,K4.indexOf(k));   // cascata de cima para baixo
+  const pool=P2.prev.projects.concat(P2.cur.projects).filter(p=>before.every(kk=>!off4[kk].has(p[kk]))), vals=uniq(k,pool), o=off4[k], all=vals.every(v=>!o.has(v));
+  let h=`<label><input type="checkbox" data-all="1" ${all?'checked':''}>Selecionar tudo</label>`;
+  vals.forEach(v=>h+=`<label title="${esc(v)}"><input type="checkbox" value="${esc(v)}" ${o.has(v)?'':'checked'}>${esc(v)}</label>`);
+  const el=$('#f4-'+k); el.innerHTML=h;
+  el.querySelectorAll('input:not([data-all])').forEach(i=>i.onchange=()=>{ i.checked?o.delete(i.value):o.add(i.value); page4(); });
+  el.querySelector('[data-all]').onchange=e=>{ if(e.target.checked) o.clear(); else vals.forEach(v=>o.add(v)); page4(); };
+}
+function toggle4(v,multi){ if(multi){ sel4.has(v)?sel4.delete(v):sel4.add(v); } else if(sel4.size===1&&sel4.has(v)) sel4.clear(); else { sel4.clear(); sel4.add(v); } page4(); }
+const cell4=(v,cls)=>v==null?`<td class="${cls}"></td>`:`<td class="${cls}">${fM2(v)}</td>`;
+function page4(){
+  K4.forEach(drawFilter4);
+  const P=new Map(), C=new Map();
+  P2.prev.projects.filter(pass4).forEach(p=>P.set(p.p,p)); P2.cur.projects.filter(pass4).forEach(p=>C.set(p.p,p));
+  const names=[...new Set([...P.keys(),...C.keys()])];
+  [...sel4].forEach(v=>{ if(!names.includes(v)) sel4.delete(v); });
+  const c=$('#clearSel4'); c.classList.toggle('on',sel4.size>0); c.textContent=sel4.size?(sel4.size===1?[...sel4][0]:sel4.size+' projects')+'  ✕':'';
+  const rows=names.map(n=>{ const a=P.get(n), b=C.get(n); return {n, a, b,
+    bud:[a?a.bud:null,b?b.bud:null], efc:[a?a.efc:null,b?b.efc:null], cont:[a?a.cont:null,b?b.cont:null], sav:[a?sav(a):null,b?sav(b):null]}; });
+  tab4('bud','Budget',rows,['bud']); tab4('efc','EFC',rows,['efc']); tab4('cont','Cont.',rows,['cont','sav']);
+}
+function tab4(id,label,rows,metrics){
+  const z=v=>Math.abs(v||0)<0.5;
+  let L=rows.filter(r=>metrics.some(m=>!z(r[m][0])||!z(r[m][1])));
+  const st=sort4[id], m0=metrics[0], d=(r,m)=>(r[m][1]||0)-(r[m][0]||0);
+  const key=r=> st.k==='n'?r.n : st.k==='abs'?Math.abs(d(r,m0)) : st.k==='sabs'?Math.abs(d(r,'sav')) : st.k.endsWith('P')? (r[st.k.slice(0,-1)][0]||0) : (r[st.k.slice(0,-1)][1]||0);
+  L.sort((a,b)=> st.k==='n'? st.d*a.n.localeCompare(b.n) : st.d*(key(a)-key(b)));
+  const ar=k=>st.k===k?(st.d<0?' ▾':' ▴'):'', nm={bud:'Budget',efc:'EFC',cont:'Cont.',sav:'Saving'};
+  let h=`<thead><tr><th data-s="n">Project${ar('n')}</th>`;
+  metrics.forEach((m,i)=>{ const v=i?'sabs':'abs'; h+=`<th class="pv ${i?'sep':''}" data-s="${m}P">${nm[m]}<br>Previous${ar(m+'P')}</th><th class="cu" data-s="${m}C">${nm[m]}<br>Current${ar(m+'C')}</th><th class="ar"></th><th data-s="${v}">${nm[m]}<br>Variation${ar(v)}</th>`; });
+  h+='</tr></thead><tbody>';
+  // a tabela clicada mostra tudo com destaque; as outras mostram só os projetos selecionados
+  const shown = (!sel4.size || window._src4===id) ? L : L.filter(r=>sel4.has(r.n));
+  shown.forEach(r=>{ const cls=sel4.size?(sel4.has(r.n)?'on':'dim'):'';
+    h+=`<tr class="pick ${window._src4===id?cls:''}" data-v="${esc(r.n)}"><td title="${esc(r.n)}">${esc(r.n)}</td>`;
+    metrics.forEach((m,i)=>{ const dd=d(r,m); h+=cell4(r[m][0],'pv'+(i?' sep':''))+cell4(r[m][1],'cu')+`<td class="ar">${arrow(dd)}</td><td>${fM2(Math.abs(dd))}</td>`; });
+    h+='</tr>'; });
+  h+=`<tr class="sum"><td>Total</td>`;
+  metrics.forEach((m,i)=>{ const a=shown.reduce((t,r)=>t+(r[m][0]||0),0), b=shown.reduce((t,r)=>t+(r[m][1]||0),0);
+    h+=`<td class="${i?'sep':''}">${fM2(a)}</td><td>${fM2(b)}</td><td class="ar">${Math.abs(b-a)<1?'-':b>a?'▲':'▼'}</td><td>${fM2(Math.abs(b-a))}</td>`; });
+  const t=$('#t4-'+id); t.innerHTML=h+'</tr></tbody>';
+  t.querySelectorAll('th').forEach(th=>th.onclick=()=>{ const s=th.dataset.s; if(!s) return; sort4[id]=st.k===s?{k:s,d:-st.d}:{k:s,d:s==='n'?1:-1}; page4(); });
+  t.querySelectorAll('tr.pick').forEach(tr=>tr.onclick=e=>{ window._src4=id; toggle4(tr.dataset.v,isMulti(e)); });
+}
+$('#clearSel4').onclick=()=>{ sel4.clear(); page4(); };
+
+// =====================================================================
+// PÁGINA 5 — Building: Budget (Approved) × Current = EFC + Contingency + Saving
+// =====================================================================
+const K5=['country','other','type2','site'];
+const off5=Object.fromEntries(K5.map(k=>[k,new Set()]));
+const st5={file:'cur', scale:'own', q:'', o:'n'};   // padrão: ordem por nome
+const isBld=p=>p.cat==='Building' && (Math.abs(p.bud)>=1||Math.abs(p.efc)>=1||Math.abs(p.cont)>=1);
+const pass5=p=>K5.every(k=>!off5[k].has(p[k]));
+function drawFilter5(k){
+  const before=K5.slice(0,K5.indexOf(k));   // cascata: Country → Other → Type → Site
+  const pool=P2[st5.file].projects.filter(p=>isBld(p)&&before.every(kk=>!off5[kk].has(p[kk]))), vals=uniq(k,pool), o=off5[k], all=vals.every(v=>!o.has(v));
+  let h=`<label><input type="checkbox" data-all="1" ${all?'checked':''}>Selecionar tudo</label>`;
+  vals.forEach(v=>h+=`<label title="${esc(v)}"><input type="checkbox" value="${esc(v)}" ${o.has(v)?'':'checked'}>${esc(v)}</label>`);
+  const el=$('#f5-'+k); el.innerHTML=h;
+  el.querySelectorAll('input:not([data-all])').forEach(i=>i.onchange=()=>{ i.checked?o.delete(i.value):o.add(i.value); page5(); });
+  el.querySelector('[data-all]').onchange=e=>{ if(e.target.checked) o.clear(); else vals.forEach(v=>o.add(v)); page5(); };
+}
+
+// mudança relevante: |Δ| ≥ US$ 500 mil ou ≥ 5% do Budget em qualquer métrica
+const REL5={abs:5e5, pct:.05};
+function diff5(p){
+  const other=st5.file==='cur'?'prev':'cur', vs=st5.file==='cur'?'vs anterior':'vs atual';
+  const o=P2[other].projects.find(x=>x.p===p.p);
+  if(!o) return {big:true, html:`<span class="tg ${st5.file==='cur'?'new':'rem'}">${st5.file==='cur'?'novo':'não existe no atual'}</span><span class="dl">${vs}</span>`};
+  const sv=x=>x.bud-x.efc-x.cont, M=[['Budget',p.bud-o.bud],['EFC',p.efc-o.efc],['Cont.',p.cont-o.cont],['Saving',sv(p)-sv(o)]];
+  const lim=Math.max(REL5.abs, Math.abs(o.bud||p.bud)*REL5.pct);
+  const parts=M.filter(([,d])=>Math.abs(d)>=1000).map(([n,d])=>{ const rel=Math.abs(d)>=lim;
+    return `<span style="margin-left:10px;${rel?'font-weight:800':'font-weight:500;opacity:.85'}">${n} <span class="${d>0?'up':'dn'}">${d>0?'▲ +':'▼ '}${fM2(d)}</span></span>`; });
+  const big=M.some(([,d])=>Math.abs(d)>=lim);
+  return {big, html: parts.length ? parts.join('')+`<span class="dl" style="margin-left:8px">${vs}</span>` : `<span class="dl">sem alteração ${vs}</span>`};
+}
+function page5(){
+  K5.forEach(drawFilter5);
+  const q=st5.q.toLowerCase();
+  let L=P2[st5.file].projects.filter(p=>isBld(p)&&pass5(p)&&(!q||p.p.toLowerCase().includes(q)))
+        .map(p=>({p, s:p.bud-p.efc-p.cont, used:p.bud?((p.efc+p.cont)/p.bud):0}));
+  const O=st5.o; L.sort((a,b)=> O==='n'?a.p.p.localeCompare(b.p.p,'pt-BR',{numeric:true,sensitivity:'base'}) : O==='sav'?a.s-b.s : O==='cont'?b.p.cont-a.p.cont : O==='pct'?b.used-a.used : b.p.bud-a.p.bud);
+  // cartões
+  const T=k=>L.reduce((t,r)=>t+(k==='s'?r.s:r.p[k]),0), over=L.filter(r=>r.s<-0.5);
+  const card=(l,v,s,c)=>`<div class="kc"><div class="l">${l}</div><div class="v" ${c?`style="color:${c}"`:''}>${v}</div><div class="s">${s}</div></div>`;
+  $('#kp5').innerHTML = card('Projetos Building', L.length, st5.file==='cur'?'arquivo atual (PROD)':'arquivo anterior (Cons)')
+    + card('Budget (Approved)', fM2(T('bud')), 'soma dos projetos', '#00C2EA')
+    + card('EFC', fM2(T('efc')), (T('bud')?(T('efc')/T('bud')*100).toLocaleString('pt-BR',{maximumFractionDigits:1}):'0')+'% do Budget', '#C9CBCE')
+    + card('Contingency', fM2(T('cont')), (T('bud')?(T('cont')/T('bud')*100).toLocaleString('pt-BR',{maximumFractionDigits:1}):'0')+'% do Budget', '#11BF79')
+    + card('Saving', fM2(T('s')), 'Budget − EFC − Contingency', T('s')<0?'#E5484D':'#E3B53A')
+    + card('Mudanças relevantes', L.filter(r=>diff5(r.p).big).length, `${st5.file==='cur'?'vs anterior':'vs atual'} · ≥ US$ 0,5 M ou ≥ 5% do Budget`, L.some(r=>diff5(r.p).big)?'#E5484D':'#5BC07A')
+    + card('Projetos com estouro', over.length, over.length?`soma ${fM2(over.reduce((t,r)=>t+r.s,0))}`:'nenhum', over.length?'#E5484D':'#5BC07A');
+  // barras
+  const gmax=Math.max(1,...L.map(r=>Math.max(r.p.bud, r.p.efc+r.p.cont)));
+  const pct=(v,mx)=>Math.max(0,v)/mx*100;
+  const seg=(cls,left,w,lab,tip)=>w<=0?'':`<div class="s ${cls}" style="left:${left}%;width:${w}%" data-t="${esc(tip)}">${w>7?lab:''}</div>`;
+  let h='';
+  L.forEach(r=>{ const p=r.p, mx=st5.scale==='own'?Math.max(1,p.bud,p.efc+p.cont):gmax;
+    const wB=pct(p.bud,mx), wE=pct(p.efc,mx), wC=pct(p.cont,mx), over=r.s<-0.5;
+    // saving positivo completa até o Budget; negativo = parte que passa do Budget (estouro)
+    const wS=over?0:pct(r.s,mx), wO=over?Math.min(wE+wC, pct(-r.s,mx)):0;
+    let cur=seg('efc',0,wE,fM(p.efc),'EFC|'+p.efc)+seg('cont',wE,wC,fM(p.cont),'Contingency|'+p.cont);
+    if(over){ const start=wB; cur=seg('efc',0,Math.min(wE,wB),fM(p.efc),'EFC|'+p.efc)
+      +seg('cont',Math.min(wE,wB),Math.max(0,Math.min(wE+wC,wB)-Math.min(wE,wB)),fM(p.cont),'Contingency|'+p.cont)
+      +seg('ovr',start,wO,fM(r.s),'Estouro (Saving negativo)|'+r.s); }
+    else cur+=seg('sav',wE+wC,wS,fM(r.s),'Saving|'+r.s);
+    // o que mudou em relação ao outro arquivo (anterior, quando se vê o atual; atual, quando se vê o anterior)
+    const ch=diff5(p), big=ch.big;
+    h+=`<div class="pc ${big?'over':''}"><div class="hd"><b>${esc(p.p)}</b><span class="meta">${esc(p.country)} · ${esc(p.other)} · ${esc(p.type2)}</span>
+      <span class="res">${ch.html}</span></div>
+      <div class="br"><span class="nm">Approved</span><div class="bar5">${seg('bud',0,wB,fM(p.bud),'Budget (Approved)|'+p.bud)}</div><span class="val">${fM2(p.bud)}</span></div>
+      <div class="br"><span class="nm">Current</span><div class="bar5">${cur}${over?`<div class="mark" style="left:${wB}%" title="Budget"></div>`:''}</div><span class="val">${fM2(p.efc+p.cont+Math.max(0,r.s))}</span></div></div>`; });
+  if(!L.length) h='<div class="dl">Nenhum projeto Building com os filtros atuais.</div>';
+  const LE=$('#list5'); LE.innerHTML=h;
+  // preenche a coluna da esquerda até a altura da tela e continua na da direita;
+  // se não couber nas duas, divide ao meio e a lista rola
+  const first=LE.querySelector('.pc'); if(first){ const ch=first.offsetHeight+8, fit=Math.max(1,Math.floor((LE.clientHeight+8)/ch));
+    const R=Math.max(fit, Math.ceil(L.length/2)); LE.style.gridTemplateRows=`repeat(${Math.min(R,L.length)}, auto)`; } else LE.style.gridTemplateRows='';
+  // dicas
+  const t=$('#tip'); document.querySelectorAll('#list5 [data-t]').forEach(n=>{
+    n.onmousemove=e=>{ const [a,b]=n.dataset.t.split('|'); t.innerHTML=`${esc(a)}<br><b>${fM2(+b)}</b>`; t.style.display='block'; t.style.left=e.clientX+12+'px'; t.style.top=e.clientY+12+'px'; };
+    n.onmouseleave=()=>t.style.display='none'; });
+  document.querySelectorAll('#file5 button').forEach(b=>b.classList.toggle('on',b.dataset.f===st5.file));
+  document.querySelectorAll('#scale5 button').forEach(b=>b.classList.toggle('on',b.dataset.s===st5.scale));
+}
+document.querySelectorAll('#file5 button').forEach(b=>b.onclick=()=>{ st5.file=b.dataset.f; page5(); });
+document.querySelectorAll('#scale5 button').forEach(b=>b.onclick=()=>{ st5.scale=b.dataset.s; page5(); });
+$('#q5').oninput=e=>{ st5.q=e.target.value; page5(); };
+$('#o5').onchange=e=>{ st5.o=e.target.value; page5(); };
+
+// =====================================================================
+// PÁGINA 0 — Início: escolher os arquivos, comparar no navegador e confirmar
+// A leitura dos .xlsx é feita aqui mesmo, sem internet. O navegador não consegue baixar do SharePoint por link (login). Por isso:
+//  - com os arquivos selecionados do computador (pasta sincronizada), a comparação roda aqui mesmo;
+//  - só com links, a página monta o pedido para o Claude rodar a comparação.
+// =====================================================================
+const MPT0=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const pad2=n=>String(n).padStart(2,'0');
+function fmtDT(d){ return `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${String(d.getFullYear()).slice(2)} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
+// ---- leitor de .xlsx embutido (sem bibliotecas externas e sem internet) ----
+// Descompacta só as partes necessárias com o DecompressionStream do navegador (Chrome/Edge atuais)
+// e lê os valores salvos nas células, como o openpyxl com data_only=True.
+const SHEETS=['CapEx Summary','CapEx Detail USD'];
+async function unzipParts(buf, wanted){
+  const dv=new DataView(buf), u8=new Uint8Array(buf); let eo=-1;
+  for(let i=buf.byteLength-22;i>=Math.max(0,buf.byteLength-70000);i--) if(dv.getUint32(i,true)===0x06054b50){ eo=i; break; }
+  if(eo<0) throw new Error('O arquivo não parece ser um .xlsx válido.');
+  const n=dv.getUint16(eo+10,true); let p=dv.getUint32(eo+16,true); const dir={};
+  for(let k=0;k<n;k++){ if(dv.getUint32(p,true)!==0x02014b50) break;
+    const meth=dv.getUint16(p+10,true), csz=dv.getUint32(p+20,true), nl=dv.getUint16(p+28,true), xl=dv.getUint16(p+30,true), cl=dv.getUint16(p+32,true), off=dv.getUint32(p+42,true);
+    const name=new TextDecoder().decode(u8.subarray(p+46,p+46+nl)); dir[name]={meth,csz,off}; p+=46+nl+xl+cl; }
+  const out={};
+  for(const w of wanted){ const e=dir[w]; if(!e){ out[w]=null; continue; }
+    const lnl=dv.getUint16(e.off+26,true), lxl=dv.getUint16(e.off+28,true), st=e.off+30+lnl+lxl, data=u8.subarray(st,st+e.csz);
+    if(e.meth===0){ out[w]=new TextDecoder().decode(data); continue; }
+    if(typeof DecompressionStream==='undefined') throw new Error('Este navegador não consegue abrir .xlsx. Use o Chrome ou o Edge atualizados.');
+    out[w]=await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text(); }
+  return {dir,out};
+}
+const XENT={amp:'&',lt:'<',gt:'>',quot:'"',apos:"'"};
+const xdec=s=>s.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi,(m,c)=>c[0]==='#'?String.fromCodePoint(c[1].toLowerCase()==='x'?parseInt(c.slice(2),16):+c.slice(1)):XENT[c.toLowerCase()]);
+const attr=(s,a)=>{ const m=new RegExp('\\b'+a+'="([^"]*)"').exec(s); return m?m[1]:null; };
+const colIdx=c=>{ let n=0; for(const ch of c) n=n*26+ch.charCodeAt(0)-64; return n-1; };
+function dateStyles(stylesXml){
+  const custom={}; (stylesXml.match(/<numFmt\b[^>]*\/?>/g)||[]).forEach(t=>custom[attr(t,'numFmtId')]=xdec(attr(t,'formatCode')||''));
+  const isDate=id=>{ id=+id; if((id>=14&&id<=22)||(id>=27&&id<=36)||(id>=45&&id<=47)||(id>=50&&id<=58)) return true;
+    const f=custom[id]; if(!f) return false; const g=f.replace(/"[^"]*"/g,'').replace(/\[[^\]]*\]/g,'').replace(/\\./g,''); return /[dmy]/i.test(g)&&!/general/i.test(g); };
+  const a=stylesXml.indexOf('<cellXfs'), b=stylesXml.indexOf('</cellXfs>',a); const sec=a<0?'':stylesXml.slice(a,b);
+  return (sec.match(/<xf\b[^>]*>/g)||[]).map(t=>isDate(attr(t,'numFmtId')||0));
+}
+const serialToDate=v=>{ const u=new Date(Date.UTC(1899,11,30)+Math.round(v*864e5)); return new Date(u.getUTCFullYear(),u.getUTCMonth(),u.getUTCDate(),u.getUTCHours(),u.getUTCMinutes()); };
+function parseSheet(xml, ss, isDateStyle){
+  const rows=[], re=/<c\b([^>]*?)(\/>|>([\s\S]*?)<\/c>)/g; let m;
+  while((m=re.exec(xml))){ const at=m[1], ref=attr(at,'r'); if(!ref) continue; const mm=/^([A-Z]+)(\d+)$/.exec(ref); if(!mm) continue;
+    const t=attr(at,'t')||'n', inner=m[3]||''; let v=null; const vm=/<v>([\s\S]*?)<\/v>/.exec(inner);
+    if(t==='s'){ if(vm) v=ss[+vm[1]]; }
+    else if(t==='inlineStr'){ const ts=inner.match(/<t\b[^>]*>([\s\S]*?)<\/t>/g)||[]; v=xdec(ts.map(x=>x.replace(/<[^>]+>/g,'')).join('')); }
+    else if(t==='str'||t==='e'){ if(vm) v=xdec(vm[1]); }
+    else if(t==='b'){ if(vm) v=vm[1]==='1'; }
+    else if(t==='d'){ if(vm) v=new Date(vm[1]); }
+    else if(vm){ v=+vm[1]; const s=attr(at,'s'); if(s!=null&&isDateStyle[+s]&&isFinite(v)) v=serialToDate(v); }
+    if(v==null) continue; const r=+mm[2]-1; (rows[r]||(rows[r]=[]))[colIdx(mm[1])]=v; }
+  for(let i=0;i<rows.length;i++) if(!rows[i]) rows[i]=[];
+  return rows;
+}
+async function readBook(file){
+  const buf=await file.arrayBuffer();
+  const base=['xl/workbook.xml','xl/_rels/workbook.xml.rels','xl/sharedStrings.xml','xl/styles.xml','docProps/core.xml'];
+  const {dir,out}=await unzipParts(buf,base);
+  if(!out['xl/workbook.xml']) throw new Error('O arquivo não parece ser um .xlsx válido.');
+  const rels={}; (out['xl/_rels/workbook.xml.rels']||'').replace(/<Relationship\b[^>]*>/g,t=>{ rels[attr(t,'Id')]=attr(t,'Target'); return t; });
+  const sheetPath={}; (out['xl/workbook.xml'].match(/<sheet\b[^>]*>/g)||[]).forEach(t=>{ const nm=xdec(attr(t,'name')||''), id=attr(t,'r:id'); let tg=rels[id]||'';
+    tg=tg.startsWith('/')?tg.slice(1):'xl/'+tg.replace(/^\.\//,''); sheetPath[nm]=tg; });
+  const ss=[]; (out['xl/sharedStrings.xml']||'').replace(/<si>([\s\S]*?)<\/si>/g,(m,inner)=>{ const ts=inner.replace(/<rPh\b[\s\S]*?<\/rPh>/g,'').match(/<t\b[^>]*>([\s\S]*?)<\/t>/g)||[]; ss.push(xdec(ts.map(x=>x.replace(/<[^>]+>/g,'')).join(''))); return ''; });
+  const isDateStyle=dateStyles(out['xl/styles.xml']||'');
+  const mod=/<dcterms:modified[^>]*>([^<]+)</.exec(out['docProps/core.xml']||'');
+  const res={modified: mod?new Date(mod[1]).getTime():null, sheets:{}};
+  for(const n of SHEETS){ const pth=sheetPath[n]; if(!pth||!dir[pth]){ res.sheets[n]=null; continue; }
+    const x=(await unzipParts(buf,[pth])).out[pth]; res.sheets[n]=parseSheet(x,ss,isDateStyle); }
+  return res;
+}
+// ---- mesmas regras do build_dashboard.py ----
+const T=v=>v==null||v instanceof Date?'':String(v).trim();
+const N=v=>typeof v==='number'&&isFinite(v)?v:0;
+const isD=v=>v instanceof Date&&!isNaN(v);
+const ymOf=d=>{ const x=new Date(d.getTime()+12*3600e3); return `${x.getFullYear()}-${pad2(x.getMonth()+1)}`; };
+const r2=v=>Math.round(v*100)/100;
+function parseBook(out, fileName, lastMod){
+  const R=out.sheets['CapEx Summary']; if(!R) throw new Error(`A aba "CapEx Summary" não foi encontrada em ${fileName}.`);
+  let hi=-1; for(let i=0;i<Math.min(30,R.length);i++){ const r=R[i]||[]; if(T(r[0])==='Site'&&T(r[1])==='Phase/Project'){ hi=i; break; } }
+  if(hi<0) throw new Error(`Cabeçalho "Site | Phase/Project" não encontrado em ${fileName}.`);
+  const hdr=R[hi], col={}; hdr.forEach((h,j)=>{ if(h==null||isD(h)) return; const k=T(h); if(k&&!(k in col)) col[k]=j; });
+  const miss=['Capex categorization','Type','Other','Commit?','Country','Remaining Capex'].filter(k=>!(k in col));
+  if(miss.length) throw new Error(`Colunas ausentes em ${fileName}: ${miss.join(', ')}.`);
+  const months=[]; for(let j=0;j<hdr.length;j++){ if(isD(hdr[j])){ if(months.length&&j!==months.at(-1)[0]+1) break; months.push([j,ymOf(hdr[j])]); } }
+  let cutoff=null; const up=R[hi-1]||[]; for(let j=0;j<Math.min(up.length,col['Remaining Capex']+3);j++) if(isD(up[j])) cutoff=up[j];
+  if(!cutoff) throw new Error(`Data de corte não encontrada acima de "Remaining Capex" em ${fileName}.`);
+  // Contingency: Remaining das linhas Contingency/Escalation da aba CapEx Detail USD
+  const cont=new Map(), DT=out.sheets['CapEx Detail USD'];
+  if(DT){ let h=null; for(const r of DT){ const row=r||[];
+      if(!h){ const names=row.map(T); if(names.includes('Category')&&names.includes('Remaining')&&names.includes('Site')){ h={}; names.forEach((n,i)=>{ if(n&&!(n in h)) h[n]=i; }); } continue; }
+      const site=T(row[h['Site']]), ph=T(row[h['Phase/Project']]), ca=T(row[h['Category']]);
+      if(site&&ph&&ca.toLowerCase()==='contingency/escalation'){ const k=site+'\u0001'+ph; cont.set(k,(cont.get(k)||0)+N(row[h['Remaining']])); } } }
+  const projects=[], keyrows=[]; let pending=[]; const seen={};
+  const dtype=(c,t)=>c==='OFE'?'Spec - OFE':c==='Fitout'?'Fitout':(t||'(vazio)');
+  const rtype=(c,t)=>c==='Fitout'?'Fitout':t.toLowerCase()==='non-spec'?'Non-spec':(t||'(vazio)');
+  for(let i=hi+1;i<R.length;i++){ const r=R[i]||[]; const a=T(r[0]), b=T(r[1]);
+    if(T(r[col['Commit?']])==='Total'){ pending.forEach(k=>k.block=a); pending=[]; continue; }
+    if(a&&!b) break; if(!(a&&b)) continue; if(/^\s*ajuste\b/i.test(b)) continue;
+    const cat=T(r[col['Capex categorization']]), typ=T(r[col['Type']]);
+    if(typ.toLowerCase()!=='reimbursement'){ const base=`${a} | ${b}`; seen[base]=(seen[base]||0)+1;
+      const kr={key:seen[base]===1?base:`${base} #${seen[base]}`, site:a, block:'', efc:'EFC' in col?N(r[col['EFC']]):0}; keyrows.push(kr); pending.push(kr); }
+    if(cat==='Fitout Revenue'||cat==='Utility Revenue'||typ==='Reimbursement') continue;
+    projects.push({p:`${a} ${b}`, site:a, row:i+1, country:T(r[col['Country']])||'(vazio)', other:T(r[col['Other']])||'(vazio)',
+      type:dtype(cat,typ), type2:rtype(cat,typ), cat:cat||'(vazio)', commit:T(r[col['Commit?']])||'(vazio)',
+      bud:'Total Budget' in col?r2(N(r[col['Total Budget']])):0, efc:'C' in col?r2(N(r[col['C']])):0, cont:r2(cont.get(a+'\u0001'+b)||0),
+      v:months.map(([j])=>r2(N(r[j]))) }); }
+  const cy=ymOf(cutoff), m=/(\d{2})-(\d{2})-(\d{2,4})/.exec(fileName);
+  return {file:fileName, last_update:fmtDT(new Date(out.modified||lastMod)),
+    file_date:m?`${m[1]}/${m[2]}/${m[3].slice(-2)}`:fmtDT(new Date(lastMod)).slice(0,8),
+    cutoff:cy, cutoff_label:MPT0[+cy.slice(5)-1].replace(/^./,c=>c.toUpperCase())+'-'+cy.slice(2,4),
+    months:months.map(x=>x[1]), projects, keyrows, generated:fmtDT(new Date())};
+}
+function renamesJS(o,n){ const O=new Map(o.keyrows.map(k=>[k.key,k])), Nn=new Map(n.keyrows.map(k=>[k.key,k]));
+  const added=[...Nn.keys()].filter(k=>!O.has(k)), out=[];
+  [...O.keys()].filter(k=>!Nn.has(k)).forEach(r=>{ const po=O.get(r), c=added.filter(x=>Nn.get(x).site===po.site&&Nn.get(x).block===po.block);
+    if(c.length){ const best=c.reduce((m,x)=>Math.abs(Nn.get(x).efc-po.efc)<Math.abs(Nn.get(m).efc-po.efc)?x:m); out.push({old:r,new:best,site:po.site}); } });
+  return out; }
+// ---- interface ----
+const FILES={prev:null,cur:null};
+[['Prev','prev'],['Cur','cur']].forEach(([S,k])=>{ $('#file'+S).onchange=e=>{ FILES[k]=e.target.files[0]||null; $('#fn'+S).textContent=FILES[k]?FILES[k].name:'nenhum arquivo selecionado'; }; });
+$('#lnkPrev').value=(ALL.meta&&ALL.meta.prev_link)||''; $('#lnkCur').value=(ALL.meta&&ALL.meta.cur_link)||'';
+function steps(list){ const p=$('#prog0'); p.hidden=false; p.innerHTML=list.map(([t,s])=>`<div class="st ${s}"><i></i><span>${esc(t)}</span></div>`).join(''); }
+function msg(html,cls=''){ $('#msg0').innerHTML=html?`<div class="msg ${cls}">${html}</div>`:''; }
+$('#goCmp').onclick=async()=>{
+  msg(''); const lp=$('#lnkPrev').value.trim(), lc=$('#lnkCur').value.trim();
+  if(!FILES.prev||!FILES.cur){
+    if(lp||lc){ const ask=`Use o skill capex-summary-compare para comparar os arquivos de Funding:\n- Arquivo anterior (rosa): ${lp||'(informar)'}\n- Arquivo atual (azul): ${lc||'(informar)'}\nGere o dashboard com a página inicial preenchida com esses links.`;
+      msg(`O navegador não consegue baixar os arquivos direto do SharePoint pelo link (o SharePoint exige login). Você pode:<br>
+        1) clicar em "Selecionar arquivo do computador" nos dois campos e escolher os arquivos na pasta sincronizada pelo OneDrive; ou<br>
+        2) copiar o pedido abaixo e colar no Claude, que roda a comparação e devolve o dashboard pronto.
+        <textarea id="ask0" readonly>${esc(ask)}</textarea><div class="jump"><button id="copy0">Copiar pedido</button></div>`,'info');
+      $('#copy0').onclick=()=>{ const t=$('#ask0'); t.select(); try{ navigator.clipboard.writeText(t.value); }catch(e){ document.execCommand('copy'); } $('#copy0').textContent='Copiado'; };
+    } else msg('Selecione o arquivo anterior (rosa) e o atual (azul), ou cole os links do SharePoint.');
+    return; }
+  if(/\bprod\b/i.test(FILES.prev.name)&&/\bcons/i.test(FILES.cur.name)&&!confirm('Parece que os arquivos estão invertidos: o anterior tem "PROD" no nome e o atual tem "Cons". Continuar mesmo assim?')) return;
+  $('#goCmp').disabled=true; $('#done0').innerHTML='';
+  const S=[['Lendo o arquivo anterior: '+FILES.prev.name,'run'],['Lendo o arquivo atual: '+FILES.cur.name,''],['Comparando e montando as abas','']];
+  try{
+    steps(S); const bp=await readBook(FILES.prev); const prev=parseBook(bp,FILES.prev.name,FILES.prev.lastModified);
+    S[0][1]='ok'; S[1][1]='run'; steps(S); const bc=await readBook(FILES.cur); const cur=parseBook(bc,FILES.cur.name,FILES.cur.lastModified);
+    S[1][1]='ok'; S[2][1]='run'; steps(S);
+    const data={cur, prev, cmp:{renames:renamesJS(prev,cur)}, meta:{source:'browser', generated:fmtDT(new Date()), prev_link:lp, cur_link:lc}};
+    delete data.cur.keyrows; delete data.prev.keyrows;
+    S[2][1]='ok'; steps(S);
+    openWith(data);
+  }catch(err){ const i=S.findIndex(x=>x[1]==='run'); if(i>=0) S[i][1]='err'; steps(S); msg('Não foi possível concluir a comparação: '+esc(err.message||String(err))); $('#goCmp').disabled=false; }
+};
+// abre o dashboard com os dados novos numa página nova (a original continua no "Voltar" do navegador)
+function htmlWith(data){ const json=JSON.stringify(data).replace(/<\//g,'<\\/');
+  return SRC.replace(/(<script id="dash-data" type="application\/json">)[\s\S]*?(<\/script>)/,(m,a,b)=>a+json+b); }
+function openWith(data){ const h=htmlWith(data); setTimeout(()=>{ document.open(); document.write(h); document.close(); },50); }   // remonta a página com os arquivos escolhidos
+function confirmBox(){
+  if(EMPTY){ $('#done0').innerHTML=`<div class="msg info">Nenhuma comparação carregada ainda. Selecione o arquivo anterior (rosa) e o atual (azul) e clique em "Realizar comparação". As outras abas são liberadas depois disso.</div>`; return; }
+  const M=ALL.meta||{}, row=(cls,lab,d,link)=>`<div class="fl ${cls}"><span class="k">${lab}</span><b>${esc(d.file.replace(/\.xlsx?$/i,''))}</b>
+    <span class="k">Data de corte</span><span>${esc(d.cutoff_label)}</span><span class="k">Último salvamento</span><span>${esc(d.last_update)}</span>
+    <span class="k">Projetos</span><span>${d.projects.length}</span>${link?`<span class="k">Link</span><a href="${esc(link)}" target="_blank" rel="noopener">${esc(link)}</a>`:''}</div>`;
+  $('#done0').innerHTML=`<div class="done"><div class="ok"><b>✓</b>Comparação realizada entre os arquivos</div>
+    ${row('pk','Anterior',ALL.prev,M.prev_link)}${row('bl','Atual',ALL.cur,M.cur_link)}
+    <div class="dl" style="margin-top:8px">${M.source==='browser'?'Comparação feita neste navegador':'Comparação gerada pelo Claude'} em ${esc(M.generated||ALL.cur.generated||'')}.</div>
+    <div class="jump"><button data-j="1">Odata CapEx Control</button><button data-j="2">Capex Comparison</button><button data-j="3">Change Details</button><button data-j="4">Comparison w/o FX</button><button data-j="5">Building Budget</button><button id="dl0">Baixar este dashboard (.html)</button></div></div>`;
+  document.querySelectorAll('#done0 [data-j]').forEach(b=>b.onclick=()=>goPage(+b.dataset.j));
+  $('#dl0').onclick=()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([htmlWith(ALL)],{type:'text/html'}));
+    a.download=`Comparativo_${ALL.prev.cutoff_label}_x_${ALL.cur.cutoff_label}.html`; document.body.appendChild(a); a.click(); a.remove(); };
+}
+
+// ---------- navegação entre páginas
+let PAGE=1;
+$('#d3').value=$('#d1').value; $('#d4').value=$('#d2').value;
+$('#d3').onchange=$('#d4').onchange=refresh2;
+$('#clearSel2').onclick=clear2;
+function header(){
+  $('#upd').style.visibility = PAGE===0 ? 'hidden' : 'visible';
+  if(PAGE===0){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').textContent='Início'; return; }   // sem nomes de arquivo na tela inicial
+  if(PAGE===5){ $('#file').innerHTML=`<div class="pink">${esc(P2.prev.file.replace(/\.xlsx?$/i,''))}</div><div class="blue">${esc(P2.cur.file.replace(/\.xlsx?$/i,''))}</div>`; $('#file').className='file file2'; $('h1').innerHTML='Building Projects<small>Budget × EFC + Contingency + Saving</small>'; return; }
+  if(PAGE===4){ $('#file').innerHTML=`<div class="pink">${esc(P2.prev.file.replace(/\.xlsx?$/i,''))}</div><div class="blue">${esc(P2.cur.file.replace(/\.xlsx?$/i,''))}</div>`; $('#file').className='file file2'; $('h1').innerHTML=`<span class="cutl pink">${esc(P2.prev.cutoff_label)}</span>Capex Comparison<small>w/o FX Variation</small><span class="cutl blue">${esc(P2.cur.cutoff_label)}</span>`; return; }
+  if(PAGE===3){ $('#file').innerHTML=`<div class="pink">${esc(P2.prev.file.replace(/\.xlsx?$/i,''))}</div><div class="blue">${esc(P2.cur.file.replace(/\.xlsx?$/i,''))}</div>`; $('#file').className='file file2'; $('h1').textContent='Change Details'; return; }
+  if(PAGE===1){ $('#file').innerHTML=esc(D.file.replace(/\.xlsx?$/i,'')); $('#file').className='file'; $('h1').textContent='Odata CapEx Control'; }
+  else { $('#file').innerHTML=`<div class="pink">${esc(P2.prev.file.replace(/\.xlsx?$/i,''))}</div><div class="blue">${esc(P2.cur.file.replace(/\.xlsx?$/i,''))}</div>`; $('#file').className='file file2'; $('h1').textContent='Capex Comparison'; }
+}
+function goPage(n){
+  PAGE=n; $('#pg0').hidden = n!==0; $('#pg1').hidden = n!==1; $('#pg2').hidden = n!==2; $('#pg3').hidden = n!==3; $('#pg4').hidden = n!==4; $('#pg5').hidden = n!==5;
+  document.querySelectorAll('.pages button').forEach(b=>b.classList.toggle('on', +b.dataset.pg===n));
+  $('#hdrDates2').hidden = n!==2;
+  header(); n===0 ? confirmBox() : n===1 ? refresh() : n===2 ? refresh2() : n===3 ? page3() : n===4 ? page4() : page5();
+}
+document.querySelectorAll('.pages button').forEach(b=>{ if(EMPTY&&b.dataset.pg!=='0'){ b.disabled=true; b.title='Faça a comparação na aba Início'; } b.onclick=()=>goPage(+b.dataset.pg); });
+document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return;
+  if(PAGE===1 && (selMonths.size||selTypes.size||selProj.size)) clearSel();
+  if(PAGE===2 && Object.values(sel2).some(s=>s.size)) clear2();
+  if(PAGE===4 && sel4.size){ sel4.clear(); page4(); } });
+let rt; window.addEventListener('resize',()=>{ if(GEN!==window.__dashGen) return; fit(); clearTimeout(rt);rt=setTimeout(()=>PAGE===0?null:PAGE===1?refresh():PAGE===2?refresh2():PAGE===3?page3():PAGE===4?page4():page5(),150);});
+goPage(0);
+})();
+</script>
+</body>
+</html>
