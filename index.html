@@ -126,6 +126,7 @@
   .box3 h2{margin:0 0 6px;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
   .box3 h2 .n{font-size:11px;color:var(--mut);font-weight:400}
   .box3 .scroll{max-height:300px}
+  .box3 .scroll.fill3{max-height:max(260px, calc(var(--appH) - 500px))}   /* usa a altura que sobra da tela */
   #t3-country th{vertical-align:bottom;line-height:1.2}
   #t3-country td,#t3-country th{padding:4px 7px}
   .box3 td:first-child{max-width:260px;overflow:hidden;text-overflow:ellipsis}
@@ -224,6 +225,73 @@
   .msg{border-radius:10px;padding:10px 14px;font-size:13px;background:rgba(229,72,77,.12);border:1px solid rgba(229,72,77,.45)}
   .msg.info{background:rgba(111,176,255,.1);border-color:rgba(111,176,255,.45)}
   .msg textarea{width:100%;margin-top:8px;background:#0A1830;color:var(--txt);border:1px solid #3B5A92;border-radius:6px;font:inherit;font-size:12px;padding:8px;min-height:70px}
+  /* página 6 — Visão Geral executiva (cópia redesenhada da Odata CapEx Control) */
+  .wrap6{display:grid;grid-template-columns:232px 1fr;gap:12px;padding:10px 12px;height:calc(var(--appH) - 82px);min-height:640px;
+         --inc:#2F7BFF;--fc:#B06AD8;--card:rgba(15,32,70,.78);--bd:rgba(130,165,230,.16);--t2:#A9B8D3}
+  .side6{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:visible;position:relative;z-index:20}   /* não cortar o zoom e ficar à frente dos gráficos */
+  .f6{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:9px 11px;position:relative;transition:transform .18s ease, box-shadow .18s ease;transform-origin:left top}
+  .f6:hover{transform:scale(1.18);z-index:30;background:#122B5C;box-shadow:0 10px 28px rgba(0,0,0,.55)}
+  .f6.grow{flex:1;min-height:0;display:flex;flex-direction:column;transform-origin:left bottom}
+  .f6 h4{margin:0 0 6px;font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:7px;color:#DDE6F7}
+  .f6 h4 i{width:7px;height:7px;border-radius:2px;background:var(--inc);display:inline-block}
+  .f6 .list{overflow:auto;max-height:118px}
+  .f6.grow .list{max-height:none;flex:1;min-height:0}
+  .f6 label{display:flex;gap:7px;align-items:center;padding:2px 0;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:#D3DDF0}
+  .f6 input[type=checkbox]{accent-color:#2F7BFF;margin:0;flex:none}
+  .f6.per{background:linear-gradient(160deg,rgba(47,123,255,.20),rgba(15,32,70,.85));border-color:rgba(47,123,255,.45)}
+  .f6 select,.f6 input[type=date],.f6 input[type=text]{width:100%;background:#0A1830;color:var(--txt);border:1px solid #33507F;border-radius:7px;padding:5px 8px;font:inherit;font-size:12px;color-scheme:dark}
+  .f6 .dd{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+  #tl6{margin:4px 2px 0;height:40px;min-width:0} #tl6 .tl-lab,#tl6 .tl-h span{display:none}
+  #tl6 .tl-track,#tl6 .tl-fill{top:18px} #tl6 .tl-tick{top:15px} #tl6 .tl-tick.y{top:12px} #tl6 .tl-h{top:11px}
+  /* página 6: filtros iguais aos da página 1 (mesmo visual e zoom) e período na barra superior */
+  .wrap6{grid-template-columns:220px 1fr}
+  #pg6 .fbox{position:relative;transform-origin:left top;transition:transform .18s ease, box-shadow .18s ease, background-color .18s ease;will-change:transform}
+  #pg6 .fbox:hover{transform:scale(1.28);z-index:30;background:#122B5C;box-shadow:0 10px 28px rgba(0,0,0,.55);border-color:#4A78C2}
+  #pg6 .fbox.proj{transform-origin:left bottom}
+  .per6{display:flex;align-items:center;gap:8px;margin-left:18px;flex:1;min-width:0}
+  .per6 select,.per6 input{background:#0A1830;color:var(--txt);border:1px solid #33507F;border-radius:7px;padding:5px 8px;font:inherit;font-size:12px;color-scheme:dark}
+  .per6 #tl6{flex:1;min-width:160px;max-width:380px;margin:0 6px}
+  .main6{display:grid;grid-template-rows:auto 112px minmax(0,1.3fr) minmax(0,1fr) auto;gap:10px;min-height:0}
+  .top6{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--bd);padding-bottom:6px}
+  .top6 .nv{background:none;border:0;color:var(--t2);font:inherit;font-size:13px;font-weight:600;padding:6px 14px;cursor:pointer;border-bottom:2px solid transparent}
+  .top6 .nv.on{color:#fff;border-bottom-color:var(--inc)} .top6 .nv:hover{color:#fff}
+  .top6 .rt{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:11px;color:var(--t2);text-align:right;line-height:1.35}
+  .top6 .ic{background:var(--card);border:1px solid var(--bd);border-radius:8px;color:var(--txt);padding:6px 10px;cursor:pointer;font:inherit;font-size:12px}
+  .top6 .chip6{background:#132A57;border:1px solid #33507F;border-radius:8px;padding:6px 12px;font-weight:800;font-size:15px;color:#fff}
+  .kpi6{display:grid;grid-template-columns:1.1fr 1fr 1fr 1.05fr;gap:10px}
+  .k6{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:14px;min-width:0}
+  .k6 .ico{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex:none;background:rgba(47,123,255,.16)}
+  .k6 .ico svg{width:22px;height:22px}
+  .k6 .tx{flex:1;min-width:0}
+  .k6 .l{font-size:12px;color:var(--t2);font-weight:600}
+  .k6 .v{font-size:27px;font-weight:800;color:#fff;letter-spacing:.2px;margin-top:2px;white-space:nowrap}
+  .k6 .s{font-size:11px;color:var(--t2);margin-top:2px}
+  .k6 .st{display:grid;grid-template-columns:auto auto;gap:2px 10px;font-size:11px;color:var(--t2)} .k6 .st b{color:#fff;font-weight:700}
+  .card6{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;min-height:0;min-width:0}
+  .card6 .hd{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .card6 .hd h3{margin:0;font-size:15px;font-weight:700;color:#fff} .card6 .hd h3 small{display:block;font-size:11.5px;color:var(--t2);font-weight:400;margin-top:2px}
+  .lg6{display:flex;gap:14px;font-size:11.5px;color:#D3DDF0;margin-left:auto}
+  .lg6 i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+  .seg6{display:inline-flex;border:1px solid #33507F;border-radius:8px;overflow:hidden}
+  .seg6 button{background:transparent;border:0;color:var(--t2);font:inherit;font-size:12px;padding:4px 12px;cursor:pointer} .seg6 button.on{background:var(--inc);color:#fff}
+  .c6{position:relative;flex:1;min-height:0;overflow:hidden} .c6>svg{position:absolute;left:0;top:0}
+  .row6a{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(0,1fr);gap:10px;min-height:0}
+  .row6b{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;min-height:0}
+  #t6top{width:100%;border-collapse:collapse;font-size:12px}
+  #t6top th{background:transparent;color:var(--t2);font-weight:600;font-size:11px;padding:5px 6px;border-bottom:1px solid var(--bd);position:static}
+  #t6top td{padding:5px 6px;border-bottom:1px solid rgba(255,255,255,.04)} #t6top td.n{color:var(--t2);width:22px}
+  #t6top td.tt{font-weight:800;color:#fff;background:rgba(47,123,255,.12)}
+  #t6top td.pj{max-width:150px;overflow:hidden;text-overflow:ellipsis}
+  #t6top tr.sum td{font-weight:800;background:#16305F;color:#fff}
+  #t6top tr.pk{cursor:pointer} #t6top tr.pk:hover td{background:rgba(255,255,255,.05)} #t6top tr.dim td{opacity:.35} #t6top tr.on td{background:rgba(47,123,255,.22)}
+  .more6{margin-top:auto;padding-top:6px;text-align:right;font-size:12px;color:#7FB2FF;cursor:pointer;background:none;border:0;font:inherit}
+  .ins6{display:grid;grid-template-columns:200px repeat(4,1fr);gap:10px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px 12px}
+  .ins6 .ttl{display:flex;flex-direction:column;justify-content:center} .ins6 .ttl b{font-size:15px;color:#fff} .ins6 .ttl span{font-size:11px;color:var(--t2);margin-top:3px}
+  .in6{background:rgba(8,20,46,.7);border:1px solid var(--bd);border-radius:10px;padding:9px 12px;min-width:0}
+  .in6 b{display:block;font-size:13px;color:#fff;margin-bottom:3px} .in6 span{font-size:11.5px;color:var(--t2);line-height:1.4}
+  .in6.inc{border-left:3px solid var(--inc)} .in6.fc{border-left:3px solid var(--fc)} .in6.nt{border-left:3px solid #7FA3D9}
+  .foot6{display:flex;justify-content:space-between;font-size:10.5px;color:var(--t2)}
+  .hit6{cursor:pointer}
   /* página 2 — comparação */
   .wrap2{display:grid;grid-template-columns:180px 1fr 180px;grid-template-rows:minmax(0,1fr) auto 250px;gap:8px;padding:8px;height:calc(var(--appH) - 82px);min-height:680px}
   .ppanel{background:rgba(112,48,104,.5);border:1px solid rgba(240,122,192,.35);border-radius:10px}
@@ -389,12 +457,11 @@
     <div class="box3"><h2><span>Top 10 variations</span><span class="f3"><select id="tm3"></select></span></h2><div id="top3"></div></div>
   </div>
   <div class="row3" style="grid-template-columns:1fr 1fr">
-    <div class="box3"><h2>New, removed and possibly renamed projects <span class="n">renamed = same site and block; confirm with the sheet owner</span></h2><div class="scroll"><table id="t3-nr"></table></div></div>
-    <div class="box3"><h2>Sites with changes <span class="n" id="n3-site"></span></h2><div class="scroll"><table id="t3-site"></table></div></div>
+    <div class="box3"><h2>New, removed and possibly renamed projects <span class="n">renamed = same site and block; confirm with the sheet owner</span></h2><div class="scroll fill3"><table id="t3-nr"></table></div></div>
+    <div class="box3"><h2><span>Projects with changed values <span class="n" id="n3-chg"></span></span>
+      <span class="f3"><input id="q3" placeholder="Search site or project"><select id="c3"></select><select id="m3"></select></span></h2>
+      <div class="scroll fill3"><table id="t3-chg"></table></div></div>
   </div>
-  <div class="box3"><h2><span>Projects with changed values <span class="n" id="n3-chg"></span></span>
-    <span class="f3"><input id="q3" placeholder="Search site or project"><select id="c3"></select><select id="m3"></select></span></h2>
-    <div class="scroll" style="max-height:420px"><table id="t3-chg"></table></div></div>
   </div>
 </div>
 <div class="wrap4" id="pg4" hidden>
@@ -427,7 +494,44 @@
     <div class="list5" id="list5"></div>
   </div>
 </div>
-<nav class="pages"><button data-pg="0" class="on">Início</button><button data-pg="1">Odata CapEx Control</button><button data-pg="2">Capex Comparison</button><button data-pg="3">Change Details</button><button data-pg="4">Comparison w/o FX</button><button data-pg="5">Building Budget</button></nav>
+<div class="wrap6" id="pg6" hidden>
+  <aside class="col side6">
+    <div class="fgrid">
+      <div class="panel fbox auto"><h3>Country</h3><div class="list" id="f6-country"></div></div>
+      <div class="panel fbox auto"><h3>Other</h3><div class="list" id="f6-other"></div></div>
+      <div class="panel fbox auto"><h3>Type</h3><div class="list" id="f6-type"></div></div>
+      <div class="panel fbox auto"><h3>Category</h3><div class="list" id="f6-cat"></div></div>
+    </div>
+    <div class="panel fbox proj"><h3>Project</h3><div class="list" id="f6-p"></div></div>
+  </aside>
+  <div class="main6">
+    <div class="top6">
+      <button class="nv on">Visão Geral</button><button class="nv" data-go="1">Projetos</button><button class="nv" data-go="2">Comparativos</button><button class="nv" data-go="4">Orçamento</button><button class="nv" data-go="3">Detalhamento</button>
+      <div class="per6"><select id="y6" title="Ano"></select><div class="tl" id="tl6" title="Arraste: a esquerda vai para o 1º dia do mês, a direita para o último dia"></div><input type="date" id="d6a" title="Data inicial"><input type="date" id="d6b" title="Data final"></div>
+      <div class="rt"><div><span id="rep6"></span><br><span id="upd6"></span></div><button class="ic" id="exp6" title="Baixar este dashboard (.html)">Exportar ⤓</button><span class="chip6" id="cut6"></span><button class="chip" id="clr6" title="Limpar seleção (Esc)"></button></div>
+    </div>
+    <div class="kpi6" id="kpi6"></div>
+    <div class="row6a">
+      <div class="card6"><div class="hd"><h3>Evolução do CapEx<small>Incorrido vs. Forecast (M) · clique num mês para filtrar</small></h3>
+        <span class="lg6"><span><i style="background:var(--inc)"></i>Incorrido</span><span><i style="background:var(--fc)"></i>Forecast</span></span>
+        <span class="seg6" id="mode6"><button data-m="y">Anual</button><button data-m="m" class="on">Mensal</button></span></div>
+        <div class="c6" id="ch6"></div></div>
+      <div class="card6"><div class="hd"><h3>Top Projetos por Investimento<small>Total no período selecionado</small></h3><select id="n6" style="margin-left:auto;background:#0A1830;color:var(--txt);border:1px solid #33507F;border-radius:7px;padding:4px 8px;font:inherit;font-size:12px"><option value="10">Top 10</option><option value="15">Top 15</option><option value="20">Top 20</option></select></div>
+        <div style="flex:1;min-height:0;overflow:auto"><table id="t6top"></table></div>
+        <button class="more6" data-go="1">Ver todos os projetos →</button></div>
+    </div>
+    <div class="row6b">
+      <div class="card6"><div class="hd"><h3>CapEx por Tipo <small style="display:inline;margin-left:4px">(M)</small></h3><span class="lg6"><span><i style="background:var(--inc)"></i>Incorrido</span><span><i style="background:var(--fc)"></i>Forecast</span></span></div><div class="c6" id="ty6"></div></div>
+      <div class="card6"><div class="hd"><h3>CapEx por Categoria <small style="display:inline;margin-left:4px">(M)</small></h3><span class="lg6"><span><i style="background:var(--inc)"></i>Incorrido</span><span><i style="background:var(--fc)"></i>Forecast</span></span></div><div class="c6" id="ca6"></div></div>
+      <div class="card6"><div class="hd"><h3>Total Anual <small style="display:inline;margin-left:4px">(M)</small></h3><span class="lg6"><span><i style="background:var(--inc)"></i>Incorrido</span><span><i style="background:var(--fc)"></i>Forecast</span></span></div><div class="c6" id="an6"></div></div>
+    </div>
+    <div>
+      <div class="ins6" id="ins6"></div>
+      <div class="foot6" style="margin-top:5px"><span>Odata · An Aligned Data Centers Company</span><span>Valores em US$ milhões (M) · Fonte: PLA-FOR-010, aba CapEx Summary · Incorrido = meses até a data de corte; Forecast = meses seguintes</span></div>
+    </div>
+  </div>
+</div>
+<nav class="pages"><button data-pg="0" class="on">Início</button><button data-pg="1">Odata CapEx Control</button><button data-pg="6">Visão Geral (novo)</button><button data-pg="2">Capex Comparison</button><button data-pg="3">Change Details</button><button data-pg="4">Comparison w/o FX</button><button data-pg="5">Building Budget</button></nav>
 </div>
 <div class="tip" id="tip"></div>
 <script id="dash-data" type="application/json">null</script>
@@ -829,15 +933,6 @@ function page3(){
   V3.removed.filter(r=>!renN.has(r.n)).forEach(r=>h+=nr3(r.a,'rem'));
   if(!V3.added.length&&!V3.removed.length&&!V3.ren.length) h+='<tr><td colspan="7" class="dl">None.</td></tr>';
   $('#t3-nr').innerHTML=h+'</tbody>';
-  // por site
-  const sg={}; R.forEach(r=>{ (sg[r.ref.site]=sg[r.ref.site]||[]).push(r); });
-  const S=Object.entries(sg).filter(([,rows])=>rows.some(r=>!r.a||!r.b||MET3.some(([m])=>Math.abs(r.d[m])>=1000)))
-    .sort((x,y)=>Math.abs(sum3(y[1],'b','efc')-sum3(y[1],'a','efc'))-Math.abs(sum3(x[1],'b','efc')-sum3(x[1],'a','efc')));
-  $('#n3-site').textContent=`(${S.length})`;
-  h=`<thead><tr><th>Site</th><th>Country</th>${MET3.map(([,l])=>`<th>Δ ${l}</th>`).join('')}<th>Projects changed</th></tr></thead><tbody>`;
-  S.forEach(([s,rows])=>h+=`<tr><td>${esc(s)}</td><td>${esc(rows[0].ref.country)}</td>${MET3.map(([m])=>`<td>${dv(sum3(rows,'b',m)-sum3(rows,'a',m))}</td>`).join('')}<td>${rows.filter(r=>!r.a||!r.b||MET3.some(([m])=>Math.abs(r.d[m])>=1000)).length}</td></tr>`);
-  if(!S.length) h+='<tr><td colspan="7" class="dl">None.</td></tr>';
-  $('#t3-site').innerHTML=h+'</tbody>';
   // filtros da tabela de alterados
   const cs=[...new Set(V3.changed.map(r=>r.ref.country))].sort();
   $('#c3').innerHTML=`<option value="">All countries</option>`+cs.map(c=>`<option ${c===st3.c?'selected':''}>${esc(c)}</option>`).join('');
@@ -1179,11 +1274,179 @@ function confirmBox(){
   $('#done0').innerHTML=`<div class="done"><div class="ok"><b>✓</b>Comparação realizada entre os arquivos</div>
     ${row('pk','Anterior',ALL.prev,M.prev_link)}${row('bl','Atual',ALL.cur,M.cur_link)}
     <div class="dl" style="margin-top:8px">${M.source==='browser'?'Comparação feita neste navegador':'Comparação gerada pelo Claude'} em ${esc(M.generated||ALL.cur.generated||'')}.</div>
-    <div class="jump"><button data-j="1">Odata CapEx Control</button><button data-j="2">Capex Comparison</button><button data-j="3">Change Details</button><button data-j="4">Comparison w/o FX</button><button data-j="5">Building Budget</button><button id="dl0">Baixar este dashboard (.html)</button></div></div>`;
+    <div class="jump"><button data-j="1">Odata CapEx Control</button><button data-j="6">Visão Geral (novo)</button><button data-j="2">Capex Comparison</button><button data-j="3">Change Details</button><button data-j="4">Comparison w/o FX</button><button data-j="5">Building Budget</button><button id="dl0">Baixar este dashboard (.html)</button></div></div>`;
   document.querySelectorAll('#done0 [data-j]').forEach(b=>b.onclick=()=>goPage(+b.dataset.j));
   $('#dl0').onclick=()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([htmlWith(ALL)],{type:'text/html'}));
     a.download=`Comparativo_${ALL.prev.cutoff_label}_x_${ALL.cur.cutoff_label}.html`; document.body.appendChild(a); a.click(); a.remove(); };
 }
+
+// =====================================================================
+// PÁGINA 6 — Visão Geral executiva (mesmos dados e regras da Odata CapEx Control, novo layout)
+// =====================================================================
+const K6=['country','other','type','cat','p'];
+const off6=Object.fromEntries(K6.map(k=>[k,new Set()]));
+const sel6={m:new Set(), type:new Set(), cat:new Set(), p:new Set()};
+const st6={mode:'m', n:10, q:''};
+const fM6=v=>(v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' M';
+const pct6=(a,b)=>b>0?(a/b*100).toLocaleString('pt-BR',{maximumFractionDigits:0})+'%':'–';
+const pass6=(p,skip)=>K6.every(k=>k===skip||!off6[k].has(p[k]));
+function drawFilter6(k){
+  const before=K6.slice(0,K6.indexOf(k));
+  let pool=D.projects.filter(p=>before.every(kk=>!off6[kk].has(p[kk])));
+  const o=off6[k]; let vals=uniq(k,pool);
+  const q=st6.q.toLowerCase(), shown=k==='p'&&q?vals.filter(v=>v.toLowerCase().includes(q)):vals;
+  const all=vals.every(v=>!o.has(v));
+  let h=`<label><input type="checkbox" data-all="1" ${all?'checked':''}>Selecionar tudo</label>`;
+  shown.forEach(v=>h+=`<label title="${esc(v)}"><input type="checkbox" value="${esc(v)}" ${o.has(v)?'':'checked'}>${esc(v)}</label>`);
+  const el=$('#f6-'+k); el.innerHTML=h;
+  el.querySelectorAll('input:not([data-all])').forEach(i=>i.onchange=()=>{ i.checked?o.delete(i.value):o.add(i.value); page6(); });
+  el.querySelector('[data-all]').onchange=e=>{ if(e.target.checked) o.clear(); else vals.forEach(v=>o.add(v)); page6(); };
+}
+const ME6=D.months.map(mEnd);
+function range6(){ let a=$('#d6a').value||D.months[0]+'-01', b=$('#d6b').value||ME6.at(-1); if(a>b)[a,b]=[b,a]; return [a,b]; }
+function tog6(set,v,multi){ if(multi){ set.has(v)?set.delete(v):set.add(v); } else if(set.size===1&&set.has(v)) set.clear(); else { set.clear(); set.add(v); } page6(); }
+function clr6(){ Object.values(sel6).forEach(s=>s.clear()); page6(); }
+const ok6=(p,skip)=>['type','cat','p'].every(k=>k===skip||!sel6[k].size||sel6[k].has(p[k]));
+function sums6(list,idx){ let s=0,r=0; list.forEach(p=>idx.forEach(i=>{ D.months[i]<=CUT?s+=p.v[i]:r+=p.v[i]; })); return [s,r]; }
+const ICO={tot:'<svg viewBox="0 0 24 24" fill="none" stroke="#7FB2FF" stroke-width="1.8"><ellipse cx="12" cy="5.5" rx="7" ry="2.5"/><path d="M5 5.5v6c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-6M5 11.5v6c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-6"/></svg>',
+  proj:'<svg viewBox="0 0 24 24" fill="none" stroke="#7FB2FF" stroke-width="1.8"><path d="M4 19h16M6 16l4-5 3 3 5-7"/></svg>'};
+function ring6(p,col){ const r=24,c=2*Math.PI*r, f=Math.max(0,Math.min(1,p)); return `<svg width="62" height="62" viewBox="0 0 62 62" style="flex:none"><circle cx="31" cy="31" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="7"/><circle cx="31" cy="31" r="${r}" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c*f} ${c}" transform="rotate(-90 31 31)"/><text x="31" y="35.5" text-anchor="middle" font-size="12.5" font-weight="800" fill="#fff">${(f*100).toLocaleString('pt-BR',{maximumFractionDigits:0})}%</text></svg>`; }
+function page6(){
+  K6.forEach(drawFilter6);
+  const base=D.projects.filter(p=>pass6(p));
+  const [a,b]=range6(), idx=ME6.map((d,i)=>d>=a&&d<=b?i:-1).filter(i=>i>=0);
+  [...sel6.m].forEach(m=>{ const e=mEnd(m); if(e<a||e>b) sel6.m.delete(m); });
+  const midx=sel6.m.size?idx.filter(i=>sel6.m.has(D.months[i])):idx;
+  const parts=[]; if(sel6.m.size) parts.push([...sel6.m].sort().map(m=>MPT[+m.slice(5)-1]+'/'+m.slice(2,4)).join(', '));
+  ['type','cat','p'].forEach(k=>{ if(sel6[k].size) parts.push(sel6[k].size===1?[...sel6[k]][0]:sel6[k].size+' itens'); });
+  const c=$('#clr6'); c.classList.toggle('on',parts.length>0); c.textContent=parts.length?parts.join(' · ')+'  ✕':'';
+  const all=base.filter(p=>ok6(p));
+  // KPIs
+  const [S,R]=sums6(all,midx), T=S+R, ytd=a.slice(5)==='01-01'&&a.slice(0,4)===String(CY)&&b>=CUT;
+  const stc={}; all.forEach(p=>stc[p.other]=(stc[p.other]||0)+1);
+  const per=`${a.slice(8)}/${a.slice(5,7)}/${a.slice(0,4)} a ${b.slice(8)}/${b.slice(5,7)}/${b.slice(0,4)}`;
+  $('#kpi6').innerHTML=`
+    <div class="k6"><div class="ico">${ICO.tot}</div><div class="tx"><div class="l">Total CapEx</div><div class="v">${fM6(T)}</div><div class="s">US$ · ${per}</div></div></div>
+    <div class="k6"><div class="tx"><div class="l">${ytd?'Incorrido (YTD)':'Incorrido'}</div><div class="v" style="color:#8DB8FF">${fM6(S)}</div><div class="s">meses até ${esc(D.cutoff_label)} (data de corte)</div></div>${ring6(T?S/T:0,'#2F7BFF')}</div>
+    <div class="k6"><div class="tx"><div class="l">Forecast (Restante)</div><div class="v" style="color:#D7A6F2">${fM6(R)}</div><div class="s">meses após ${esc(D.cutoff_label)}</div></div>${ring6(T?R/T:0,'#B06AD8')}</div>
+    <div class="k6"><div class="ico">${ICO.proj}</div><div class="tx"><div class="l">Nº de Projetos</div><div class="v">${all.length}</div></div>
+      <div class="st">${Object.entries(stc).sort((x,y)=>y[1]-x[1]).map(([k,v])=>`<b>${v}</b><span>${esc(k)}</span>`).join('')}</div></div>`;
+  chart6(idx, base.filter(p=>ok6(p)));
+  top6(base.filter(p=>ok6(p,'p')), midx, T);
+  hbar6('#ty6','type',base.filter(p=>ok6(p,'type')),midx);
+  hbar6('#ca6','cat',base.filter(p=>ok6(p,'cat')),midx);
+  annual6(all);
+  insights6(all, idx, midx, S, R);
+}
+function chart6(idx, list){
+  const el=$('#ch6'), W=el.clientWidth||800, H=el.clientHeight||300;
+  if(!idx.length){ el.innerHTML='<div class="note">Sem meses no período.</div>'; return; }
+  if(st6.mode==='y'){ // anual: soma por ano dentro do período
+    const ys=[...new Set(idx.map(i=>D.months[i].slice(0,4)))], g=ys.map(y=>({y,s:0,r:0}));
+    idx.forEach(i=>{ const k=ys.indexOf(D.months[i].slice(0,4)); list.forEach(p=>{ D.months[i]<=CUT?g[k].s+=p.v[i]:g[k].r+=p.v[i]; }); });
+    const pl=52,pb=26,pt=20, mx=Math.max(1,...g.map(o=>Math.max(0,o.s)+Math.max(0,o.r))), bw=(W-pl-10)/g.length, sc=v=>Math.max(0,v)/mx*(H-pt-pb);
+    let s=`<svg width="${W}" height="${H}">`+axisY6(W,H,pl,pt,pb,0,mx);
+    g.forEach((o,k)=>{ const x=pl+k*bw+bw*.2, w=bw*.6, hs=sc(o.s), hr=sc(o.r), y0=H-pb;
+      s+=`<rect x="${x}" y="${y0-hs}" width="${w}" height="${hs}" rx="3" fill="#2F7BFF" data-t="${o.y} · Incorrido|${o.s}"/><rect x="${x}" y="${y0-hs-hr}" width="${w}" height="${hr}" rx="3" fill="#B06AD8" data-t="${o.y} · Forecast|${o.r}"/>
+        <text x="${x+w/2}" y="${y0-hs-hr-6}" font-size="12" font-weight="700" text-anchor="middle">${fM6(o.s+o.r)}</text><text x="${x+w/2}" y="${H-8}" font-size="12" text-anchor="middle" fill="#A9B8D3">${o.y}</text>`; });
+    el.innerHTML=s+'</svg>'; tips(el); return; }
+  const months=idx.map(i=>D.months[i]), vals=idx.map(i=>list.reduce((t,p)=>t+p.v[i],0));
+  const pl=52,pr=22,pt=26,pb=58, mx=Math.max(...vals,0)*1.08||1, mn=Math.min(...vals,0);
+  const x=k=>pl+(months.length<2?(W-pl-pr)/2:k*(W-pl-pr)/(months.length-1)), y=v=>pt+(mx-v)/((mx-mn)||1)*(H-pt-pb);
+  const pts=vals.map((v,k)=>[x(k),y(v)]), cutK=months.filter(m=>m<=CUT).length-1, base=y(Math.max(mn,0)), multi=months[0].slice(0,4)!==months.at(-1).slice(0,4);
+  const bw=months.length<2?(W-pl-pr):(W-pl-pr)/(months.length-1), any=sel6.m.size>0;
+  let s=`<svg width="${W}" height="${H}"><defs><linearGradient id="g6a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2F7BFF" stop-opacity=".45"/><stop offset="1" stop-color="#2F7BFF" stop-opacity=".04"/></linearGradient>
+    <linearGradient id="g6b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B06AD8" stop-opacity=".45"/><stop offset="1" stop-color="#B06AD8" stop-opacity=".04"/></linearGradient></defs>`+axisY6(W,H,pl,pt,pb,mn,mx);
+  months.forEach((m,k)=>{ if(sel6.m.has(m)) s+=`<rect x="${pts[k][0]-bw/2}" y="${pt-6}" width="${bw}" height="${H-pb-pt+6}" fill="rgba(255,255,255,.07)" rx="6"/>`; });
+  const area=(p,g)=>p.length>1?`<path d="${smooth(p)} L${p.at(-1)[0]},${base} L${p[0][0]},${base}Z" fill="url(#${g})"/>`:'';
+  const sp=cutK>=0?pts.slice(0,cutK+1):[], rp=pts.slice(Math.max(cutK,0));
+  if(sp.length>1) s+=area(sp,'g6a')+`<path d="${smooth(sp)}" fill="none" stroke="#2F7BFF" stroke-width="3"/>`;
+  if(cutK<pts.length-1&&rp.length>1) s+=area(rp,'g6b')+`<path d="${smooth(rp)}" fill="none" stroke="#B06AD8" stroke-width="3" stroke-dasharray="2 5" stroke-linecap="round"/>`;
+  if(cutK>=0&&cutK<pts.length-1){ const cx=pts[cutK][0]; s+=`<line x1="${cx}" x2="${cx}" y1="${pt-10}" y2="${H-pb}" stroke="rgba(255,255,255,.35)" stroke-dasharray="3 4"/>`; }
+  pts.forEach((p,k)=>{ const m=months[k], on=sel6.m.has(m), op=(!any||on)?1:.3;
+    s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${on?6:4}" fill="${k<=cutK?'#2F7BFF':'#B06AD8'}" stroke="#0B1B3D" stroke-width="2" opacity="${op}"/>`;
+    if(months.length<=24) s+=`<text x="${p[0]}" y="${p[1]-10}" font-size="11.5" font-weight="700" text-anchor="middle" opacity="${op}">${fM6(vals[k])}</text>`;
+    const step=Math.ceil(months.length/18); if(k%step===0) s+=`<text x="${p[0]}" y="${H-pb+17}" font-size="11.5" text-anchor="middle" fill="#A9B8D3">${MPT[+m.slice(5)-1]}${multi?'/'+m.slice(2,4):''}</text>`; });
+  // faixa Realizado | Forecast com valores do período
+  const S=vals.slice(0,cutK+1).reduce((t,v)=>t+v,0), R=vals.slice(cutK+1).reduce((t,v)=>t+v,0), T=S+R, yb=H-pb+36;
+  if(cutK>=0){ const x1=pts[0][0], x2=pts[cutK][0]; s+=`<line x1="${x1}" x2="${x2}" y1="${yb}" y2="${yb}" stroke="#2F7BFF" stroke-width="1.5"/><text x="${(x1+x2)/2}" y="${yb-5}" font-size="11.5" text-anchor="middle" fill="#8DB8FF">Realizado: ${fM6(S)} (${pct6(S,T)})</text>`; }
+  if(cutK<pts.length-1){ const x1=pts[Math.max(cutK,0)][0]+(cutK>=0?8:0), x2=pts.at(-1)[0]; s+=`<line x1="${x1}" x2="${x2}" y1="${yb}" y2="${yb}" stroke="#B06AD8" stroke-width="1.5"/><text x="${(x1+x2)/2}" y="${yb-5}" font-size="11.5" text-anchor="middle" fill="#D7A6F2">Forecast: ${fM6(R)} (${pct6(R,T)})</text>`; }
+  if(!multi) s+=`<text x="${(pl+W-pr)/2}" y="${H-4}" font-size="11.5" font-weight="700" text-anchor="middle" fill="#A9B8D3">${months[0].slice(0,4)}</text>`;
+  pts.forEach((p,k)=>s+=`<rect class="hit6" x="${p[0]-bw/2}" y="0" width="${bw}" height="${H-pb+20}" fill="transparent" data-m="${months[k]}" data-t="${months[k]} · ${k<=cutK?'Incorrido':'Forecast'}|${vals[k]}"/>`);
+  el.innerHTML=s+'</svg>'; tips(el);
+  el.querySelectorAll('.hit6').forEach(r=>r.onclick=e=>tog6(sel6.m,r.dataset.m,isMulti(e)));
+}
+function axisY6(W,H,pl,pt,pb,mn,mx){ let s=''; for(let k=0;k<=4;k++){ const v=mn+(mx-mn)*k/4, y=pt+(mx-v)/((mx-mn)||1)*(H-pt-pb);
+  s+=`<line x1="${pl}" x2="${W-8}" y1="${y}" y2="${y}" stroke="rgba(255,255,255,.06)"/><text x="${pl-8}" y="${y+4}" font-size="10.5" text-anchor="end" fill="#7F90AF">${Math.round(v/1e6).toLocaleString('pt-BR')}</text>`; } return s; }
+function top6(list, midx, Ttot){
+  const rows=list.map(p=>{ let s=0,r=0; midx.forEach(i=>{ D.months[i]<=CUT?s+=p.v[i]:r+=p.v[i]; }); return {p:p.p,s,r,t:s+r}; }).sort((x,y)=>y.t-x.t);
+  const L=rows.slice(0,st6.n), any=sel6.p.size>0, S=rows.reduce((t,r)=>t+r.s,0), R=rows.reduce((t,r)=>t+r.r,0);
+  let h=`<thead><tr><th>#</th><th style="text-align:left">Projeto</th><th>Incorrido</th><th>Forecast</th><th>Total</th></tr></thead><tbody>`;
+  L.forEach((r,i)=>h+=`<tr class="pk ${any?(sel6.p.has(r.p)?'on':'dim'):''}" data-v="${esc(r.p)}"><td class="n">${i+1}</td><td class="pj" title="${esc(r.p)}">${esc(r.p)}</td><td>${fM6(r.s)}</td><td>${fM6(r.r)}</td><td class="tt">${fM6(r.t)}</td></tr>`);
+  h+=`<tr class="sum"><td></td><td style="text-align:left">Total (${rows.length} projetos)</td><td>${fM6(S)}</td><td>${fM6(R)}</td><td>${fM6(S+R)}</td></tr></tbody>`;
+  const t=$('#t6top'); t.innerHTML=h; t.querySelectorAll('tr.pk').forEach(tr=>tr.onclick=e=>tog6(sel6.p,tr.dataset.v,isMulti(e)));
+}
+const ORD6={type:['Spec','Spec - OFE','Non-Spec','Misc.','Expansion','Fitout','Non-spec']};
+function hbar6(sel,k,list,midx){
+  const g={}; list.forEach(p=>{ const o=g[p[k]]||(g[p[k]]={s:0,r:0}); midx.forEach(i=>{ D.months[i]<=CUT?o.s+=p.v[i]:o.r+=p.v[i]; }); });
+  let keys=Object.keys(g).filter(x=>Math.abs(g[x].s)>=0.5||Math.abs(g[x].r)>=0.5);
+  if(ORD6[k]) keys.sort((a,b)=>{ const ia=ORD6[k].indexOf(a), ib=ORD6[k].indexOf(b); return (ia<0?99:ia)-(ib<0?99:ib); }); else keys.sort((a,b)=>(g[b].s+g[b].r)-(g[a].s+g[a].r));
+  const el=$(sel), W=el.clientWidth||400, H=el.clientHeight||220, lw=88, rw=58, pb=20, n=Math.max(keys.length,1), rh=Math.min(38,(H-pb-4)/n);
+  const mx=Math.max(1,...keys.map(x=>Math.max(0,g[x].s)+Math.max(0,g[x].r))), sc=v=>Math.max(0,v)/mx*(W-lw-rw), any=sel6[k].size>0;
+  let s=`<svg width="${W}" height="${H}">`;
+  for(let t=0;t<=4;t++){ const xv=lw+(W-lw-rw)*t/4; s+=`<line x1="${xv}" x2="${xv}" y1="0" y2="${n*rh}" stroke="rgba(255,255,255,.05)"/><text x="${xv}" y="${n*rh+14}" font-size="10" text-anchor="middle" fill="#7F90AF">${Math.round(mx*t/4/1e6).toLocaleString('pt-BR')}</text>`; }
+  keys.forEach((x,i)=>{ const y0=i*rh, ws=sc(g[x].s), wr=sc(g[x].r), bh=Math.max(10,rh*.62), by=y0+(rh-bh)/2, ty=y0+rh/2+4, op=(!any||sel6[k].has(x))?1:.3;
+    s+=`<g class="hit6" data-v="${esc(x)}" opacity="${op}"><rect x="0" y="${y0}" width="${W}" height="${rh}" fill="transparent"/>
+      <text x="${lw-8}" y="${ty}" font-size="12" text-anchor="end" fill="#D3DDF0">${esc(x.length>13?x.slice(0,12)+'…':x)}</text>
+      <rect x="${lw}" y="${by}" width="${ws}" height="${bh}" rx="2" fill="#2F7BFF" data-t="${esc(x)} · Incorrido|${g[x].s}"/>
+      <rect x="${lw+ws}" y="${by}" width="${wr}" height="${bh}" rx="2" fill="#B06AD8" data-t="${esc(x)} · Forecast|${g[x].r}"/>
+      ${ws>44?`<text x="${lw+ws/2}" y="${ty}" font-size="10.5" text-anchor="middle">${(g[x].s/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})}</text>`:''}
+      ${wr>44?`<text x="${lw+ws+wr/2}" y="${ty}" font-size="10.5" text-anchor="middle">${(g[x].r/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})}</text>`:''}
+      <text x="${W-4}" y="${ty}" font-size="12" font-weight="800" text-anchor="end">${((g[x].s+g[x].r)/1e6).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})}</text></g>`; });
+  el.innerHTML=s+'</svg>'; tips(el);
+  el.querySelectorAll('g.hit6').forEach(n=>n.onclick=e=>tog6(sel6[k],n.dataset.v,isMulti(e)));
+}
+function annual6(list){
+  const first=+D.months[0].slice(0,4), last=CY+4, years=[]; for(let y=first;y<=last;y++) years.push(y);
+  const g=years.map(()=>({s:0,r:0}));
+  D.months.forEach((m,i)=>{ const y=+m.slice(0,4); if(y>last) return; const k=years.indexOf(Math.max(y,first)); list.forEach(p=>{ m<=CUT?g[k].s+=p.v[i]:g[k].r+=p.v[i]; }); });
+  const el=$('#an6'), W=el.clientWidth||400, H=el.clientHeight||220, pt=34, pb=20, bw=(W-6)/years.length;
+  const mx=Math.max(1,...g.map(o=>Math.max(0,o.s)+Math.max(0,o.r))), sc=v=>Math.max(0,v)/mx*(H-pt-pb);
+  const ck=years.indexOf(CY);
+  let s=`<svg width="${W}" height="${H}">`;
+  if(ck>=0){ const cx=3+ck*bw+bw/2; s+=`<line x1="${cx}" x2="${cx}" y1="8" y2="${H-pb}" stroke="rgba(255,255,255,.3)" stroke-dasharray="3 4"/>
+    <text x="${cx-6}" y="14" font-size="10.5" text-anchor="end" fill="#8DB8FF">← Realizado</text><text x="${cx+6}" y="14" font-size="10.5" fill="#D7A6F2">Planejado →</text>`; }
+  years.forEach((y,k)=>{ const x=3+k*bw+bw*.14, w=bw*.72, hs=sc(g[k].s), hr=sc(g[k].r), y0=H-pb;
+    s+=`<rect x="${x}" y="${y0-hs}" width="${w}" height="${hs}" rx="2" fill="#2F7BFF" data-t="${y} · Incorrido|${g[k].s}"/><rect x="${x}" y="${y0-hs-hr}" width="${w}" height="${hr}" rx="2" fill="#B06AD8" data-t="${y} · Forecast|${g[k].r}"/>
+      <text x="${x+w/2}" y="${y0-hs-hr-5}" font-size="10" font-weight="700" text-anchor="middle">${Math.round((g[k].s+g[k].r)/1e6).toLocaleString('pt-BR')}</text>
+      <text x="${x+w/2}" y="${H-5}" font-size="10" text-anchor="middle" fill="#A9B8D3">${k===0?'Até '+y:y}</text>`; });
+  el.innerHTML=s+'</svg>'; tips(el);
+}
+function insights6(all, idx, midx, S, R){
+  const T=S+R, box=(cls,t,d)=>`<div class="in6 ${cls}"><b>${t}</b><span>${d}</span></div>`, na=box('nt','Insight não calculado','dados adicionais necessários.');
+  const out=[];
+  out.push(T>0?box('inc',`${pct6(S,T)} do CapEx do período já foi incorrido`,`${fM6(S)} incorridos de ${fM6(T)} (meses até ${esc(D.cutoff_label)}).`):na);
+  const mv=midx.map(i=>({m:D.months[i],v:all.reduce((t,p)=>t+p.v[i],0)})).sort((a,b)=>b.v-a.v)[0];
+  out.push(mv&&mv.v>0?box(mv.m<=CUT?'inc':'fc',`Maior valor mensal em ${MPT[+mv.m.slice(5)-1]}/${mv.m.slice(2,4)}`,`${fM6(mv.v)} ${mv.m<=CUT?'incorridos':'em Forecast'} no mês — o maior do período.`):na);
+  const gt={}; all.forEach(p=>midx.forEach(i=>gt[p.type]=(gt[p.type]||0)+p.v[i])); const tt=Object.entries(gt).sort((a,b)=>b[1]-a[1])[0];
+  out.push(tt&&T>0?box('nt',`${esc(tt[0])} representa ${pct6(tt[1],T)} do CapEx`,`${fM6(tt[1])} de ${fM6(T)} no período — o Tipo de maior valor.`):na);
+  const pr=all.map(p=>({p:p.p,t:midx.reduce((s,i)=>s+p.v[i],0)})).sort((a,b)=>b.t-a.t), t10=pr.slice(0,10).reduce((s,x)=>s+x.t,0);
+  out.push(pr.length&&T>0?box('nt',`Top 10 projetos concentram ${pct6(t10,T)} do total`,`${fM6(t10)} de ${fM6(T)}; maior: ${esc(pr[0].p)} (${fM6(pr[0].t)}).`):na);
+  $('#ins6').innerHTML=`<div class="ttl"><b>Insights Gerenciais</b><span>Calculados a partir dos dados e filtros atuais</span></div>`+out.join('');
+}
+// controles da página 6
+(()=>{ const ys=[...new Set(D.months.map(m=>m.slice(0,4)))].filter(y=>+y<=2032);
+  $('#y6').innerHTML=ys.map(y=>`<option ${+y===CY?'selected':''}>${y}</option>`).join('')+'<option value="">Período personalizado</option>';
+  $('#d6a').value=CY+'-01-01'; $('#d6b').value=CY+'-12-31'; })();
+const TL6 = timeline($('#tl6'), D.months.filter(m=>m<='2032-12'), $('#d6a'), $('#d6b'), ()=>{ $('#y6').value=''; page6(); });
+$('#y6').onchange=e=>{ const y=e.target.value; if(!y) return; $('#d6a').value=y+'-01-01'; $('#d6b').value=y+'-12-31'; TL6.sync(); page6(); };
+$('#d6a').onchange=$('#d6b').onchange=()=>{ $('#y6').value=''; TL6.sync(); page6(); };
+$('#n6').onchange=e=>{ st6.n=+e.target.value; page6(); };
+$('#clr6').onclick=clr6;
+document.querySelectorAll('#mode6 button').forEach(b=>b.onclick=()=>{ st6.mode=b.dataset.m; document.querySelectorAll('#mode6 button').forEach(x=>x.classList.toggle('on',x===b)); page6(); });
+document.querySelectorAll('#pg6 [data-go]').forEach(b=>b.onclick=()=>goPage(+b.dataset.go));
+$('#exp6').onclick=()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([htmlWith(ALL)],{type:'text/html'}));
+  a.download=`Odata_CapEx_Control_${D.cutoff_label||'dados'}.html`; document.body.appendChild(a); a.click(); a.remove(); };
 
 // ---------- navegação entre páginas
 let PAGE=1;
@@ -1192,6 +1455,8 @@ $('#d3').onchange=$('#d4').onchange=refresh2;
 $('#clearSel2').onclick=clear2;
 function header(){
   $('#upd').style.visibility = PAGE===0 ? 'hidden' : 'visible';
+  if(PAGE===6){ $('#file').innerHTML=esc(D.file.replace(/\.xlsx?$/i,'')); $('#file').className='file'; $('h1').innerHTML='Odata CapEx Control<small>Visão Geral</small>';
+    $('#rep6').textContent=D.file.replace(/\.xlsx?$/i,''); $('#upd6').textContent='Última atualização: '+D.last_update; $('#cut6').textContent=D.cutoff_label; return; }
   if(PAGE===0){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').textContent='Início'; return; }   // sem nomes de arquivo na tela inicial
   if(PAGE===5){ $('#file').innerHTML=`<div class="pink">${esc(P2.prev.file.replace(/\.xlsx?$/i,''))}</div><div class="blue">${esc(P2.cur.file.replace(/\.xlsx?$/i,''))}</div>`; $('#file').className='file file2'; $('h1').innerHTML='Building Projects<small>Budget × EFC + Contingency + Saving</small>'; return; }
   if(PAGE===4){ $('#file').innerHTML=`<div class="pink">${esc(P2.prev.file.replace(/\.xlsx?$/i,''))}</div><div class="blue">${esc(P2.cur.file.replace(/\.xlsx?$/i,''))}</div>`; $('#file').className='file file2'; $('h1').innerHTML=`<span class="cutl pink">${esc(P2.prev.cutoff_label)}</span>Capex Comparison<small>w/o FX Variation</small><span class="cutl blue">${esc(P2.cur.cutoff_label)}</span>`; return; }
@@ -1200,17 +1465,18 @@ function header(){
   else { $('#file').innerHTML=`<div class="pink">${esc(P2.prev.file.replace(/\.xlsx?$/i,''))}</div><div class="blue">${esc(P2.cur.file.replace(/\.xlsx?$/i,''))}</div>`; $('#file').className='file file2'; $('h1').textContent='Capex Comparison'; }
 }
 function goPage(n){
-  PAGE=n; $('#pg0').hidden = n!==0; $('#pg1').hidden = n!==1; $('#pg2').hidden = n!==2; $('#pg3').hidden = n!==3; $('#pg4').hidden = n!==4; $('#pg5').hidden = n!==5;
+  PAGE=n; $('#pg0').hidden = n!==0; $('#pg1').hidden = n!==1; $('#pg2').hidden = n!==2; $('#pg3').hidden = n!==3; $('#pg4').hidden = n!==4; $('#pg5').hidden = n!==5; $('#pg6').hidden = n!==6;
   document.querySelectorAll('.pages button').forEach(b=>b.classList.toggle('on', +b.dataset.pg===n));
   $('#hdrDates2').hidden = n!==2;
-  header(); n===0 ? confirmBox() : n===1 ? refresh() : n===2 ? refresh2() : n===3 ? page3() : n===4 ? page4() : page5();
+  header(); n===0 ? confirmBox() : n===1 ? refresh() : n===2 ? refresh2() : n===3 ? page3() : n===4 ? page4() : n===5 ? page5() : page6();
 }
 document.querySelectorAll('.pages button').forEach(b=>{ if(EMPTY&&b.dataset.pg!=='0'){ b.disabled=true; b.title='Faça a comparação na aba Início'; } b.onclick=()=>goPage(+b.dataset.pg); });
 document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return;
   if(PAGE===1 && (selMonths.size||selTypes.size||selProj.size)) clearSel();
   if(PAGE===2 && Object.values(sel2).some(s=>s.size)) clear2();
-  if(PAGE===4 && sel4.size){ sel4.clear(); page4(); } });
-let rt; window.addEventListener('resize',()=>{ if(GEN!==window.__dashGen) return; fit(); clearTimeout(rt);rt=setTimeout(()=>PAGE===0?null:PAGE===1?refresh():PAGE===2?refresh2():PAGE===3?page3():PAGE===4?page4():page5(),150);});
+  if(PAGE===4 && sel4.size){ sel4.clear(); page4(); }
+  if(PAGE===6 && Object.values(sel6).some(x=>x.size)) clr6(); });
+let rt; window.addEventListener('resize',()=>{ if(GEN!==window.__dashGen) return; fit(); clearTimeout(rt);rt=setTimeout(()=>PAGE===0?null:PAGE===1?refresh():PAGE===2?refresh2():PAGE===3?page3():PAGE===4?page4():PAGE===5?page5():page6(),150);});
 goPage(0);
 })();
 </script>
