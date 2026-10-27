@@ -292,6 +292,10 @@
   .in6.inc{border-left:3px solid var(--inc)} .in6.fc{border-left:3px solid var(--fc)} .in6.nt{border-left:3px solid #7FA3D9}
   .foot6{display:flex;justify-content:space-between;font-size:10.5px;color:var(--t2)}
   .hit6{cursor:pointer}
+  /* página 7 — aba amarela (em branco, aguardando conteúdo) */
+  .wrap7{height:calc(var(--appH) - 82px);background:#FFD60A;color:#1d2430;display:flex;align-items:center;justify-content:center}
+  .wrap7 .box7{text-align:center} .wrap7 h2{margin:0;font-size:34px;font-weight:800;color:#1d2430} .wrap7 p{margin:8px 0 0;font-size:15px;color:#3a3a2a}
+  .pages button[data-pg="7"]{color:#FFD60A}
   /* página 2 — comparação */
   .wrap2{display:grid;grid-template-columns:180px 1fr 180px;grid-template-rows:minmax(0,1fr) auto 250px;gap:8px;padding:8px;height:calc(var(--appH) - 82px);min-height:680px}
   .ppanel{background:rgba(112,48,104,.5);border:1px solid rgba(240,122,192,.35);border-radius:10px}
@@ -531,7 +535,8 @@
     </div>
   </div>
 </div>
-<nav class="pages"><button data-pg="0" class="on">Início</button><button data-pg="1">Odata CapEx Control</button><button data-pg="6">Visão Geral (novo)</button><button data-pg="2">Capex Comparison</button><button data-pg="3">Change Details</button><button data-pg="4">Comparison w/o FX</button><button data-pg="5">Building Budget</button></nav>
+<div class="wrap7" id="pg7" hidden><div class="box7"><h2>Nova aba</h2><p>Aba em branco, pronta para receber conteúdo.</p></div></div>
+<nav class="pages"><button data-pg="0" class="on">Início</button><button data-pg="1">Odata CapEx Control</button><button data-pg="6">Visão Geral (novo)</button><button data-pg="2">Capex Comparison</button><button data-pg="3">Change Details</button><button data-pg="4">Comparison w/o FX</button><button data-pg="5">Building Budget</button><button data-pg="7">Nova aba</button></nav>
 </div>
 <div class="tip" id="tip"></div>
 <script id="dash-data" type="application/json">null</script>
@@ -1455,6 +1460,7 @@ $('#d3').onchange=$('#d4').onchange=refresh2;
 $('#clearSel2').onclick=clear2;
 function header(){
   $('#upd').style.visibility = PAGE===0 ? 'hidden' : 'visible';
+  if(PAGE===7){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').textContent='Nova aba'; return; }
   if(PAGE===6){ $('#file').innerHTML=esc(D.file.replace(/\.xlsx?$/i,'')); $('#file').className='file'; $('h1').innerHTML='Odata CapEx Control<small>Visão Geral</small>';
     $('#rep6').textContent=D.file.replace(/\.xlsx?$/i,''); $('#upd6').textContent='Última atualização: '+D.last_update; $('#cut6').textContent=D.cutoff_label; return; }
   if(PAGE===0){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').textContent='Início'; return; }   // sem nomes de arquivo na tela inicial
@@ -1465,10 +1471,10 @@ function header(){
   else { $('#file').innerHTML=`<div class="pink">${esc(P2.prev.file.replace(/\.xlsx?$/i,''))}</div><div class="blue">${esc(P2.cur.file.replace(/\.xlsx?$/i,''))}</div>`; $('#file').className='file file2'; $('h1').textContent='Capex Comparison'; }
 }
 function goPage(n){
-  PAGE=n; $('#pg0').hidden = n!==0; $('#pg1').hidden = n!==1; $('#pg2').hidden = n!==2; $('#pg3').hidden = n!==3; $('#pg4').hidden = n!==4; $('#pg5').hidden = n!==5; $('#pg6').hidden = n!==6;
+  PAGE=n; $('#pg0').hidden = n!==0; $('#pg1').hidden = n!==1; $('#pg2').hidden = n!==2; $('#pg3').hidden = n!==3; $('#pg4').hidden = n!==4; $('#pg5').hidden = n!==5; $('#pg6').hidden = n!==6; $('#pg7').hidden = n!==7;
   document.querySelectorAll('.pages button').forEach(b=>b.classList.toggle('on', +b.dataset.pg===n));
   $('#hdrDates2').hidden = n!==2;
-  header(); n===0 ? confirmBox() : n===1 ? refresh() : n===2 ? refresh2() : n===3 ? page3() : n===4 ? page4() : n===5 ? page5() : page6();
+  header(); n===0 ? confirmBox() : n===1 ? refresh() : n===2 ? refresh2() : n===3 ? page3() : n===4 ? page4() : n===5 ? page5() : n===6 ? page6() : null;
 }
 document.querySelectorAll('.pages button').forEach(b=>{ if(EMPTY&&b.dataset.pg!=='0'){ b.disabled=true; b.title='Faça a comparação na aba Início'; } b.onclick=()=>goPage(+b.dataset.pg); });
 document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return;
@@ -1476,7 +1482,7 @@ document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return;
   if(PAGE===2 && Object.values(sel2).some(s=>s.size)) clear2();
   if(PAGE===4 && sel4.size){ sel4.clear(); page4(); }
   if(PAGE===6 && Object.values(sel6).some(x=>x.size)) clr6(); });
-let rt; window.addEventListener('resize',()=>{ if(GEN!==window.__dashGen) return; fit(); clearTimeout(rt);rt=setTimeout(()=>PAGE===0?null:PAGE===1?refresh():PAGE===2?refresh2():PAGE===3?page3():PAGE===4?page4():PAGE===5?page5():page6(),150);});
+let rt; window.addEventListener('resize',()=>{ if(GEN!==window.__dashGen) return; fit(); clearTimeout(rt);rt=setTimeout(()=>PAGE===0?null:PAGE===1?refresh():PAGE===2?refresh2():PAGE===3?page3():PAGE===4?page4():PAGE===5?page5():PAGE===6?page6():null,150);});
 goPage(0);
 })();
 </script>
