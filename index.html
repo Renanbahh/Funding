@@ -1139,7 +1139,7 @@ function view3(){
     const lim=Math.max(5e5, Math.abs((a||b).bud)*.05); r.big=!a||!b||MET3.some(([k])=>Math.abs(r.d[k])>=lim);
     return r; });
   const ren=C3RAW.renames.map(x=>({o:kname(x.old), c:kname(x.new), site:x.site})).filter(x=>K.has(x.o)||K.has(x.c));
-  return {rows, ren, added:rows.filter(r=>!r.a&&r.b), removed:rows.filter(r=>r.a&&!r.b), changed:rows.filter(r=>r.a&&r.b&&(MET3.some(([k])=>Math.abs(r.d[k])>=1000)||r.attrs.length))};
+  return {rows, ren, added:rows.filter(r=>!r.a&&r.b), removed:rows.filter(r=>r.a&&!r.b), changed:rows.filter(r=>(!r.a||!r.b)||MET3.some(([k])=>Math.abs(r.d[k])>=1000)||r.attrs.length)};   // inclui novos e removidos
 }
 const sum3=(rows,side,k)=>rows.reduce((t,r)=>t+((side==='a'?r.a:r.b)?.[k]||0),0);
 function page3(){
@@ -1194,15 +1194,15 @@ function top3(){
 function chg3(){
   const q=st3.q.toLowerCase(), M=st3.m;
   const L=V3.changed.filter(r=>(!st3.c||r.ref.country===st3.c)&&(!q||r.n.toLowerCase().includes(q))).sort((a,b)=>Math.abs(b.d[M])-Math.abs(a.d[M]));
-  $('#n3-chg').textContent=`(${L.length} of ${V3.changed.length}) · red = relevant change · click a row for previous × current`;
+  $('#n3-chg').textContent=`(${L.length} of ${V3.changed.length}) · incl. new and removed · red = relevant change · click a row for previous × current`;
   let h=`<thead><tr><th>Project</th><th>Country</th>${MET3.map(([,l])=>`<th>Δ ${l}</th>`).join('')}<th>Other changes</th></tr></thead><tbody>`;
   L.forEach((r,i)=>{ const ex=r.attrs.map(a=>`<span class="tg att">${esc({country:'Country',other:'Other',type:'Type',cat:'Category'}[a.k])}</span>`);
-    h+=`<tr class="exp" data-i="${i}" ${r.big?'style="box-shadow:inset 3px 0 0 #E5484D"':''}><td title="${esc(r.n)}">${esc(r.n)}</td><td>${esc(r.ref.country)}</td>${MET3.map(([m])=>`<td>${dv(r.d[m])}</td>`).join('')}<td style="text-align:left">${ex.join('')}</td></tr>`; });
+    h+=`<tr class="exp" data-i="${i}" ${r.big?'style="box-shadow:inset 3px 0 0 #E5484D"':''}><td title="${esc(r.n)}">${!r.a?'<span class="tg new">new</span>':!r.b?'<span class="tg rem">removed</span>':''}${esc(r.n)}</td><td>${esc(r.ref.country)}</td>${MET3.map(([m])=>`<td>${dv(r.d[m])}</td>`).join('')}<td style="text-align:left">${ex.join('')}</td></tr>`; });
   if(!L.length) h+='<tr><td colspan="7" class="dl">Nothing found.</td></tr>';
   const t=$('#t3-chg'); t.innerHTML=h+'</tbody>';
   t.querySelectorAll('tr.exp').forEach(tr=>tr.onclick=()=>{ const nx=tr.nextElementSibling; if(nx&&nx.classList.contains('det')){nx.remove();return;}
     const r=L[+tr.dataset.i]; let d=`<table><tr><th>Field</th><th class="pv">Previous</th><th class="cu">Current</th><th>Δ</th></tr>`;
-    MET3.forEach(([m,l])=>d+=`<tr><td>${l}</td><td class="pv">${fM2(r.a[m])}</td><td class="cu">${fM2(r.b[m])}</td><td>${dv(r.d[m])}</td></tr>`);
+    MET3.forEach(([m,l])=>d+=`<tr><td>${l}</td><td class="pv">${r.a?fM2(r.a[m]):'–'}</td><td class="cu">${r.b?fM2(r.b[m]):'–'}</td><td>${dv(r.d[m])}</td></tr>`);
     r.attrs.forEach(a=>d+=`<tr><td>${esc({country:'Country',other:'Other',type:'Type',cat:'Category'}[a.k])}</td><td class="pv">${esc(a.o)}</td><td class="cu">${esc(a.c)}</td><td></td></tr>`);
     const x=document.createElement('tr'); x.className='det'; x.innerHTML=`<td colspan="7">${d}</table></td>`; tr.after(x); });
 }
