@@ -104,12 +104,26 @@
   .pages{position:fixed;left:0;right:0;bottom:0;height:30px;display:flex;gap:2px;padding:0 10px;background:#081631;border-top:1px solid var(--line);z-index:6}
   .pages button{background:transparent;border:0;color:var(--mut);font:inherit;font-weight:600;padding:0 16px;cursor:pointer;border-top:3px solid transparent}
   .pages button:disabled{opacity:.35;cursor:not-allowed}
+  .pages button.fpa{color:#FFD60A}
+  .pages button.fpa.on{color:#FFD60A;border-top-color:#FFD60A;background:rgba(255,214,10,.12)}
   .pages button.on{color:#fff;border-top-color:#2D8CFF;background:rgba(45,140,255,.12)}
   .wrap{height:calc(var(--appH) - 82px)!important}
   .file2 div{font-size:12px;line-height:1.5}
   .pink{color:#F07AC0}.blue{color:#6FB0FF}
   /* página 3 — detalhes da comparação */
   .wrap3{height:calc(var(--appH) - 82px);overflow:auto;padding:8px 10px 16px;display:flex;flex-direction:column;gap:8px}
+  /* Change Details: anterior em rosa, atual em azul, variação em branco com seta colorida */
+  #pg3 th.pv,#pg3 td.pv,#pg3 .pv3{color:#F07AC0} #pg3 th.cu,#pg3 td.cu,#pg3 .cu3{color:#6FB0FF}
+  #pg3 tr.sum td,#pg3 tr.sum td.pv,#pg3 tr.sum td.cu{color:#fff} #pg3 .vv3{color:#E8EEF8}
+  #pg3 td.cu3,#pg3 td.pv3{text-align:right}
+  /* Change Details: caixas escuras como as tabelas das outras abas */
+  #pg3 .box3,#pg3 .kc{background:rgba(6,18,40,.85);border-color:rgba(120,160,230,.18)}
+  #pg3 .box3 th{background:#0A1830}
+  #pg3 .box3 tbody tr:nth-child(odd) td{background-color:rgba(255,255,255,.03)}
+  /* Current Overview: caixas escuras (exceto filtros) */
+  #pg6 .k6,#pg6 .card6{background:rgba(6,18,40,.85);border-color:rgba(120,160,230,.18)}
+  #pg6 #t6top tbody tr:nth-child(odd) td{background-color:rgba(255,255,255,.03)}
+  .top3{display:flex;align-items:center;gap:10px;justify-content:flex-end;min-height:40px}   /* barra no padrão da Current Overview, sem régua (aqui não há período) */
   .wrap3o{display:grid;grid-template-columns:220px 1fr;gap:8px;padding:8px 0 0 8px;height:calc(var(--appH) - 82px);min-height:620px}
   .wrap3o .wrap3{height:auto;min-height:0;padding:0 10px 16px 0}
   #pg3 .fbox{position:relative;transform-origin:left top;transition:transform .18s ease, box-shadow .18s ease;will-change:transform}
@@ -141,6 +155,14 @@
   tr.exp{cursor:pointer} tr.exp:hover td{filter:brightness(1.25)}
   .dl{color:var(--mut)}
   /* página 4 — comparação sem FX */
+  /* página 4: filtros à esquerda no padrão das outras páginas (com zoom) e barra com os dois arquivos */
+  .wrap4{grid-template-columns:220px 1fr!important;grid-template-rows:minmax(0,1fr)!important}
+  .side4{overflow:visible;position:relative;z-index:20}
+  #pg4 .fbox{position:relative;transform-origin:left top;transition:transform .18s ease, box-shadow .18s ease, background-color .18s ease;will-change:transform}
+  #pg4 .fbox:hover{transform:scale(1.28);z-index:30;background:#122B5C;box-shadow:0 10px 28px rgba(0,0,0,.55);border-color:#4A78C2}
+  #pg4 .fbox.proj{transform-origin:left bottom}
+  .main4{display:grid;grid-template-rows:auto minmax(0,1fr);gap:8px;min-height:0;min-width:0}
+  .tabs4{display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:8px;min-height:0}
   .wrap4{display:grid;grid-template-columns:1fr 1fr 1.5fr;grid-template-rows:minmax(0,1fr) 185px;gap:8px;padding:8px;height:calc(var(--appH) - 82px);min-height:660px}
   .sec4{display:flex;flex-direction:column;gap:6px;min-height:0}
   .sec4 .ctab{flex:1}
@@ -248,9 +270,9 @@
   #pg6 .fbox{position:relative;transform-origin:left top;transition:transform .18s ease, box-shadow .18s ease, background-color .18s ease;will-change:transform}
   #pg6 .fbox:hover{transform:scale(1.28);z-index:30;background:#122B5C;box-shadow:0 10px 28px rgba(0,0,0,.55);border-color:#4A78C2}
   #pg6 .fbox.proj{transform-origin:left bottom}
-  .per6{display:flex;align-items:center;gap:8px;margin-left:18px;flex:1;min-width:0}
+  .per6{display:flex;align-items:center;gap:8px;margin-left:4px;flex:1;min-width:0}
   .per6 select,.per6 input{background:#0A1830;color:var(--txt);border:1px solid #33507F;border-radius:7px;padding:5px 8px;font:inherit;font-size:12px;color-scheme:dark}
-  .per6 #tl6{flex:1;min-width:160px;max-width:380px;margin:0 6px}
+  .per6 #tl6{flex:1;min-width:300px;margin:0 14px 0 10px}   /* régua de datas ocupa o espaço livre */
   .main6{display:grid;grid-template-rows:auto 112px minmax(0,1.3fr) minmax(0,1fr) auto;gap:10px;min-height:0}
   .top6{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--bd);padding-bottom:6px}
   .top6 .nv{background:none;border:0;color:var(--t2);font:inherit;font-size:13px;font-weight:600;padding:6px 14px;cursor:pointer;border-bottom:2px solid transparent}
@@ -273,7 +295,8 @@
   .lg6{display:flex;gap:14px;font-size:11.5px;color:#D3DDF0;margin-left:auto}
   .lg6 i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
   .seg6{display:inline-flex;border:1px solid #33507F;border-radius:8px;overflow:hidden}
-  .seg6 button{background:transparent;border:0;color:var(--t2);font:inherit;font-size:12px;padding:4px 12px;cursor:pointer} .seg6 button.on{background:var(--inc);color:#fff}
+  .seg6 button{background:transparent;border:0;color:#A9B8D3;font:inherit;font-size:12px;padding:4px 12px;cursor:pointer} .seg6 button.on{background:#2F7BFF;color:#fff;font-weight:600}   /* cor fixa: vale em qualquer aba */
+  .seg6 button:not(.on):hover{color:#fff}
   .c6{position:relative;flex:1;min-height:0;overflow:hidden} .c6>svg{position:absolute;left:0;top:0}
   .row6a{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(0,1fr);gap:10px;min-height:0}
   .row6b{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;min-height:0}
@@ -292,16 +315,114 @@
   .in6.inc{border-left:3px solid var(--inc)} .in6.fc{border-left:3px solid var(--fc)} .in6.nt{border-left:3px solid #7FA3D9}
   .foot6{display:flex;justify-content:space-between;font-size:10.5px;color:var(--t2)}
   .hit6{cursor:pointer}
-  /* página 7 — aba amarela (em branco, aguardando conteúdo) */
-  .wrap7{height:calc(var(--appH) - 82px);background:#FFD60A;color:#1d2430;display:flex;align-items:center;justify-content:center}
-  .wrap7 .box7{text-align:center} .wrap7 h2{margin:0;font-size:34px;font-weight:800;color:#1d2430} .wrap7 p{margin:8px 0 0;font-size:15px;color:#3a3a2a}
-  .pages button[data-pg="7"]{color:#FFD60A}
+  /* início v2: lista da pasta (esquerda) + campos de arrastar (direita) */
+  .home2{width:min(1500px,100%)}
+  .grid0{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:stretch;height:clamp(300px, calc(var(--appH) - 560px), 380px)}
+  .src0{background:rgba(6,18,40,.8);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;min-height:0}
+  .srch{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px} .srch b{font-size:15px} .srch small{display:block;font-size:11px;color:var(--mut);margin-top:3px}
+  .mini{margin-left:auto;background:#2D8CFF;border:0;color:#fff;border-radius:8px;padding:7px 14px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .mini.ghost{background:transparent;border:1px solid #3B5A92;color:var(--txt);font-weight:600;padding:4px 10px;font-size:11.5px}
+  .srcst{font-size:12px;color:var(--mut);margin-bottom:6px}
+  .flist{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:6px;padding-right:4px}
+  .fi{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;background:#0E2350;border:1px solid #2A4677;border-radius:9px;padding:8px 10px;cursor:grab;user-select:none}
+  .fi:hover{border-color:#6FB0FF;background:#122B5C} .fi:active{cursor:grabbing}
+  .fi .xl{width:22px;height:22px;border-radius:4px;background:#1D6F42;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .fi .nm{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .fi .mt{font-size:10.5px;color:var(--mut);margin-top:2px}
+  .fi .ac{display:flex;gap:4px} .fi .ac button{border:0;border-radius:6px;font:inherit;font-size:10.5px;font-weight:700;padding:3px 7px;cursor:pointer}
+  .fi .ac .ap{background:rgba(240,122,192,.25);color:#F7B3DC} .fi .ac .ac2{background:rgba(111,176,255,.25);color:#B9D9FF}
+  .fi .tg{margin-left:6px}
+  .fi.used-prev{border-color:#F07AC0} .fi.used-cur{border-color:#6FB0FF}
+  .fi.isnew{box-shadow:0 0 0 2px rgba(211,237,99,.6) inset}
+  .srcft{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11px;color:var(--mut)}
+  .dst0{display:flex;flex-direction:column;gap:12px;min-height:0}
+  .drop{flex:1;border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:6px;min-height:0}
+  .drop.pk{background:linear-gradient(135deg,rgba(176,58,134,.5),rgba(112,48,104,.4));border:1px solid #F07AC0}
+  .drop.bl{background:linear-gradient(135deg,rgba(29,78,149,.6),rgba(16,48,110,.5));border:1px solid #6FB0FF}
+  .drop .dt{font-size:15px;font-weight:700} .drop .dt small{font-size:11px;font-weight:400;opacity:.85;margin-left:8px}
+  .dz{flex:1;border:2px dashed rgba(255,255,255,.35);border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;transition:background .15s,border-color .15s}
+  .dz .ph{font-size:14px;opacity:.9} .dz .ph small{font-size:12px;opacity:.85} .lnk{text-decoration:underline;cursor:pointer}
+  .drop.over .dz{background:rgba(255,255,255,.1);border-color:#fff}
+  .dz .sel{width:100%;display:flex;align-items:center;gap:12px;text-align:left}
+  .dz .sel .xl{width:34px;height:34px;border-radius:6px;background:#1D6F42;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+  .dz .sel b{display:block;font-size:14px} .dz .sel span{font-size:11.5px;opacity:.85}
+  .dz .sel button{margin-left:auto;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:5px 10px;font:inherit;font-size:12px;cursor:pointer}
+  .home2 .go{margin-top:2px}
+  /* página 8 — Comparison by Project */
+  .wrap8{display:grid;grid-template-columns:180px 1fr 180px;grid-template-rows:auto minmax(0,1fr) 318px;gap:8px;padding:8px;height:calc(var(--appH) - 82px);min-height:700px}
+  .side8 .fbox{flex:none;max-height:none;position:relative;transition:transform .18s ease, box-shadow .18s ease;will-change:transform}
+  .side8 .fbox .list{overflow:auto} .side8 .fbox label{padding:1px 0} .side8 .fbox.grow{flex:1;max-height:none}
+  #side8-prev .fbox{transform-origin:left top} #side8-cur .fbox{transform-origin:right top}
+  #side8-prev .fbox.grow{transform-origin:left bottom} #side8-cur .fbox.grow{transform-origin:right bottom}
+  .side8 .fbox:hover{transform:scale(1.28);z-index:30;box-shadow:0 10px 28px rgba(0,0,0,.55)} .side8 .fbox.grow:hover{transform:scale(1.2)}
+  #side8-prev .fbox:hover{background:#5A2452;border-color:#F07AC0} #side8-cur .fbox:hover{background:#122B5C;border-color:#6FB0FF}
+  .bot8{grid-column:1 / span 3;display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:0}
+  .half8{display:flex;flex-direction:column;gap:6px;min-height:0}
+  .dd8{display:flex;gap:8px}
+  .dd8 select{background:#0A1830;color:var(--txt);border:1px solid #33507F;border-radius:7px;padding:5px 8px;font:inherit;font-size:12px;min-width:150px}
+  .pair8{flex:1;display:grid;grid-template-columns:1.35fr 1fr;gap:8px;min-height:0}
+  .vc8{background:rgba(6,18,40,.85);border:1px solid var(--line);border-radius:10px;padding:6px 10px;display:flex;flex-direction:column;min-height:0}
+  .vc8 h4{margin:0 0 4px;font-size:12.5px;font-weight:600;color:#C9D6EE}
+  .c8{flex:1;position:relative;min-height:0;overflow:hidden} .c8>svg{position:absolute;left:0;top:0}
+  #pg8 .ctab td.pv,#pg8 .ctab th.pv{color:#F07AC0} #pg8 .ctab td.cu,#pg8 .ctab th.cu{color:#6FB0FF}
+  /* página 9 — PO Value Check (arquivo atual) */
+  .wrap9{display:flex;flex-direction:column;gap:8px;padding:8px 12px;height:calc(var(--appH) - 82px);min-height:600px}
+  .tabs9{display:flex;gap:6px;margin-right:auto}
+  .tabs9 button{min-width:150px;background:#123068;border:1px solid #3B5A92;color:#E8EEF8;border-radius:6px;padding:7px 14px;font:inherit;font-size:13px;cursor:pointer}
+  .tabs9 button.on{background:#2A2F3A;border-color:#8FA6CC;font-weight:700}
+  .tabs9 button .bd{display:inline-block;margin-left:8px;background:#E5484D;color:#fff;border-radius:9px;padding:0 7px;font-size:11px;font-weight:700}
+  .bar9{display:flex;align-items:center;gap:10px}
+  .bar9 input[type=text],.bar9 #q9{background:#0A1830;color:var(--txt);border:1px solid #33507F;border-radius:7px;padding:5px 9px;font:inherit;font-size:12px;width:220px}
+  .only9{font-size:12px;display:flex;align-items:center;gap:6px;white-space:nowrap;cursor:pointer}
+  .t9{flex:1;min-height:0}
+  .g9{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:10px}
+  .l9{display:flex;flex-direction:column;gap:8px;min-height:0;min-width:0}
+  #t9 td,#t9 th{padding:4px 6px} #t9{font-size:12px}
+  #td9{font-size:12px} #td9 td,#td9 th{padding:4px 6px} #td9 td:first-child{white-space:normal;max-width:220px}
+  #td9 tr.exp{cursor:pointer} #td9 tr.exp:hover td{filter:brightness(1.25)} #td9 tr.det td{background:#0A1830!important}
+  #td9 .tg{margin-right:6px}
+  #t9{font-size:12.5px} #t9 th{vertical-align:bottom;line-height:1.3}
+  #t9 th.cu,#t9 td.cu{color:#6FB0FF} #t9 th.pv,#t9 td.pv{color:#F07AC0} #t9 th small{display:block;font-size:12px;font-weight:700;margin-top:2px}
+  #t9 td.ok{color:#E8EEF8;text-align:right} #t9 td.bad{background:#E5484D!important;color:#fff;font-weight:700}
+  #t9 .sep{border-left:2px solid rgba(255,255,255,.14)}
+  #t9 td:first-child{max-width:230px;white-space:normal}
+  #t9 tr.sum td{position:sticky;bottom:0;background:#123068}
+  .tabs9 button{min-width:110px}
+  /* página 11 — CapEx Dashboard */
+  #t11{font-size:11.5px;width:max-content;min-width:100%} #t11 td,#t11 th{padding:3px 7px;white-space:nowrap}
+  #t11 th{text-align:right;vertical-align:bottom;background:#0A1830} #t11 tr.g0 th,#t11 tr.g1 th{text-align:center}
+  #t11 th.gs{background:#0F2550!important;color:#fff;border-bottom:2px solid #2F7BFF}
+  #t11 tr.g0 th.gs{background:#123068!important;border-bottom:2px solid #6FB0FF}
+  #t11 .bl{position:sticky;left:0;z-index:2;background:#0A1830;text-align:left;font-weight:700;min-width:150px}
+  #t11 thead th{position:sticky;z-index:1} #t11 thead tr.g0 th{top:0} #t11 thead tr.g1 th{top:23px} #t11 thead tr.hh th{top:46px}
+  #t11 thead th.bl{z-index:3}
+  #t11 td.x,.lg11 .x{color:#7F90AF;font-style:italic;font-size:10.5px;text-align:center}
+  #t11 th.hx{color:#7F90AF}
+  #t11 tr.grp td{background:#123068!important;color:#fff;font-weight:700}
+  #t11 tr.tot td{font-weight:800;background:#16305F!important;border-top:1px solid #6FB0FF}
+  #t11 tr.site{cursor:pointer} #t11 tr.site:hover td{filter:brightness(1.2)} #t11 .tw{display:inline-block;width:14px;color:#7FB2FF}
+  #t11 tr.proj td{font-size:10.5px;color:#C9D6EE;background:rgba(10,24,48,.6)} #t11 tr.proj td.bl{font-weight:400;color:#C9D6EE} #t11 .pj{padding-left:22px;display:inline-block}
+  #t11 tr.vat td{font-style:italic}
+  #t11 tr.sum td{font-weight:800;background:#123068!important;border-top:2px solid #E8EEF8}
+  .lg11{font-size:11.5px;color:#C9D6EE;margin-right:auto}
   /* página 2 — comparação */
-  .wrap2{display:grid;grid-template-columns:180px 1fr 180px;grid-template-rows:minmax(0,1fr) auto 250px;gap:8px;padding:8px;height:calc(var(--appH) - 82px);min-height:680px}
+  .top2{grid-column:1 / span 3;display:flex;align-items:center;gap:10px;min-width:0}
+  .top2 .per6{margin-left:0}
+  .top2 #tl2,.top2 #tl8{flex:1;min-width:220px;max-width:520px;margin:0 12px 0 8px}   /* régua menor que na Current Overview, para caber os dois arquivos */
+  .top2 #tl2 .tl-lab,.top2 #tl2 .tl-h span,.top2 #tl8 .tl-lab,.top2 #tl8 .tl-h span{display:none}
+  .top2 #tl2 .tl-track,.top2 #tl2 .tl-fill,.top2 #tl8 .tl-track,.top2 #tl8 .tl-fill{top:18px} .top2 #tl2 .tl-tick,.top2 #tl8 .tl-tick{top:15px} .top2 #tl2 .tl-tick.y,.top2 #tl8 .tl-tick.y{top:12px} .top2 #tl2 .tl-h,.top2 #tl8 .tl-h{top:11px}
+  .top2 #tl2,.top2 #tl8{height:40px}
+  .rt2{margin-left:auto;display:flex;gap:14px;text-align:right;line-height:1.35;min-width:0}
+  .fn2{display:flex;flex-direction:column;font-size:11px;color:var(--mut);padding-right:12px;min-width:0}
+  .fn2 b{font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px}
+  .fn2.pk{border-right:1px solid rgba(255,255,255,.12)} .fn2.pk b{color:#F07AC0} .fn2.bl b{color:#6FB0FF}
+  .ic2{background:rgba(15,32,70,.78);border:1px solid rgba(130,165,230,.16);border-radius:8px;color:var(--txt);padding:6px 10px;cursor:pointer;font:inherit;font-size:12px;white-space:nowrap}
+  .cut2{border-radius:8px;padding:5px 11px;font-weight:800;font-size:14px;color:#fff;white-space:nowrap}
+  .cut2.pk{background:#5A2452;border:1px solid #F07AC0} .cut2.bl{background:#132A57;border:1px solid #6FB0FF}
+  .wrap2{display:grid;grid-template-columns:180px 1fr 180px;grid-template-rows:auto minmax(0,1fr) auto 250px;gap:8px;padding:8px;height:calc(var(--appH) - 82px);min-height:680px}
   .ppanel{background:rgba(112,48,104,.5);border:1px solid rgba(240,122,192,.35);border-radius:10px}
   .bpanel{background:rgba(16,48,110,.65);border:1px solid rgba(111,176,255,.35);border-radius:10px}
   .side{display:flex;flex-direction:column;gap:6px;min-height:0}
-  .side .fbox{flex:none;max-height:158px}
+  .side .fbox{flex:none;max-height:none}   /* sem a caixa Project, as três caixas mostram a lista inteira */
   .side .fbox label{padding:1px 0}
   .side .fbox .list{overflow:auto}
   .side .fbox.grow{flex:1;max-height:none}
@@ -344,26 +465,30 @@
 <body>
 <div id="app">
 <header>
-  <div style="display:flex;align-items:center;gap:26px"><div class="logo">Aligned<small>Adaptive Data Centers</small></div><div class="file" id="file"></div><div class="p2dates" id="hdrDates2" hidden><input type="date" id="d3" title="Data inicial"><input type="date" id="d4" title="Data final"><button class="chip" id="clearSel2" title="Limpar seleção (Esc)"></button></div></div>
+  <div style="display:flex;align-items:center;gap:26px"><div class="logo">Aligned<small>Adaptive Data Centers</small></div><div class="file" id="file"></div></div>
   <h1>Odata CapEx Control</h1>
   <div class="upd" id="upd"></div>
   <div class="odata">ODATA<small>An Aligned Data Centers Company</small></div>
 </header>
 <div class="wrap0" id="pg0" hidden>
-  <div class="home">
+  <div class="home home2">
     <h2>Comparação de arquivos de Funding (PLA-FOR-010)</h2>
-    <div class="sub">Informe o arquivo anterior (rosa) e o atual (azul) e clique em "Realizar comparação". Os arquivos são lidos só no seu navegador: nada é enviado para a internet. As abas Capex Comparison, Change Details, Comparison w/o FX e Building Budget passam a mostrar esses dois arquivos; a aba Odata CapEx Control mostra o arquivo atual.</div>
-    <div class="fcard pk">
-      <div class="tt">Arquivo anterior<small>versão consolidada (Cons)</small></div>
-      <input type="text" id="lnkPrev" placeholder="Cole aqui o link do SharePoint do arquivo anterior">
-      <div class="pickf"><label class="btn" for="filePrev">Selecionar arquivo do computador…</label><input type="file" id="filePrev" accept=".xlsx,.xlsm"><span class="fn" id="fnPrev">nenhum arquivo selecionado</span></div>
+    <div class="sub">Arraste um arquivo da lista para o campo <b class="pink">Arquivo anterior</b> e outro para o campo <b class="blue">Arquivo atual</b>, e clique em "Realizar comparação". Os arquivos são lidos só no seu navegador: nada é enviado para a internet.</div>
+    <div class="grid0">
+      <section class="src0">
+        <div class="srch"><div><b>Arquivos da pasta Funding</b><small id="fold0">CAPEX Control - Documentos › 11. Arquivos Claude - Renan › 01. Funding</small></div>
+          <button class="mini" id="conn0">Conectar pasta</button></div>
+        <input type="file" id="dir0" webkitdirectory multiple hidden>
+        <div class="srcst" id="st0"></div>
+        <div class="flist" id="list0"></div>
+        <div class="srcft"><span id="upd0"></span><button class="mini ghost" id="rf0" hidden>Atualizar agora</button></div>
+      </section>
+      <section class="dst0">
+        <div class="drop pk" id="dropPrev" data-k="prev"><div class="dt">Arquivo anterior<small>versão consolidada (Cons)</small></div><div class="dz"><span class="ph">Arraste aqui um arquivo da lista<br><small>ou do Explorador de Arquivos, ou <label class="lnk" for="filePrev">procure no computador</label></small></span><div class="sel" hidden></div></div><input type="file" id="filePrev" accept=".xlsx,.xlsm" hidden></div>
+        <div class="drop bl" id="dropCur" data-k="cur"><div class="dt">Arquivo atual<small>versão PROD</small></div><div class="dz"><span class="ph">Arraste aqui um arquivo da lista<br><small>ou do Explorador de Arquivos, ou <label class="lnk" for="fileCur">procure no computador</label></small></span><div class="sel" hidden></div></div><input type="file" id="fileCur" accept=".xlsx,.xlsm" hidden></div>
+      </section>
     </div>
-    <div class="fcard bl">
-      <div class="tt">Arquivo atual<small>versão PROD</small></div>
-      <input type="text" id="lnkCur" placeholder="Cole aqui o link do SharePoint do arquivo atual">
-      <div class="pickf"><label class="btn" for="fileCur">Selecionar arquivo do computador…</label><input type="file" id="fileCur" accept=".xlsx,.xlsm"><span class="fn" id="fnCur">nenhum arquivo selecionado</span></div>
-    </div>
-    <button class="go" id="goCmp">Realizar comparação</button>
+    <button class="go" id="goCmp" disabled>Realizar comparação</button>
     <div id="msg0"></div>
     <div class="prog" id="prog0" hidden></div>
     <div id="done0"></div>
@@ -404,11 +529,17 @@
   </div>
 </div>
 <div class="wrap2" id="pg2" hidden>
+  <div class="top2">
+    <div class="per6"><div class="tl" id="tl2" title="Arraste: a esquerda vai para o 1º dia do mês, a direita para o último dia"></div><select id="y2" title="Ano"></select><input type="date" id="d3" title="Data inicial"><input type="date" id="d4" title="Data final"></div>
+    <button class="chip" id="clearSel2" title="Limpar seleção (Esc)"></button>
+    <div class="rt2"><div class="fn2 pk"><b id="pf2"></b><span id="pu2"></span></div><div class="fn2 bl"><b id="cf2"></b><span id="cu2"></span></div></div>
+    <button class="ic2" id="exp2" title="Baixar este dashboard (.html)">Exportar ⤓</button>
+    <span class="cut2 pk" id="pc2"></span><span class="cut2 bl" id="cc2"></span>
+  </div>
   <div class="side" id="side-prev">
     <div class="ppanel fbox"><h3>Country</h3><div class="list" id="f2-prev-country"></div></div>
     <div class="ppanel fbox"><h3>Type</h3><div class="list" id="f2-prev-type2"></div></div>
     <div class="ppanel fbox"><h3>Capex categorization</h3><div class="list" id="f2-prev-cat"></div></div>
-    <div class="ppanel fbox grow"><h3>Project Previous</h3><div class="list" id="f2-prev-p"></div></div>
   </div>
   <div class="charts">
     <div class="ppanel cbox">
@@ -433,7 +564,6 @@
     <div class="bpanel fbox"><h3>Country</h3><div class="list" id="f2-cur-country"></div></div>
     <div class="bpanel fbox"><h3>Type</h3><div class="list" id="f2-cur-type2"></div></div>
     <div class="bpanel fbox"><h3>Capex categorization</h3><div class="list" id="f2-cur-cat"></div></div>
-    <div class="bpanel fbox grow"><h3>Project Current</h3><div class="list" id="f2-cur-p"></div></div>
   </div>
   <div class="p2bar"><span>Period Comparison</span><span class="hint" style="color:#C9D6EE">Clique num mês ou numa linha para filtrar · Ctrl+clique para vários</span></div>
   <div class="tables">
@@ -454,14 +584,16 @@
     <div class="panel fbox proj"><h3>Project</h3><div class="list" id="f3-p"></div></div>
   </div>
   <div class="wrap3">
+  <div class="top3"><div class="rt2"><div class="fn2 pk"><b id="pf3"></b><span id="pu3"></span></div><div class="fn2 bl"><b id="cf3"></b><span id="cu3"></span></div></div>
+    <button class="ic2" id="exp3" title="Baixar este dashboard (.html)">Exportar ⤓</button><span class="cut2 pk" id="pc3"></span><span class="cut2 bl" id="cc3"></span></div>
   <div id="warn3"></div>
   <div class="kp" id="kp3"></div>
   <div class="row3" style="grid-template-columns:max-content minmax(340px,1fr)">
     <div class="box3"><h2>By Country <span class="n">Budget · EFC (w/o FX) · Contingency · Saving — previous × current</span></h2><div class="scroll"><table id="t3-country"></table></div></div>
-    <div class="box3"><h2><span>Top 10 variations</span><span class="f3"><select id="tm3"></select></span></h2><div id="top3"></div></div>
+    <div class="box3"><h2><span>Top 10 variations</span><span class="seg6" id="tm3"></span></h2><div id="top3"></div></div>
   </div>
   <div class="row3" style="grid-template-columns:1fr 1fr">
-    <div class="box3"><h2>New, removed and possibly renamed projects <span class="n">renamed = same site and block; confirm with the sheet owner</span></h2><div class="scroll fill3"><table id="t3-nr"></table></div></div>
+    <div class="box3"><h2>New, removed and possibly renamed projects <span class="n"><span class="cu3">● current</span> &nbsp;<span class="pv3">● previous</span> &nbsp;· renamed = same site and block</span></h2><div class="scroll fill3"><table id="t3-nr"></table></div></div>
     <div class="box3"><h2><span>Projects with changed values <span class="n" id="n3-chg"></span></span>
       <span class="f3"><input id="q3" placeholder="Search site or project"><select id="c3"></select><select id="m3"></select></span></h2>
       <div class="scroll fill3"><table id="t3-chg"></table></div></div>
@@ -469,14 +601,24 @@
   </div>
 </div>
 <div class="wrap4" id="pg4" hidden>
-  <div class="sec4"><div class="bar-title"><span>Budget</span><button class="chip" id="clearSel4" title="Limpar seleção (Esc)"></button></div><div class="ctab"><table id="t4-bud"></table></div></div>
-  <div class="sec4"><div class="bar-title"><span>EFC</span><span class="hint" style="color:#C9D6EE;font-weight:400">EFC w/o FX Variation</span></div><div class="ctab"><table id="t4-efc"></table></div></div>
-  <div class="sec4"><div class="bar-title"><span>Contingency</span><span class="hint" style="color:#C9D6EE;font-weight:400">Saving = Budget − EFC − Contingency</span></div><div class="ctab"><table id="t4-cont"></table></div></div>
-  <div class="bot4">
-    <div class="panel fbox"><h3>Country</h3><div class="list" id="f4-country"></div></div>
-    <div class="panel fbox"><h3>Other</h3><div class="list" id="f4-other"></div></div>
-    <div class="panel fbox"><h3>Type</h3><div class="list" id="f4-type2"></div></div>
-    <div class="panel fbox"><h3>Capex categorization</h3><div class="list" id="f4-cat"></div></div>
+  <aside class="col side4">
+    <div class="fgrid">
+      <div class="panel fbox auto"><h3>Country</h3><div class="list" id="f4-country"></div></div>
+      <div class="panel fbox auto"><h3>Other</h3><div class="list" id="f4-other"></div></div>
+      <div class="panel fbox auto"><h3>Type</h3><div class="list" id="f4-type2"></div></div>
+      <div class="panel fbox auto"><h3>Category</h3><div class="list" id="f4-cat"></div></div>
+    </div>
+    <div class="panel fbox proj"><h3>Project</h3><div class="list" id="f4-p"></div></div>
+  </aside>
+  <div class="main4">
+    <div class="top3"><button class="chip" id="clearSel4" title="Limpar seleção (Esc)" style="margin-right:auto"></button>
+      <div class="rt2"><div class="fn2 pk"><b id="pf4"></b><span id="pu4"></span></div><div class="fn2 bl"><b id="cf4"></b><span id="cu4"></span></div></div>
+      <button class="ic2" id="exp4" title="Baixar este dashboard (.html)">Exportar ⤓</button><span class="cut2 pk" id="pc4"></span><span class="cut2 bl" id="cc4"></span></div>
+    <div class="tabs4">
+      <div class="sec4"><div class="bar-title"><span>Budget</span></div><div class="ctab"><table id="t4-bud"></table></div></div>
+      <div class="sec4"><div class="bar-title"><span>EFC</span><span class="hint" style="color:#C9D6EE;font-weight:400">EFC w/o FX Variation</span></div><div class="ctab"><table id="t4-efc"></table></div></div>
+      <div class="sec4"><div class="bar-title"><span>Contingency</span><span class="hint" style="color:#C9D6EE;font-weight:400">Saving = Budget − EFC − Contingency</span></div><div class="ctab"><table id="t4-cont"></table></div></div>
+    </div>
   </div>
 </div>
 <div class="wrap5" id="pg5" hidden>
@@ -510,9 +652,8 @@
   </aside>
   <div class="main6">
     <div class="top6">
-      <button class="nv on">Visão Geral</button><button class="nv" data-go="1">Projetos</button><button class="nv" data-go="2">Comparativos</button><button class="nv" data-go="4">Orçamento</button><button class="nv" data-go="3">Detalhamento</button>
-      <div class="per6"><select id="y6" title="Ano"></select><div class="tl" id="tl6" title="Arraste: a esquerda vai para o 1º dia do mês, a direita para o último dia"></div><input type="date" id="d6a" title="Data inicial"><input type="date" id="d6b" title="Data final"></div>
-      <div class="rt"><div><span id="rep6"></span><br><span id="upd6"></span></div><button class="ic" id="exp6" title="Baixar este dashboard (.html)">Exportar ⤓</button><span class="chip6" id="cut6"></span><button class="chip" id="clr6" title="Limpar seleção (Esc)"></button></div>
+      <div class="per6"><div class="tl" id="tl6" title="Arraste: a esquerda vai para o 1º dia do mês, a direita para o último dia"></div><select id="y6" title="Ano"></select><input type="date" id="d6a" title="Data inicial"><input type="date" id="d6b" title="Data final"></div>
+      <div class="rt"><div><span id="rep6" style="color:#6FB0FF;font-weight:600"></span><br><span id="upd6"></span></div><button class="ic" id="exp6" title="Baixar este dashboard (.html)">Exportar ⤓</button><span class="chip6" id="cut6"></span><button class="chip" id="clr6" title="Limpar seleção (Esc)"></button></div>
     </div>
     <div class="kpi6" id="kpi6"></div>
     <div class="row6a">
@@ -520,9 +661,9 @@
         <span class="lg6"><span><i style="background:var(--inc)"></i>Incorrido</span><span><i style="background:var(--fc)"></i>Forecast</span></span>
         <span class="seg6" id="mode6"><button data-m="y">Anual</button><button data-m="m" class="on">Mensal</button></span></div>
         <div class="c6" id="ch6"></div></div>
-      <div class="card6"><div class="hd"><h3>Top Projetos por Investimento<small>Total no período selecionado</small></h3><select id="n6" style="margin-left:auto;background:#0A1830;color:var(--txt);border:1px solid #33507F;border-radius:7px;padding:4px 8px;font:inherit;font-size:12px"><option value="10">Top 10</option><option value="15">Top 15</option><option value="20">Top 20</option></select></div>
+      <div class="card6"><div class="hd"><h3>Top Projetos por Investimento<small>Total no período selecionado</small></h3><select id="n6" style="margin-left:auto;background:#0A1830;color:var(--txt);border:1px solid #33507F;border-radius:7px;padding:4px 8px;font:inherit;font-size:12px"><option value="10">Top 10</option><option value="15">Top 15</option><option value="20">Top 20</option><option value="100000">Todos</option></select></div>
         <div style="flex:1;min-height:0;overflow:auto"><table id="t6top"></table></div>
-        <button class="more6" data-go="1">Ver todos os projetos →</button></div>
+        <button class="more6" id="all6">Ver todos os projetos →</button></div>
     </div>
     <div class="row6b">
       <div class="card6"><div class="hd"><h3>CapEx por Tipo <small style="display:inline;margin-left:4px">(M)</small></h3><span class="lg6"><span><i style="background:var(--inc)"></i>Incorrido</span><span><i style="background:var(--fc)"></i>Forecast</span></span></div><div class="c6" id="ty6"></div></div>
@@ -530,13 +671,77 @@
       <div class="card6"><div class="hd"><h3>Total Anual <small style="display:inline;margin-left:4px">(M)</small></h3><span class="lg6"><span><i style="background:var(--inc)"></i>Incorrido</span><span><i style="background:var(--fc)"></i>Forecast</span></span></div><div class="c6" id="an6"></div></div>
     </div>
     <div>
-      <div class="ins6" id="ins6"></div>
-      <div class="foot6" style="margin-top:5px"><span>Odata · An Aligned Data Centers Company</span><span>Valores em US$ milhões (M) · Fonte: PLA-FOR-010, aba CapEx Summary · Incorrido = meses até a data de corte; Forecast = meses seguintes</span></div>
+      <div class="foot6"><span>Odata · An Aligned Data Centers Company</span><span>Valores em US$ milhões (M) · Fonte: PLA-FOR-010, aba CapEx Summary · Incorrido = meses até a data de corte; Forecast = meses seguintes</span></div>
     </div>
   </div>
 </div>
-<div class="wrap7" id="pg7" hidden><div class="box7"><h2>Nova aba</h2><p>Aba em branco, pronta para receber conteúdo.</p></div></div>
-<nav class="pages"><button data-pg="0" class="on">Início</button><button data-pg="1">Odata CapEx Control</button><button data-pg="6">Visão Geral (novo)</button><button data-pg="2">Capex Comparison</button><button data-pg="3">Change Details</button><button data-pg="4">Comparison w/o FX</button><button data-pg="5">Building Budget</button><button data-pg="7">Nova aba</button></nav>
+<div class="wrap8" id="pg8" hidden>
+  <div class="top2">
+    <div class="per6"><div class="tl" id="tl8" title="Arraste: a esquerda vai para o 1º dia do mês, a direita para o último dia"></div><select id="y8" title="Ano"></select><input type="date" id="d8a" title="Data inicial"><input type="date" id="d8b" title="Data final"></div>
+    <button class="chip" id="clearSel8" title="Limpar seleção (Esc)"></button>
+    <div class="rt2"><div class="fn2 pk"><b id="pf8"></b><span id="pu8"></span></div><div class="fn2 bl"><b id="cf8"></b><span id="cu8"></span></div></div>
+    <button class="ic2" id="exp8" title="Baixar este dashboard (.html)">Exportar ⤓</button>
+    <span class="cut2 pk" id="pc8"></span><span class="cut2 bl" id="cc8"></span>
+  </div>
+  <div class="side side8" id="side8-prev">
+    <div class="ppanel fbox"><h3>Country</h3><div class="list" id="f8-prev-country"></div></div>
+    <div class="ppanel fbox"><h3>Type</h3><div class="list" id="f8-prev-type2"></div></div>
+    <div class="ppanel fbox"><h3>Capex categorization</h3><div class="list" id="f8-prev-cat"></div></div>
+  </div>
+  <div class="charts">
+    <div class="ppanel cbox"><div class="chead">
+        <div class="card pcard"><small>Incurred</small><b id="p8Inc"></b></div>
+        <div class="ctitle"><span class="lab pink">Previous file - <span id="p8Cut"></span></span><span id="p8Tot"></span><span>N Projects:&nbsp; <span id="p8N"></span></span></div>
+        <div class="card pcard"><small>Forecast</small><b id="p8Fc"></b></div></div>
+      <div class="cline" id="line8P"></div></div>
+    <div class="bpanel cbox"><div class="chead">
+        <div class="card bcard"><small>Incurred</small><b id="c8Inc"></b></div>
+        <div class="ctitle"><span class="lab blue">Current file - <span id="c8Cut"></span></span><span id="c8Tot"></span><span>N Projects:&nbsp; <span id="c8N"></span></span></div>
+        <div class="card bcard"><small>Forecast</small><b id="c8Fc"></b></div></div>
+      <div class="cline" id="line8C"></div></div>
+  </div>
+  <div class="side side8" id="side8-cur">
+    <div class="bpanel fbox"><h3>Country</h3><div class="list" id="f8-cur-country"></div></div>
+    <div class="bpanel fbox"><h3>Type</h3><div class="list" id="f8-cur-type2"></div></div>
+    <div class="bpanel fbox"><h3>Capex categorization</h3><div class="list" id="f8-cur-cat"></div></div>
+  </div>
+  <div class="bot8">
+    <div class="half8">
+      <div class="bar-title"><span>Period Comparison</span><span class="hint" style="color:#C9D6EE;font-weight:400" id="per8"></span></div>
+      <div class="dd8"><select id="s8c"></select><select id="s8t"></select><select id="s8k"></select></div>
+      <div class="pair8"><div class="ctab"><table id="t8p"></table></div><div class="vc8"><h4>Variation by Country - Period</h4><div class="c8" id="v8p"></div></div></div>
+    </div>
+    <div class="half8">
+      <div class="bar-title"><span>Monthly Comparison</span><span class="hint" style="color:#C9D6EE;font-weight:400">Country, Type e Category da esquerda também se aplicam</span></div>
+      <div class="dd8"><select id="s8m"></select></div>
+      <div class="pair8"><div class="ctab"><table id="t8m"></table></div><div class="vc8"><h4>Variation by Country - Monthly</h4><div class="c8" id="v8m"></div></div></div>
+    </div>
+  </div>
+</div>
+<div class="wrap9" id="pg9" hidden>
+  <div class="top3"><div class="tabs9" id="ct9"></div>
+    <div class="rt2"><div class="fn2 pk"><b id="pf9"></b><span id="pu9"></span></div><div class="fn2 bl"><b id="cf9"></b><span id="cu9"></span></div></div>
+    <button class="ic2" id="exp9" title="Baixar este dashboard (.html)">Exportar ⤓</button><span class="cut2 pk" id="pc9"></span><span class="cut2 bl" id="cc9"></span></div>
+  <div class="g9">
+    <div class="l9">
+      <div class="bar9"><div class="bar-title" style="flex:1"><span>PO Value</span><span class="hint" style="color:#C9D6EE;font-weight:400" id="sum9"></span></div>
+        <input id="q9" placeholder="Buscar projeto"><label class="only9"><input type="checkbox" id="o9"> Só divergências</label></div>
+      <div class="ctab t9"><table id="t9"></table></div>
+    </div>
+    <div class="l9">
+      <div class="bar9"><div class="bar-title" style="flex:1"><span>CapEx Detail × CapEx Summary</span><span class="hint" style="color:#C9D6EE;font-weight:400" id="sumd9"></span></div></div>
+      <div class="ctab t9"><table id="td9"></table></div>
+    </div>
+  </div>
+</div>
+<div class="wrap9" id="pg11" hidden>
+  <div class="top3"><div class="lg11"><span class="x">Dado externo</span> = vem de outro arquivo (MOR Data Sources, dashboards anteriores, Site Estimates, CapEx FC Expansions) · <span class="x">Dado digitado</span> = texto ou valor digitado no Excel</div>
+    <div class="rt2"><div class="fn2 bl" style="border:0"><b id="cf11"></b><span id="cu11"></span></div></div>
+    <button class="ic2" id="exp11" title="Baixar este dashboard (.html)">Exportar ⤓</button><span class="cut2 bl" id="cc11"></span></div>
+  <div class="bar-title"><span>CapEx Dashboard - LatAm</span><span class="hint" style="color:#C9D6EE;font-weight:400" id="n11"></span></div>
+  <div class="ctab t9" style="overflow:auto"><table id="t11"></table></div>
+</div>
+<nav class="pages"><button data-pg="0" class="on">Início</button><button data-pg="6">Current Overview</button><button data-pg="2">Capex Comparison</button><button data-pg="8">Comparison by Project</button><button data-pg="3">Change Details</button><button data-pg="4">Comparison w/o FX</button><button data-pg="5">Building Budget</button><button data-pg="9">Current Checks</button><button data-pg="11" class="fpa">Dashboard FP&amp;A</button></nav>
 </div>
 <div class="tip" id="tip"></div>
 <script id="dash-data" type="application/json">null</script>
@@ -786,7 +991,8 @@ function drawFilter2(side,k){
   const vals = uniq(k, pool), o = off2[side][k], all = vals.every(v=>!o.has(v));
   let h = `<label><input type="checkbox" data-all="1" ${all?'checked':''}>Selecionar tudo</label>`;
   vals.forEach(v=>h+=`<label title="${esc(v)}"><input type="checkbox" value="${esc(v)}" ${o.has(v)?'':'checked'}>${esc(v)}</label>`);
-  const el = $(`#f2-${side}-${k}`); el.innerHTML = h;
+  const el = $(`#f2-${side}-${k}`); if(!el) return;   // caixa Project retirada: o filtro por projeto segue só pelo clique nas tabelas
+  el.innerHTML = h;
   el.querySelectorAll('input:not([data-all])').forEach(i=>i.onchange=()=>{ i.checked?o.delete(i.value):o.add(i.value); refresh2(); });
   el.querySelector('[data-all]').onchange=e=>{ if(e.target.checked) o.clear(); else vals.forEach(v=>o.add(v)); refresh2(); };
 }
@@ -853,6 +1059,30 @@ function line2(sel, months, vals, cut, c1, c2){
   el.querySelectorAll('.hit').forEach(r=>r.onclick=e=>toggle2('m', r.dataset.m, isMulti(e)));
 }
 
+function lineX(sel, months, vals, cut, c1, c2, SM, pick){   // cópia genérica do line2 (usada na Comparison by Project)
+  const el=$(sel), W=el.clientWidth||700, H=el.clientHeight||180, pl=24,pr=24,pt=24,pb=30;
+  if(!months.length){ el.innerHTML='<div class="note">Sem meses no período.</div>'; return; }
+  const mx=Math.max(...vals,0), mn=Math.min(...vals,0);
+  const x=k=>pl+(months.length<2?(W-pl-pr)/2:k*(W-pl-pr)/(months.length-1)), y=v=>pt+(mx-v)/((mx-mn)||1)*(H-pt-pb);
+  const pts=vals.map((v,k)=>[x(k),y(v)]), cutK=months.filter(m=>m<=cut).length-1, base=y(Math.max(mn,0));
+  const multiYear=months[0].slice(0,4)!==months.at(-1).slice(0,4), id=sel.slice(1), any=SM.size>0;
+  const bw = months.length<2 ? (W-pl-pr) : (W-pl-pr)/(months.length-1);
+  let s=`<svg width="${W}" height="${H}"><defs><linearGradient id="g${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}" stop-opacity=".5"/><stop offset="1" stop-color="${c2}" stop-opacity=".12"/></linearGradient></defs>`;
+  months.forEach((m,k)=>{ if(SM.has(m)) s+=`<rect x="${pts[k][0]-bw/2}" y="0" width="${bw}" height="${H-pb+4}" fill="rgba(255,255,255,.09)" rx="6"/>`; });
+  const area=p=>p.length>1?`<path d="${smooth(p)} L${p.at(-1)[0]},${base} L${p[0][0]},${base}Z" fill="url(#g${id})"/>`:'';
+  const sp=cutK>=0?pts.slice(0,cutK+1):[], rp=pts.slice(Math.max(cutK,0));
+  if(sp.length>1){ s+=area(sp)+`<path d="${smooth(sp)}" fill="none" stroke="${c1}" stroke-width="3"/>`; }
+  if(cutK<pts.length-1&&rp.length>1){ s+=area(rp).replace('url(','url(').replace('fill="url','opacity=".55" fill="url')+`<path d="${smooth(rp)}" fill="none" stroke="${c1}" stroke-width="3" stroke-dasharray="3 5" opacity=".75"/>`; }
+  pts.forEach((p,k)=>{ const m=months[k], on=SM.has(m), op=(!any||on)?1:.3, lab=MPT[+m.slice(5)-1]+(multiYear?'/'+m.slice(2,4):'');
+    s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${on?6:4}" fill="${c1}" opacity="${k>cutK?op*.75:op}" ${on?'stroke="#fff" stroke-width="2"':''}/>`;
+    if(months.length<=24) s+=`<text x="${p[0]}" y="${p[1]-9}" font-size="11" text-anchor="middle" opacity="${op}" font-weight="${on?700:400}">${fM(vals[k])}</text>`;
+    const step=Math.ceil(months.length/18); if(k%step===0) s+=`<text x="${p[0]}" y="${H-pb+15}" font-size="11" text-anchor="middle" fill="#C9D6EE">${lab}</text>`; });
+  if(!multiYear) s+=`<text x="${W/2}" y="${H-3}" font-size="11" text-anchor="middle" fill="#9FB0CC">${months[0].slice(0,4)}</text>`;
+  pts.forEach((p,k)=>s+=`<rect class="hit" x="${p[0]-bw/2}" y="0" width="${bw}" height="${H}" fill="transparent" data-m="${months[k]}" data-t="${months[k]}|${vals[k]}"/>`);
+  el.innerHTML=s+'</svg>'; tips(el);
+  el.querySelectorAll('.hit').forEach(r=>r.onclick=e=>pick(r.dataset.m, isMulti(e)));
+}
+
 const T2NAME = {p:'Project', type2:'Type', cat:'Category', country:'Country'};
 function arrow(d){ return Math.abs(d)<1 ? '<span class="eq">-</span>' : d>0 ? '<span class="up">▲</span>' : '<span class="dn">▼</span>'; }
 function table2(k, g){
@@ -895,8 +1125,10 @@ function drawFilter3(k){
   el.querySelectorAll('input:not([data-all])').forEach(i=>i.onchange=()=>{ i.checked?o.delete(i.value):o.add(i.value); page3(); });
   el.querySelector('[data-all]').onchange=e=>{ if(e.target.checked) o.clear(); else vals.forEach(v=>o.add(v)); page3(); };
 }
+// variação no padrão da Capex Comparison: seta colorida (▲ verde sobe, ▼ vermelha cai, - igual) e valor absoluto em branco
 function dv(d){ if(d==null||isNaN(d)) return '<span class="eq">–</span>';
-  return Math.abs(d)<1000?'<span class="eq">0</span>':`<span class="${d>0?'up':'dn'}">${d>0?'▲ +':'▼ '}${fM(d)}</span>`; }
+  if(Math.abs(d)<1000) return '<span class="eq">-</span>&nbsp;&nbsp;<span class="vv3">0,0 M</span>';
+  return `<span class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}</span>&nbsp;&nbsp;<span class="vv3">${fM(Math.abs(d))}</span>`; }
 const v3=v=>v==null?'<span class="eq">–</span>':fM(v);
 let V3=null;
 function view3(){
@@ -927,13 +1159,14 @@ function page3(){
   const line=(name,rows,cls='')=>`<tr class="${cls}"><td>${esc(name)}</td><td>${rows.filter(r=>r.b).length}${rows.filter(r=>r.a).length!==rows.filter(r=>r.b).length?` <span class="dl">(${rows.filter(r=>r.a).length})</span>`:''}</td>${MET3.map(([m])=>{ const o=sum3(rows,'a',m), n=sum3(rows,'b',m); return `<td class="pv">${fM(o)}</td><td class="cu">${fM(n)}</td><td>${dv(n-o)}</td>`; }).join('')}</tr>`;
   $('#t3-country').innerHTML=hdr+C.map(c=>line(c.c,c.rows)).join('')+line('Total',R,'sum')+'</tbody>';
   // top 10
-  $('#tm3').innerHTML=MET3.map(([m,l])=>`<option value="${m}" ${m===st3.top?'selected':''}>Δ ${l}</option>`).join('');
+  $('#tm3').innerHTML=MET3.map(([m,l])=>`<button data-m="${m}" class="${m===st3.top?'on':''}">Δ ${l}</button>`).join('');
+  $('#tm3').querySelectorAll('button').forEach(b=>b.onclick=()=>{ st3.top=b.dataset.m; $('#tm3').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); top3(); });
   top3();
   // novos / removidos / renomeados
   const renN=new Set(V3.ren.flatMap(x=>[x.o,x.c]));
-  let h=`<thead><tr><th>Project</th><th>Status</th><th>Country</th><th>Budget</th><th>EFC</th><th>Contingency</th><th>Saving</th></tr></thead><tbody>`;
+  let h=`<thead><tr><th>Project</th><th>Status</th><th>Country</th><th>Budget</th><th>EFC</th><th>Contingency</th><th>Saving</th></tr></thead><tbody>`;   // valores: atual em azul, anterior em rosa
   V3.ren.forEach(x=>{ const o=PV3.get(x.o), c=CU3.get(x.c)||o;
-    h+=`<tr><td title="${esc(x.o)} → ${esc(x.c)}"><span class="tg ren">renamed?</span>${esc(x.o)} → ${esc(x.c)}</td><td>${esc(c.other)}</td><td>${esc(c.country)}</td>${MET3.map(([m])=>`<td>${v3(c[m])} <span class="dl">(${v3(o?o[m]:null)})</span></td>`).join('')}</tr>`; });
+    h+=`<tr><td title="${esc(x.o)} → ${esc(x.c)}"><span class="tg ren">renamed?</span>${esc(x.o)} → ${esc(x.c)}</td><td>${esc(c.other)}</td><td>${esc(c.country)}</td>${MET3.map(([m])=>`<td><span class="cu3">${v3(c[m])}</span> <span class="pv3">(${v3(o?o[m]:null)})</span></td>`).join('')}</tr>`; });
   V3.added.filter(r=>!renN.has(r.n)).forEach(r=>h+=nr3(r.b,'new'));
   V3.removed.filter(r=>!renN.has(r.n)).forEach(r=>h+=nr3(r.a,'rem'));
   if(!V3.added.length&&!V3.removed.length&&!V3.ren.length) h+='<tr><td colspan="7" class="dl">None.</td></tr>';
@@ -944,7 +1177,7 @@ function page3(){
   $('#m3').innerHTML=MET3.map(([m,l])=>`<option value="${m}" ${m===st3.m?'selected':''}>Sort by Δ ${l}</option>`).join('');
   chg3();
 }
-function nr3(p,t){ return `<tr><td title="${esc(p.p)}"><span class="tg ${t}">${t==='new'?'new':'removed'}</span>${esc(p.p)}</td><td>${esc(p.other)}</td><td>${esc(p.country)}</td>${MET3.map(([m])=>`<td>${v3(p[m])}</td>`).join('')}</tr>`; }
+function nr3(p,t){ return `<tr><td title="${esc(p.p)}"><span class="tg ${t}">${t==='new'?'new':'removed'}</span>${esc(p.p)}</td><td>${esc(p.other)}</td><td>${esc(p.country)}</td>${MET3.map(([m])=>`<td class="${t==='new'?'cu3':'pv3'}">${v3(p[m])}</td>`).join('')}</tr>`; }
 function top3(){
   const M=st3.top, lab=MET3.find(x=>x[0]===M)[1];
   const items=V3.rows.filter(r=>Math.abs(r.d[M])>=1000).sort((a,b)=>Math.abs(b.d[M])-Math.abs(a.d[M])).slice(0,10).map(r=>({l:r.n,v:r.d[M]}));
@@ -976,12 +1209,12 @@ function chg3(){
 $('#q3').oninput=e=>{st3.q=e.target.value;chg3();};
 $('#c3').onchange=e=>{st3.c=e.target.value;chg3();};
 $('#m3').onchange=e=>{st3.m=e.target.value;chg3();};
-$('#tm3').onchange=e=>{st3.top=e.target.value;top3();};
+
 
 // =====================================================================
 // PÁGINA 4 — Capex Comparison w/o FX Variation (Budget, EFC, Contingency, Saving)
 // =====================================================================
-const K4=['country','other','type2','cat'];
+const K4=['country','other','type2','cat','p'];
 const off4=Object.fromEntries(K4.map(k=>[k,new Set()])); off4.type2.add('Expansion');   // padrão do Power BI: sem Expansion
 const sel4=new Set();
 const sort4={bud:{k:'abs',d:-1}, efc:{k:'abs',d:-1}, cont:{k:'abs',d:-1}, sum:{k:'sav',d:1}};
@@ -1131,7 +1364,7 @@ function fmtDT(d){ return `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${String
 // ---- leitor de .xlsx embutido (sem bibliotecas externas e sem internet) ----
 // Descompacta só as partes necessárias com o DecompressionStream do navegador (Chrome/Edge atuais)
 // e lê os valores salvos nas células, como o openpyxl com data_only=True.
-const SHEETS=['CapEx Summary','CapEx Detail USD'];
+const SHEETS=['CapEx Summary','CapEx Detail USD','Fit-out','tenant_master_latam','site_estimates_finance_latam','site_estimates_pd_latam'];
 async function unzipParts(buf, wanted){
   const dv=new DataView(buf), u8=new Uint8Array(buf); let eo=-1;
   for(let i=buf.byteLength-22;i>=Math.max(0,buf.byteLength-70000);i--) if(dv.getUint32(i,true)===0x06054b50){ eo=i; break; }
@@ -1207,53 +1440,166 @@ function parseBook(out, fileName, lastMod){
   let cutoff=null; const up=R[hi-1]||[]; for(let j=0;j<Math.min(up.length,col['Remaining Capex']+3);j++) if(isD(up[j])) cutoff=up[j];
   if(!cutoff) throw new Error(`Data de corte não encontrada acima de "Remaining Capex" em ${fileName}.`);
   // Contingency: Remaining das linhas Contingency/Escalation da aba CapEx Detail USD
-  const cont=new Map(), DT=out.sheets['CapEx Detail USD'];
+  const cont=new Map(), poM=new Map(), spM=new Map(), flM=new Map(), DT=out.sheets['CapEx Detail USD']; let dcols=[];
   if(DT){ let h=null; for(const r of DT){ const row=r||[];
-      if(!h){ const names=row.map(T); if(names.includes('Category')&&names.includes('Remaining')&&names.includes('Site')){ h={}; names.forEach((n,i)=>{ if(n&&!(n in h)) h[n]=i; }); } continue; }
+      if(!h){ const names=row.map(T); if(names.includes('Category')&&names.includes('Remaining')&&names.includes('Site')){ h={}; names.forEach((n,i)=>{ if(n&&!(n in h)) h[n]=i; });
+          for(let j=0;j<row.length;j++){ if(isD(row[j])){ if(dcols.length&&j!==dcols.at(-1)[0]+1) break; dcols.push([j,ymOf(row[j])]); } } } continue; }
       const site=T(row[h['Site']]), ph=T(row[h['Phase/Project']]), ca=T(row[h['Category']]);
-      if(site&&ph&&ca.toLowerCase()==='contingency/escalation'){ const k=site+'\u0001'+ph; cont.set(k,(cont.get(k)||0)+N(row[h['Remaining']])); } } }
-  const projects=[], keyrows=[]; let pending=[]; const seen={};
+      if(site&&ph){ const k=site+'\u0001'+ph; let fl=flM.get(k); if(!fl){ fl={}; flM.set(k,fl); }   // fluxo mensal (todas as linhas) p/ check Detail x Summary
+        dcols.forEach(([j,m])=>{ const v=N(row[j]); if(v) fl[m]=(fl[m]||0)+v; }); }
+      if(site&&ph&&ca.toLowerCase()==='contingency/escalation'){ const k=site+'\u0001'+ph; cont.set(k,(cont.get(k)||0)+N(row[h['Remaining']])); }
+      if(site&&ph&&!ca.toUpperCase().includes('FX')){ const k=site+'\u0001'+ph;   // página PO Check: sem as linhas de FX Variation
+        if('PO Value' in h) poM.set(k,(poM.get(k)||0)+N(row[h['PO Value']]));
+        if('Spent to Date' in h) spM.set(k,(spM.get(k)||0)+N(row[h['Spent to Date']])); } } }
+  const projects=[], keyrows=[]; let pending=[]; const seen={}; const summAll=new Map(); const cdr=[];
   const dtype=(c,t)=>c==='OFE'?'Spec - OFE':c==='Fitout'?'Fitout':(t||'(vazio)');
   const rtype=(c,t)=>c==='Fitout'?'Fitout':t.toLowerCase()==='non-spec'?'Non-spec':(t||'(vazio)');
   for(let i=hi+1;i<R.length;i++){ const r=R[i]||[]; const a=T(r[0]), b=T(r[1]);
     if(T(r[col['Commit?']])==='Total'){ pending.forEach(k=>k.block=a); pending=[]; continue; }
-    if(a&&!b) break; if(!(a&&b)) continue; if(/^\s*ajuste\b/i.test(b)) continue;
+    if(a&&!b) break; if(!(a&&b)) continue;
+    cdr.push({b:T(r[2])||a, s:a, p:b, cat:T(r[col['Capex categorization']]), t:T(r[col['Type']]), pr:'% Procured' in col?N(r[col['% Procured']]):0, ps:'% Spec Capex' in col?N(r[col['% Spec Capex']]):0, c:T(r[col['Country']]), v:months.map(([j])=>r2(N(r[j])))});
+    { const k=a+'\u0001'+b; let sa=summAll.get(k); if(!sa){ sa={}; summAll.set(k,sa); } months.forEach(([j,mm])=>{ const v=N(r[j]); if(v) sa[mm]=(sa[mm]||0)+v; }); }
+    if(/^\s*ajuste\b/i.test(b)) continue;
     const cat=T(r[col['Capex categorization']]), typ=T(r[col['Type']]);
     if(typ.toLowerCase()!=='reimbursement'){ const base=`${a} | ${b}`; seen[base]=(seen[base]||0)+1;
       const kr={key:seen[base]===1?base:`${base} #${seen[base]}`, site:a, block:'', efc:'EFC' in col?N(r[col['EFC']]):0}; keyrows.push(kr); pending.push(kr); }
     if(cat==='Fitout Revenue'||cat==='Utility Revenue'||typ==='Reimbursement') continue;
     projects.push({p:`${a} ${b}`, site:a, row:i+1, country:T(r[col['Country']])||'(vazio)', other:T(r[col['Other']])||'(vazio)',
       type:dtype(cat,typ), type2:rtype(cat,typ), cat:cat||'(vazio)', commit:T(r[col['Commit?']])||'(vazio)',
-      bud:'Total Budget' in col?r2(N(r[col['Total Budget']])):0, efc:'C' in col?r2(N(r[col['C']])):0, cont:r2(cont.get(a+'\u0001'+b)||0),
+      bud:'Total Budget' in col?r2(N(r[col['Total Budget']])):0, efc:'C' in col?r2(N(r[col['C']])):0, cont:r2(cont.get(a+'\u0001'+b)||0), po:r2(poM.get(a+'\u0001'+b)||0), sp:r2(spM.get(a+'\u0001'+b)||0),
       v:months.map(([j])=>r2(N(r[j]))) }); }
   const cy=ymOf(cutoff), m=/(\d{2})-(\d{2})-(\d{2,4})/.exec(fileName);
   return {file:fileName, last_update:fmtDT(new Date(out.modified||lastMod)),
     file_date:m?`${m[1]}/${m[2]}/${m[3].slice(-2)}`:fmtDT(new Date(lastMod)).slice(0,8),
     cutoff:cy, cutoff_label:MPT0[+cy.slice(5)-1].replace(/^./,c=>c.toUpperCase())+'-'+cy.slice(2,4),
-    months:months.map(x=>x[1]), projects, keyrows, generated:fmtDT(new Date())};
+    months:months.map(x=>x[1]), projects, keyrows, fit:parseFit(out.sheets['Fit-out']), cdr, est:parseEst(out.sheets), dchk:detailCheckJS(flM,summAll,months.length?months[0][1]:''), generated:fmtDT(new Date())};
 }
+// projetos da CapEx Detail USD que faltam na Summary ou cujo fluxo mensal difere (tolerância US$ 1); meses antes do 1º da Summary somam no 1º
+function detailCheckJS(det,summ,first){ const out=[];
+  det.forEach((fl,k)=>{ const [site,ph]=k.split('\u0001'), f={}; Object.entries(fl).forEach(([m,v])=>{ const mm=first&&m<first?first:m; f[mm]=(f[mm]||0)+v; });
+    const dt=Object.values(f).reduce((a,b)=>a+b,0);
+    if(!summ.has(k)){ if(Object.values(f).some(v=>Math.abs(v)>=1)) out.push({site,ph,st:'missing',dt:Math.round(dt),sm:0,diff:Math.round(Math.abs(dt)),n:0,m:[]}); return; }
+    const s=summ.get(k), ms=[...new Set([...Object.keys(f),...Object.keys(s)])].sort();
+    const d=ms.map(m=>[m,f[m]||0,s[m]||0]).filter(([,a,b])=>Math.abs(a-b)>=1);
+    if(d.length) out.push({site,ph,st:'flow',dt:Math.round(dt),sm:Math.round(Object.values(s).reduce((a,b)=>a+b,0)),diff:Math.round(d.reduce((t,[,a,b])=>t+Math.abs(a-b),0)),n:d.length,m:d.map(([m,a,b])=>({m,d:Math.round(a),s:Math.round(b)}))}); });
+  return out.sort((x,y)=>(x.st!=='missing')-(y.st!=='missing')||y.diff-x.diff); }
+// aba Fit-out: fluxo mensal por projeto de Net Revenue e Capex (mesma regra do read_fitout em Python)
+// tabelas copiadas no funding (tenant_master_latam e site_estimates), agregadas por prédio — mesma regra do read_estimates (Python)
+function parseEst(S){ const o={kw:{},com:{},fin:{},pd:{},vat:0};
+  const tab=n=>{ const R=S[n]; if(!R||!R.length) return null; const h={}; (R[0]||[]).forEach((x,i)=>{ const k=T(x); if(k&&!(k in h)) h[k]=i; }); return {h,R:R.slice(1)}; };
+  let t=tab('tenant_master_latam'); if(t&&'Building' in t.h&&'kW' in t.h) t.R.forEach(r0=>{ const r=r0||[], b=T(r[t.h.Building]); if(b) o.kw[b]=(o.kw[b]||0)+N(r[t.h.kW]); });
+  t=tab('site_estimates_finance_latam'); if(t&&'Building' in t.h) t.R.forEach(r0=>{ const r=r0||[], b=T(r[t.h.Building]), m=T(r[t.h.Measure]), v=N(r[t.h.Value]);
+    if(m==='Commission') o.com[b]=(o.com[b]||0)+v; else if(m==='Finance Contingency') o.fin[b]=(o.fin[b]||0)+v; else if(m==='VAT Reimbursement') o.vat+=v; });
+  t=tab('site_estimates_pd_latam'); if(t&&'Building' in t.h) t.R.forEach(r0=>{ const r=r0||[], b=T(r[t.h.Building]); if(b&&T(r[t.h.Type])==='PD'&&T(r[t.h.Measure])!=='Available MW') o.pd[b]=(o.pd[b]||0)+N(r[t.h.Value]); });
+  return o; }
+function parseFit(R){ if(!R||R.length<3) return null; const mc=[]; (R[2]||[]).forEach((c,j)=>{ if(isD(c)) mc.push(j); });
+  const months=mc.map(j=>ymOf(R[2][j])), act=mc.map(j=>T((R[0]||[])[j]).toLowerCase()==='actual');
+  let st=R.findIndex(r=>r&&T(r[1])==='Breakdown'); if(st<0) st=0; const projs=[]; let cur=null;
+  for(const r0 of R.slice(st)){ const r=r0||[], kind=T(r[5]); let key;
+    if(kind==='Net Revenue'&&T(r[6])){ cur={k:T(r[6]),n:T(r[7])||T(r[6]),site:T(r[0]),c:T(r[1])||'(vazio)',rev:mc.map(()=>0),cap:mc.map(()=>0)}; projs.push(cur); key='rev'; }
+    else if(kind==='Capex'&&cur) key='cap'; else continue;
+    mc.forEach((j,q)=>{ cur[key][q]+=N(r[j]); }); }
+  projs.forEach(p=>{ p.rev=p.rev.map(Math.round); p.cap=p.cap.map(Math.round); });
+  return {months,act,projects:projs}; }
 function renamesJS(o,n){ const O=new Map(o.keyrows.map(k=>[k.key,k])), Nn=new Map(n.keyrows.map(k=>[k.key,k]));
   const added=[...Nn.keys()].filter(k=>!O.has(k)), out=[];
   [...O.keys()].filter(k=>!Nn.has(k)).forEach(r=>{ const po=O.get(r), c=added.filter(x=>Nn.get(x).site===po.site&&Nn.get(x).block===po.block);
     if(c.length){ const best=c.reduce((m,x)=>Math.abs(Nn.get(x).efc-po.efc)<Math.abs(Nn.get(m).efc-po.efc)?x:m); out.push({old:r,new:best,site:po.site}); } });
   return out; }
 // ---- interface ----
-const FILES={prev:null,cur:null};
-[['Prev','prev'],['Cur','cur']].forEach(([S,k])=>{ $('#file'+S).onchange=e=>{ FILES[k]=e.target.files[0]||null; $('#fn'+S).textContent=FILES[k]?FILES[k].name:'nenhum arquivo selecionado'; }; });
-$('#lnkPrev').value=(ALL.meta&&ALL.meta.prev_link)||''; $('#lnkCur').value=(ALL.meta&&ALL.meta.cur_link)||'';
+// Lista os arquivos da pasta sincronizada do SharePoint (OneDrive) com a File System Access API do Chrome/Edge.
+// A pasta é escolhida uma vez por pessoa; a lista é relida a cada 20 s e quando a janela volta ao foco,
+// então arquivos novos ou alterados aparecem sozinhos.
+const FILES={prev:null,cur:null}; let DIR=null, FLIST=[], SEEN=null;
+const XLRE=/\.(xlsx|xlsm)$/i;
+// ordem da lista: PROD primeiro; depois os Cons do mês-ano mais novo ao mais antigo (pelo "Cons Mmm-AA" do nome)
+const MON={jan:1,fev:2,feb:2,mar:3,abr:4,apr:4,mai:5,may:5,jun:6,jul:7,ago:8,aug:8,set:9,sep:9,out:10,oct:10,nov:11,dez:12,dec:12};
+function fileKey(n){ const prod=/\bprod\b/i.test(n)?0:1;
+  const m=/cons[\s_-]*([a-zç]{3})[a-zç]*[\s_-]*(\d{2,4})/i.exec(n); let k=0;   // sem mês-ano no nome: vai para o fim
+  if(m&&MON[m[1].toLowerCase()]){ const y=+m[2]; k=(y<100?2000+y:y)*100+MON[m[1].toLowerCase()]; }
+  else { const d=/(\d{2})-(\d{2})-(\d{2,4})/.exec(n); if(d){ const y=+d[3]; k=(y<100?2000+y:y)*100+(+d[2]); } }
+  return [prod,k]; }
+function fileOrder(a,b){ const x=fileKey(a.name), y=fileKey(b.name); return x[0]-y[0]||y[1]-x[1]||a.name.localeCompare(b.name); }
+const kb=n=>n>1048576?(n/1048576).toLocaleString('pt-BR',{maximumFractionDigits:1})+' MB':Math.round(n/1024)+' KB';
+const idb=()=>new Promise((res,rej)=>{ const r=indexedDB.open('capex-funding',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); });
+async function kvSet(k,v){ try{ const db=await idb(); await new Promise(r=>{ const t=db.transaction('kv','readwrite'); t.objectStore('kv').put(v,k); t.oncomplete=r; t.onerror=r; }); }catch(e){} }
+async function kvGet(k){ try{ const db=await idb(); return await new Promise(r=>{ const q=db.transaction('kv').objectStore('kv').get(k); q.onsuccess=()=>r(q.result); q.onerror=()=>r(null); }); }catch(e){ return null; } }
+function st0(t){ $('#st0').innerHTML=t; }
+async function scan(){
+  if(!DIR||DIR.simple) return; const out=[];
+  try{ for await (const [name,h] of DIR.entries()){ if(h.kind!=='file'||!XLRE.test(name)||name.startsWith('~$')) continue;
+      try{ const f=await h.getFile(); out.push({name,h,mod:f.lastModified,size:f.size}); }catch(e){ out.push({name,h,mod:0,size:0}); } } }
+  catch(e){ st0('Não foi possível ler a pasta. Clique em "Reconectar pasta".'); $('#conn0').hidden=false; $('#conn0').textContent='Reconectar pasta'; return; }
+  out.sort(fileOrder);
+  const prevSeen=SEEN; SEEN=new Map(out.map(f=>[f.name,f.mod]));
+  out.forEach(f=>f.isnew=!!prevSeen&&(!prevSeen.has(f.name)||prevSeen.get(f.name)!==f.mod));
+  FLIST=out; drawList();
+  $('#upd0').textContent=`Lista atualizada às ${fmtDT(new Date()).slice(9)} · atualiza sozinha a cada 20 s`; $('#rf0').hidden=false;
+}
+function drawList(){
+  const L=$('#list0');
+  if(!DIR){ L.innerHTML=''; return; }
+  st0(`${FLIST.length} arquivo(s) Excel na pasta <b>${esc(DIR.name)}</b>. Arraste para os campos à direita ou use os botões.`);
+  L.innerHTML=FLIST.map((f,i)=>{ const tag=/\bprod\b/i.test(f.name)?'<span class="tg t-att tg">PROD</span>':/\bcons/i.test(f.name)?'<span class="tg t-rem tg">Cons</span>':'';
+    const used=FILES.prev&&FILES.prev.name===f.name?'used-prev':FILES.cur&&FILES.cur.name===f.name?'used-cur':'';
+    return `<div class="fi ${used} ${f.isnew?'isnew':''}" draggable="true" data-i="${i}" title="${esc(f.name)}"><span class="xl">X</span>
+      <div style="min-width:0"><div class="nm">${esc(f.name.replace(XLRE,''))}${tag}${f.isnew?' <span class="tg t-past">novo/alterado</span>':''}</div><div class="mt">modificado ${f.mod?fmtDT(new Date(f.mod)):'–'} · ${f.size?kb(f.size):''}</div></div>
+      <div class="ac"><button class="ap" data-set="prev" title="Usar como arquivo anterior">Anterior</button><button class="ac2" data-set="cur" title="Usar como arquivo atual">Atual</button></div></div>`; }).join('')||'<div class="dl">Nenhum arquivo .xlsx nesta pasta.</div>';
+  L.querySelectorAll('.fi').forEach(el=>{ const f=FLIST[+el.dataset.i];
+    el.ondragstart=e=>{ e.dataTransfer.setData('text/x-funding',f.name); e.dataTransfer.effectAllowed='copy'; };
+    el.querySelectorAll('[data-set]').forEach(b=>b.onclick=async ev=>{ ev.stopPropagation(); await setFromList(b.dataset.set,f.name); }); });
+}
+async function setFromList(k,name){ const f=FLIST.find(x=>x.name===name); if(!f) return;
+  try{ setFile(k, f.file || await f.h.getFile()); }catch(e){ msg('Não foi possível abrir '+esc(name)+'. Se o arquivo estiver só na nuvem, clique nele com o botão direito no Explorador e escolha "Sempre manter neste dispositivo".'); } }
+function setFile(k,file){
+  FILES[k]=file; const box=$(k==='prev'?'#dropPrev':'#dropCur'), sel=box.querySelector('.sel'), ph=box.querySelector('.ph');
+  if(file){ sel.hidden=false; ph.hidden=true; sel.innerHTML=`<span class="xl">X</span><div><b>${esc(file.name.replace(XLRE,''))}</b><span>modificado ${fmtDT(new Date(file.lastModified))} · ${kb(file.size)}</span></div><button title="Remover">Trocar</button>`;
+    sel.querySelector('button').onclick=()=>setFile(k,null); }
+  else { sel.hidden=true; ph.hidden=false; }
+  $('#goCmp').disabled=!(FILES.prev&&FILES.cur); msg(''); drawList();
+}
+[['Prev','prev'],['Cur','cur']].forEach(([S,k])=>{
+  $('#file'+S).onchange=e=>{ if(e.target.files[0]) setFile(k,e.target.files[0]); e.target.value=''; };
+  const box=$('#drop'+S);
+  box.ondragover=e=>{ e.preventDefault(); box.classList.add('over'); };
+  box.ondragleave=()=>box.classList.remove('over');
+  box.ondrop=async e=>{ e.preventDefault(); box.classList.remove('over');
+    const nm=e.dataTransfer.getData('text/x-funding'); if(nm) return setFromList(k,nm);
+    const f=[...(e.dataTransfer.files||[])].find(x=>XLRE.test(x.name)); if(f) setFile(k,f); else msg('Solte um arquivo Excel (.xlsx).'); };
+});
+async function connect(fromClick){
+  if(!('showDirectoryPicker' in window)){ if(fromClick){ $('#dir0').click(); return; } st0('Este navegador não mantém a pasta conectada; clique em <b>Conectar pasta</b> para listar os arquivos (sem atualização automática). Para atualizar sozinha, use o Chrome ou o Edge.'); return; }
+  try{
+    if(!DIR||fromClick){ const saved=!fromClick&&await kvGet('dir');
+      if(saved){ DIR=saved; }
+      else if(!fromClick){ return; }   // primeira visita: espera o clique em "Conectar pasta" (o navegador exige um clique)
+      else { DIR=await window.showDirectoryPicker({id:'funding',mode:'read'}); st0('Pasta <b>'+esc(DIR.name)+'</b> selecionada. Lendo os arquivos…'); kvSet('dir',DIR); } }
+    let perm=await DIR.queryPermission({mode:'read'});
+    if(perm!=='granted'&&fromClick) perm=await DIR.requestPermission({mode:'read'});
+    if(perm!=='granted'){ st0(`Pasta <b>${esc(DIR.name)}</b> lembrada. Clique em "Reconectar pasta" para liberar a leitura (o navegador pede uma confirmação).`); $('#conn0').textContent='Reconectar pasta'; return; }
+    $('#conn0').textContent='Trocar pasta'; await scan();
+  }catch(e){ DIR=null;
+    st0(`Não foi possível conectar a pasta${e&&e.name==='AbortError'?' (a seleção foi cancelada ou bloqueada pelo navegador)':''}: <i>${esc((e&&e.name?e.name+' – ':'')+(e&&e.message||String(e)))}</i>.<br>
+      Tente o <a href="#" id="simple0" class="lnk">modo simples</a>: você escolhe a pasta e o navegador lista os arquivos (sem atualização automática; para atualizar, escolha a pasta de novo).`);
+    const a=$('#simple0'); if(a) a.onclick=ev=>{ ev.preventDefault(); $('#dir0').click(); }; }
+}
+// modo simples: <input webkitdirectory> funciona em qualquer navegador, mas a lista não se atualiza sozinha
+$('#dir0').onchange=e=>{ const fs=[...e.target.files].filter(f=>XLRE.test(f.name)&&!f.name.startsWith('~$')&&(f.webkitRelativePath||'').split('/').length===2);
+  DIR={name:(e.target.files[0]&&(e.target.files[0].webkitRelativePath||'').split('/')[0])||'pasta', simple:true};
+  FLIST=fs.map(f=>({name:f.name,file:f,mod:f.lastModified,size:f.size})).sort(fileOrder);
+  drawList(); $('#upd0').textContent='Modo simples: para atualizar a lista, clique em "Escolher pasta de novo".';
+  $('#conn0').textContent='Escolher pasta de novo'; $('#conn0').onclick=()=>$('#dir0').click(); e.target.value=''; };
+$('#conn0').onclick=()=>connect(true);
+$('#rf0').onclick=()=>scan();
+st0('Clique em <b>Conectar pasta</b> e escolha a pasta <b>01. Funding</b> sincronizada no seu computador (OneDrive). Isso é feito uma vez só; depois a lista atualiza sozinha.');
+connect(false);
+setInterval(()=>{ if(GEN===window.__dashGen&&PAGE===0&&DIR&&document.visibilityState==='visible') scan(); },20000);
+window.addEventListener('focus',()=>{ if(GEN===window.__dashGen&&PAGE===0&&DIR) scan(); });
 function steps(list){ const p=$('#prog0'); p.hidden=false; p.innerHTML=list.map(([t,s])=>`<div class="st ${s}"><i></i><span>${esc(t)}</span></div>`).join(''); }
 function msg(html,cls=''){ $('#msg0').innerHTML=html?`<div class="msg ${cls}">${html}</div>`:''; }
 $('#goCmp').onclick=async()=>{
-  msg(''); const lp=$('#lnkPrev').value.trim(), lc=$('#lnkCur').value.trim();
-  if(!FILES.prev||!FILES.cur){
-    if(lp||lc){ const ask=`Use o skill capex-summary-compare para comparar os arquivos de Funding:\n- Arquivo anterior (rosa): ${lp||'(informar)'}\n- Arquivo atual (azul): ${lc||'(informar)'}\nGere o dashboard com a página inicial preenchida com esses links.`;
-      msg(`O navegador não consegue baixar os arquivos direto do SharePoint pelo link (o SharePoint exige login). Você pode:<br>
-        1) clicar em "Selecionar arquivo do computador" nos dois campos e escolher os arquivos na pasta sincronizada pelo OneDrive; ou<br>
-        2) copiar o pedido abaixo e colar no Claude, que roda a comparação e devolve o dashboard pronto.
-        <textarea id="ask0" readonly>${esc(ask)}</textarea><div class="jump"><button id="copy0">Copiar pedido</button></div>`,'info');
-      $('#copy0').onclick=()=>{ const t=$('#ask0'); t.select(); try{ navigator.clipboard.writeText(t.value); }catch(e){ document.execCommand('copy'); } $('#copy0').textContent='Copiado'; };
-    } else msg('Selecione o arquivo anterior (rosa) e o atual (azul), ou cole os links do SharePoint.');
-    return; }
+  msg('');
+  if(!FILES.prev||!FILES.cur){ msg('Coloque um arquivo no campo Anterior (rosa) e outro no Atual (azul).'); return; }
   if(/\bprod\b/i.test(FILES.prev.name)&&/\bcons/i.test(FILES.cur.name)&&!confirm('Parece que os arquivos estão invertidos: o anterior tem "PROD" no nome e o atual tem "Cons". Continuar mesmo assim?')) return;
   $('#goCmp').disabled=true; $('#done0').innerHTML='';
   const S=[['Lendo o arquivo anterior: '+FILES.prev.name,'run'],['Lendo o arquivo atual: '+FILES.cur.name,''],['Comparando e montando as abas','']];
@@ -1261,8 +1607,8 @@ $('#goCmp').onclick=async()=>{
     steps(S); const bp=await readBook(FILES.prev); const prev=parseBook(bp,FILES.prev.name,FILES.prev.lastModified);
     S[0][1]='ok'; S[1][1]='run'; steps(S); const bc=await readBook(FILES.cur); const cur=parseBook(bc,FILES.cur.name,FILES.cur.lastModified);
     S[1][1]='ok'; S[2][1]='run'; steps(S);
-    const data={cur, prev, cmp:{renames:renamesJS(prev,cur)}, meta:{source:'browser', generated:fmtDT(new Date()), prev_link:lp, cur_link:lc}};
-    delete data.cur.keyrows; delete data.prev.keyrows;
+    const data={cur, prev, cmp:{renames:renamesJS(prev,cur)}, meta:{source:'browser', generated:fmtDT(new Date()), prev_link:'', cur_link:''}};
+    delete data.cur.keyrows; delete data.prev.keyrows; delete data.prev.dchk; delete data.prev.fit; delete data.prev.cdr; delete data.prev.est;
     S[2][1]='ok'; steps(S);
     openWith(data);
   }catch(err){ const i=S.findIndex(x=>x[1]==='run'); if(i>=0) S[i][1]='err'; steps(S); msg('Não foi possível concluir a comparação: '+esc(err.message||String(err))); $('#goCmp').disabled=false; }
@@ -1279,7 +1625,7 @@ function confirmBox(){
   $('#done0').innerHTML=`<div class="done"><div class="ok"><b>✓</b>Comparação realizada entre os arquivos</div>
     ${row('pk','Anterior',ALL.prev,M.prev_link)}${row('bl','Atual',ALL.cur,M.cur_link)}
     <div class="dl" style="margin-top:8px">${M.source==='browser'?'Comparação feita neste navegador':'Comparação gerada pelo Claude'} em ${esc(M.generated||ALL.cur.generated||'')}.</div>
-    <div class="jump"><button data-j="1">Odata CapEx Control</button><button data-j="6">Visão Geral (novo)</button><button data-j="2">Capex Comparison</button><button data-j="3">Change Details</button><button data-j="4">Comparison w/o FX</button><button data-j="5">Building Budget</button><button id="dl0">Baixar este dashboard (.html)</button></div></div>`;
+    <div class="jump"><button data-j="6">Current Overview</button><button data-j="2">Capex Comparison</button><button data-j="8">Comparison by Project</button><button data-j="3">Change Details</button><button data-j="4">Comparison w/o FX</button><button data-j="5">Building Budget</button><button data-j="9">Current Checks</button><button data-j="11">Dashboard FP&amp;A</button><button id="dl0">Baixar este dashboard (.html)</button></div></div>`;
   document.querySelectorAll('#done0 [data-j]').forEach(b=>b.onclick=()=>goPage(+b.dataset.j));
   $('#dl0').onclick=()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([htmlWith(ALL)],{type:'text/html'}));
     a.download=`Comparativo_${ALL.prev.cutoff_label}_x_${ALL.cur.cutoff_label}.html`; document.body.appendChild(a); a.click(); a.remove(); };
@@ -1341,7 +1687,7 @@ function page6(){
   hbar6('#ty6','type',base.filter(p=>ok6(p,'type')),midx);
   hbar6('#ca6','cat',base.filter(p=>ok6(p,'cat')),midx);
   annual6(all);
-  insights6(all, idx, midx, S, R);
+  // (Insights Gerenciais retirados a pedido do usuário; os gráficos ocupam o espaço)
 }
 function chart6(idx, list){
   const el=$('#ch6'), W=el.clientWidth||800, H=el.clientHeight||300;
@@ -1396,7 +1742,7 @@ function hbar6(sel,k,list,midx){
   const g={}; list.forEach(p=>{ const o=g[p[k]]||(g[p[k]]={s:0,r:0}); midx.forEach(i=>{ D.months[i]<=CUT?o.s+=p.v[i]:o.r+=p.v[i]; }); });
   let keys=Object.keys(g).filter(x=>Math.abs(g[x].s)>=0.5||Math.abs(g[x].r)>=0.5);
   if(ORD6[k]) keys.sort((a,b)=>{ const ia=ORD6[k].indexOf(a), ib=ORD6[k].indexOf(b); return (ia<0?99:ia)-(ib<0?99:ib); }); else keys.sort((a,b)=>(g[b].s+g[b].r)-(g[a].s+g[a].r));
-  const el=$(sel), W=el.clientWidth||400, H=el.clientHeight||220, lw=88, rw=58, pb=20, n=Math.max(keys.length,1), rh=Math.min(38,(H-pb-4)/n);
+  const el=$(sel), W=el.clientWidth||400, H=el.clientHeight||220, lw=88, rw=58, pb=20, n=Math.max(keys.length,1), rh=Math.min(60,(H-pb-4)/n);   // barras crescem com a altura do quadro
   const mx=Math.max(1,...keys.map(x=>Math.max(0,g[x].s)+Math.max(0,g[x].r))), sc=v=>Math.max(0,v)/mx*(W-lw-rw), any=sel6[k].size>0;
   let s=`<svg width="${W}" height="${H}">`;
   for(let t=0;t<=4;t++){ const xv=lw+(W-lw-rw)*t/4; s+=`<line x1="${xv}" x2="${xv}" y1="0" y2="${n*rh}" stroke="rgba(255,255,255,.05)"/><text x="${xv}" y="${n*rh+14}" font-size="10" text-anchor="middle" fill="#7F90AF">${Math.round(mx*t/4/1e6).toLocaleString('pt-BR')}</text>`; }
@@ -1449,40 +1795,326 @@ $('#d6a').onchange=$('#d6b').onchange=()=>{ $('#y6').value=''; TL6.sync(); page6
 $('#n6').onchange=e=>{ st6.n=+e.target.value; page6(); };
 $('#clr6').onclick=clr6;
 document.querySelectorAll('#mode6 button').forEach(b=>b.onclick=()=>{ st6.mode=b.dataset.m; document.querySelectorAll('#mode6 button').forEach(x=>x.classList.toggle('on',x===b)); page6(); });
-document.querySelectorAll('#pg6 [data-go]').forEach(b=>b.onclick=()=>goPage(+b.dataset.go));
+$('#all6').onclick=()=>{ st6.n=100000; $('#n6').value='100000'; page6(); };
 $('#exp6').onclick=()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([htmlWith(ALL)],{type:'text/html'}));
   a.download=`Odata_CapEx_Control_${D.cutoff_label||'dados'}.html`; document.body.appendChild(a); a.click(); a.remove(); };
 
+// =====================================================================
+// PÁGINA 8 — Comparison by Project (réplica da Capex Comparison + comparação por projeto no período e no mês)
+// =====================================================================
+const K8=['country','type2','cat','p'];
+const off8={prev:Object.fromEntries(K8.map(k=>[k,new Set()])), cur:Object.fromEntries(K8.map(k=>[k,new Set()]))};
+const sel8m=new Set(); const st8={c:'',t:'',k:'',m:''};
+const pass8=(side,p,skip)=>K8.every(k=>k===skip||!off8[side][k].has(p[k]));
+function drawFilter8(side,k){
+  const before=K8.slice(0,K8.indexOf(k)), data=P2[side].projects, pool=data.filter(p=>before.every(kk=>!off8[side][kk].has(p[kk])));
+  const vals=uniq(k,pool), o=off8[side][k], all=vals.every(v=>!o.has(v));
+  let h=`<label><input type="checkbox" data-all="1" ${all?'checked':''}>Selecionar tudo</label>`;
+  vals.forEach(v=>h+=`<label title="${esc(v)}"><input type="checkbox" value="${esc(v)}" ${o.has(v)?'':'checked'}>${esc(v)}</label>`);
+  const el=$(`#f8-${side}-${k}`); if(!el) return; el.innerHTML=h;
+  el.querySelectorAll('input:not([data-all])').forEach(i=>i.onchange=()=>{ i.checked?o.delete(i.value):o.add(i.value); page8(); });
+  el.querySelector('[data-all]').onchange=e=>{ if(e.target.checked) o.clear(); else vals.forEach(v=>o.add(v)); page8(); };
+}
+function range8(){ let a=$('#d8a').value||'1900-01-01', b=$('#d8b').value||'2999-12-31'; if(a>b)[a,b]=[b,a]; return [a,b]; }
+function pick8(m,multi){ if(multi){ sel8m.has(m)?sel8m.delete(m):sel8m.add(m); } else if(sel8m.size===1&&sel8m.has(m)) sel8m.clear(); else { sel8m.clear(); sel8m.add(m); } page8(); }
+const ml8=m=>MPT[+m.slice(5)-1].replace(/^./,c=>c.toUpperCase())+'-'+m.slice(2,4);
+function dd8(sel,label,vals,cur){ $(sel).innerHTML=`<option value="">${label}: Tudo</option>`+vals.map(v=>`<option value="${esc(v)}" ${v===cur?'selected':''}>${esc(v)}</option>`).join(''); }
+function page8(){
+  ['prev','cur'].forEach(side=>K8.forEach(k=>drawFilter8(side,k)));
+  const [a,b]=range8(), S={};
+  ['prev','cur'].forEach(side=>{ const d=P2[side], me=d.months.map(mEnd), idx=me.map((e,i)=>e>=a&&e<=b?i:-1).filter(i=>i>=0);
+    const midx=sel8m.size?idx.filter(i=>sel8m.has(d.months[i])):idx; S[side]={d,idx,midx,base:d.projects.filter(p=>pass8(side,p))}; });
+  const c=$('#clearSel8'); c.classList.toggle('on',sel8m.size>0); c.textContent=sel8m.size?[...sel8m].sort().map(ml8).join(', ')+'  ✕':'';
+  // gráficos e cartões (iguais aos da Capex Comparison)
+  [['prev','P','p','#F07AC0','#C04A95'],['cur','C','c','#3D8BFF','#1F5FC0']].forEach(([side,L,l,c1,c2])=>{
+    const s=S[side], cut=s.d.cutoff; let inc=0,fc=0; s.base.forEach(p=>s.midx.forEach(i=>{ s.d.months[i]<=cut?inc+=p.v[i]:fc+=p.v[i]; }));
+    $(`#${l}8Inc`).textContent=fM2(inc); $(`#${l}8Fc`).textContent=fM2(fc); $(`#${l}8Tot`).textContent=fM(inc+fc); $(`#${l}8Cut`).textContent=s.d.cutoff_label; $(`#${l}8N`).textContent=s.base.length;
+    lineX(`#line8${L}`, s.idx.map(i=>s.d.months[i]), s.idx.map(i=>s.base.reduce((t,p)=>t+p.v[i],0)), cut, c1, c2, sel8m, pick8); });
+  // filtros suspensos (Country, Type, Category) da parte de baixo
+  const both=S.prev.base.concat(S.cur.base);
+  dd8('#s8c','Country',uniq('country',both),st8.c); dd8('#s8t','Type',uniq('type2',both),st8.t); dd8('#s8k','Category',uniq('cat',both),st8.k);
+  const okDD=p=>(!st8.c||p.country===st8.c)&&(!st8.t||p.type2===st8.t)&&(!st8.k||p.cat===st8.k);
+  $('#per8').textContent=`${a.slice(8)}/${a.slice(5,7)}/${a.slice(0,4)} a ${b.slice(8)}/${b.slice(5,7)}/${b.slice(0,4)}${sel8m.size?' · meses selecionados':''}`;
+  // período
+  const gp=new Map();
+  ['prev','cur'].forEach(side=>S[side].base.filter(okDD).forEach(p=>{ const o=gp.get(p.p)||{n:p.p,country:p.country,prev:null,cur:null}; o[side]=(o[side]||0)+S[side].midx.reduce((t,i)=>t+p.v[i],0); gp.set(p.p,o); }));
+  table8('#t8p',[...gp.values()]); cols8('#v8p',[...gp.values()]);
+  // mês
+  const ms=[...new Set(S.prev.idx.map(i=>S.prev.d.months[i]).concat(S.cur.idx.map(i=>S.cur.d.months[i])))].sort();
+  if(!ms.includes(st8.m)) st8.m=ms.find(m=>m>P2.cur.cutoff)||ms.at(-1)||'';
+  $('#s8m').innerHTML=ms.map(m=>`<option value="${m}" ${m===st8.m?'selected':''}>${ml8(m)}</option>`).join('');
+  const gm=new Map();
+  ['prev','cur'].forEach(side=>{ const j=S[side].d.months.indexOf(st8.m); if(j<0) return;
+    S[side].base.filter(okDD).forEach(p=>{ const o=gm.get(p.p)||{n:p.p,country:p.country,prev:null,cur:null}; o[side]=(o[side]||0)+p.v[j]; gm.set(p.p,o); }); });
+  table8('#t8m',[...gm.values()]); cols8('#v8m',[...gm.values()]);
+}
+function table8(sel,list){
+  const z=v=>v==null||Math.abs(v)<1;
+  const rows=list.filter(r=>!(z(r.prev)&&z(r.cur))).map(r=>({...r,d:(r.cur||0)-(r.prev||0)})).sort((x,y)=>Math.abs(y.d)-Math.abs(x.d)||x.n.localeCompare(y.n));
+  const P=rows.reduce((t,r)=>t+(r.prev||0),0), C=rows.reduce((t,r)=>t+(r.cur||0),0);
+  const v=x=>x==null?'':fM(x);
+  let h=`<thead><tr><th>Project</th><th class="pv">Capex<br>Previous</th><th class="cu">Capex<br>Current</th><th class="ar"></th><th>Capex<br>Variation ▾</th></tr></thead><tbody>`;
+  rows.forEach(r=>h+=`<tr><td title="${esc(r.n)}">${esc(r.n)}</td><td class="pv">${v(r.prev)}</td><td class="cu">${v(r.cur)}</td><td class="ar">${arrow(r.d)}</td><td>${fM(Math.abs(r.d))}</td></tr>`);
+  if(!rows.length) h+='<tr><td colspan="5" class="dl">Sem valores.</td></tr>';
+  h+=`<tr class="sum"><td>Total</td><td>${fM(P)}</td><td>${fM(C)}</td><td class="ar">${Math.abs(C-P)<1?'-':C>P?'▲':'▼'}</td><td>${fM(Math.abs(C-P))}</td></tr></tbody>`;
+  $(sel).innerHTML=h;
+}
+function cols8(sel,list){
+  const g={}; list.forEach(r=>g[r.country]=(g[r.country]||0)+((r.cur||0)-(r.prev||0)));
+  const it=Object.entries(g).sort((a,b)=>b[1]-a[1]), el=$(sel), W=el.clientWidth||320, H=el.clientHeight||200;
+  if(!it.length){ el.innerHTML='<div class="dl">Sem valores.</div>'; return; }
+  const pt=22, pb=42, mx=Math.max(0,...it.map(x=>x[1])), mn=Math.min(0,...it.map(x=>x[1])), y=v=>pt+(mx-v)/((mx-mn)||1)*(H-pt-pb), y0=y(0), bw=(W-10)/it.length;
+  let s=`<svg width="${W}" height="${H}"><line x1="4" x2="${W-4}" y1="${y0}" y2="${y0}" stroke="rgba(255,255,255,.2)"/>`;
+  it.forEach(([c,v],k)=>{ const x=6+k*bw+bw*.2, w=bw*.6, yy=y(v);
+    s+=`<rect x="${x}" y="${Math.min(yy,y0)}" width="${w}" height="${Math.max(1.5,Math.abs(y0-yy))}" rx="2" fill="${v>=0?'#2F7BFF':'#1F5FC0'}" opacity="${v>=0?1:.75}" data-t="${esc(c)} · variação|${v}"/>
+      <text x="${x+w/2}" y="${v>=0?yy-5:yy+13}" font-size="11" text-anchor="middle">${fM(v)}</text>
+      <text x="${x+w/2}" y="${H-pb+16}" font-size="11" text-anchor="end" fill="#C9D6EE" transform="rotate(-30 ${x+w/2} ${H-pb+16})">${esc(c)}</text>`; });
+  el.innerHTML=s+'</svg>'; tips(el);
+}
+// controles da página 8
+$('#d8a').value=CY+'-01-01'; $('#d8b').value=CY+'-12-31';
+(()=>{ const ys=[...new Set(P2.cur.months.map(m=>m.slice(0,4)))].filter(y=>+y<=2032);
+  $('#y8').innerHTML=ys.map(y=>`<option ${+y===CY?'selected':''}>${y}</option>`).join('')+'<option value="">Período personalizado</option>'; })();
+const TL8 = timeline($('#tl8'), P2.cur.months.filter(m=>m<='2032-12'), $('#d8a'), $('#d8b'), ()=>{ $('#y8').value=''; page8(); });
+$('#y8').onchange=e=>{ const y=e.target.value; if(!y) return; $('#d8a').value=y+'-01-01'; $('#d8b').value=y+'-12-31'; TL8.sync(); page8(); };
+$('#d8a').onchange=$('#d8b').onchange=()=>{ $('#y8').value=''; TL8.sync(); page8(); };
+$('#s8c').onchange=e=>{ st8.c=e.target.value; page8(); }; $('#s8t').onchange=e=>{ st8.t=e.target.value; page8(); }; $('#s8k').onchange=e=>{ st8.k=e.target.value; page8(); };
+$('#s8m').onchange=e=>{ st8.m=e.target.value; page8(); };
+$('#clearSel8').onclick=()=>{ sel8m.clear(); page8(); };
+$('#exp8').onclick=()=>$('#exp2').click();
+
+// =====================================================================
+// PÁGINA 9 — PO Value Check (só arquivo atual)
+//  PO Value = soma da coluna "PO Value" (CapEx Detail USD); Spent to Date = "Spent to Date" do Detail sem linhas de FX;
+//  Spent + Remaining = coluna "C" da CapEx Summary (EFC sem FX).
+//  Check 1: PO ≥ Spent (senão mostra PO − Spent). Check 2: PO ≤ Spent + Remaining (senão mostra PO − (Spent+Rem)).
+// =====================================================================
+const st9={c:'',q:'',only:false,sort:{k:'var',d:-1}};
+const fN=v=>Math.round(v).toLocaleString('pt-BR');
+function rows9(){
+  // PO Value Previous vem do arquivo anterior; o resto (PO Current, Spent, Spent+Rem e checks) do arquivo atual
+  const prev=new Map(); P2.prev.projects.forEach(p=>prev.set(p.p,(prev.get(p.p)||0)+p.po));
+  const out=D.projects.filter(p=>Math.abs(p.po)>=1||Math.abs(p.sp)>=1||Math.abs(p.efc)>=1||Math.abs(prev.get(p.p)||0)>=1).map(p=>{
+    const pv=prev.has(p.p)?prev.get(p.p):null, c1=p.po<p.sp-1?p.po-p.sp:null, c2=p.po>p.efc+1?p.po-p.efc:null;
+    return {n:p.p,country:p.country,pv,po:p.po,sp:p.sp,efc:p.efc,v:p.po-(pv||0),c1,c2,issue:(c1!=null)+(c2!=null)}; });
+  const have=new Set(D.projects.map(p=>p.p));
+  P2.prev.projects.filter(p=>!have.has(p.p)&&Math.abs(p.po)>=1).forEach(p=>out.push({n:p.p,country:p.country,pv:p.po,po:null,sp:null,efc:null,v:-p.po,c1:null,c2:null,issue:0,gone:true}));
+  return out; }
+function page9(){
+  const all=rows9(), cs=[...new Set(all.map(r=>r.country))].sort();
+  if(!st9.c||!cs.includes(st9.c)) st9.c=cs.includes('Brazil')?'Brazil':cs[0]||'';
+  $('#ct9').innerHTML=cs.map(c=>{ const n=all.filter(r=>r.country===c&&r.issue).length; return `<button data-c="${esc(c)}" class="${c===st9.c?'on':''}">${esc(c)}${n?`<span class="bd">${n}</span>`:''}</button>`; }).join('');
+  $('#ct9').querySelectorAll('button').forEach(b=>b.onclick=()=>{ st9.c=b.dataset.c; page9(); });
+  const q=st9.q.toLowerCase(), z=v=>v||0;
+  let L=all.filter(r=>r.country===st9.c&&(!q||r.n.toLowerCase().includes(q))&&(!st9.only||r.issue));
+  const S=st9.sort, key={p:r=>r.n, pv:r=>z(r.pv), po:r=>z(r.po), var:r=>Math.abs(r.v), sp:r=>z(r.sp), c1:r=>r.c1==null?0:Math.abs(r.c1), efc:r=>z(r.efc), c2:r=>r.c2==null?0:Math.abs(r.c2)}[S.k];
+  L.sort((a,b)=>S.k==='p'?S.d*key(a).localeCompare(key(b)):S.d*(key(a)-key(b))||a.n.localeCompare(b.n));
+  const nb=all.filter(r=>r.country===st9.c), n1=nb.filter(r=>r.c1!=null).length, n2=nb.filter(r=>r.c2!=null).length;
+  $('#sum9').textContent=`${nb.length} projetos · PO < Spent: ${n1} · PO > Spent + Remaining: ${n2} · valores em US$`;
+  const ar=k=>S.k===k?(S.d<0?' ▾':' ▴'):'', f=v=>v==null?'':fN(v);
+  let h=`<thead><tr><th data-s="p" style="text-align:left">Project${ar('p')}</th><th class="pv" data-s="pv">PO Value<br>Previous${ar('pv')}<small>${esc(P2.prev.cutoff_label)}</small></th><th class="cu" data-s="po">PO Value<br>Current${ar('po')}<small>${esc(D.cutoff_label)}</small></th><th class="ar"></th><th data-s="var">Var. PO<br>Value${ar('var')}</th><th class="sep" data-s="sp">Spent to Date<br>Current${ar('sp')}</th><th data-s="c1">Check<br>PO &lt; Spent${ar('c1')}</th><th class="sep" data-s="efc">Spent +<br>remaining${ar('efc')}</th><th data-s="c2">Check<br>PO &gt; Spent+Rem${ar('c2')}</th></tr></thead><tbody>`;
+  L.forEach(r=>h+=`<tr><td title="${esc(r.n)}">${esc(r.n)}${r.gone?' <span class="tg rem">só no anterior</span>':''}</td><td class="pv">${f(r.pv)}</td><td class="cu">${f(r.po)}</td><td class="ar">${arrow(r.v)}</td><td>${fN(Math.abs(r.v))}</td><td class="sep">${f(r.sp)}</td>${r.gone?'<td></td>':r.c1==null?'<td class="ok">OK</td>':`<td class="bad" title="PO − Spent">${fN(r.c1)}</td>`}<td class="sep">${f(r.efc)}</td>${r.gone?'<td></td>':r.c2==null?'<td class="ok">OK</td>':`<td class="bad" title="PO − (Spent + Remaining)">${fN(r.c2)}</td>`}</tr>`);
+  if(!L.length) h+='<tr><td colspan="9" class="dl">Nenhum projeto.</td></tr>';
+  const T=k=>L.reduce((t,r)=>t+z(r[k]),0), b1=L.filter(r=>r.c1!=null).length, b2=L.filter(r=>r.c2!=null).length, dv=T('po')-T('pv');
+  h+=`<tr class="sum"><td>Total</td><td>${fN(T('pv'))}</td><td>${fN(T('po'))}</td><td class="ar">${Math.abs(dv)<1?'-':dv>0?'▲':'▼'}</td><td>${fN(Math.abs(dv))}</td><td class="sep">${fN(T('sp'))}</td><td class="${b1?'bad':'ok'}">${b1?b1+' div.':'OK'}</td><td class="sep">${fN(T('efc'))}</td><td class="${b2?'bad':'ok'}">${b2?b2+' div.':'OK'}</td></tr></tbody>`;
+  const t=$('#t9'); t.innerHTML=h;
+  t.querySelectorAll('th[data-s]').forEach(th=>th.onclick=()=>{ const k=th.dataset.s; st9.sort=S.k===k?{k,d:-S.d}:{k,d:k==='p'?1:-1}; page9(); });
+  dchk9();
+}
+function dchk9(){
+  const L=D.dchk||[], nm=L.filter(x=>x.st==='missing').length, nf=L.length-nm;
+  $('#sumd9').textContent=L.length?`${nm} fora da Summary · ${nf} com fluxo diferente · clique para ver os meses`:'nenhuma inconsistência';
+  let h=`<thead><tr><th style="text-align:left">Project (Detail)</th><th>Problema</th><th>Total Detail</th><th>Total Summary</th><th>Diferença<br>(soma |Δ|)</th></tr></thead><tbody>`;
+  L.forEach((x,i)=>h+=`<tr class="exp" data-i="${i}"><td title="${esc(x.site+' '+x.ph)}">${esc(x.site+' '+x.ph)}</td><td style="text-align:left">${x.st==='missing'?'<span class="tg rem">fora da Summary</span>':`<span class="tg att">fluxo diferente</span>${x.n} mês(es)`}</td><td class="cu">${fN(x.dt)}</td><td>${x.st==='missing'?'–':fN(x.sm)}</td><td class="bad" style="text-align:right">${fN(x.diff)}</td></tr>`);
+  if(!L.length) h+='<tr><td colspan="5" class="ok" style="text-align:left">Todos os projetos da CapEx Detail USD estão na CapEx Summary com o mesmo fluxo mensal.</td></tr>';
+  const t=$('#td9'); t.innerHTML=h+'</tbody>';
+  t.querySelectorAll('tr.exp').forEach(tr=>tr.onclick=()=>{ const nx=tr.nextElementSibling; if(nx&&nx.classList.contains('det')){nx.remove();return;}
+    const x=L[+tr.dataset.i]; if(x.st==='missing') return;
+    const r=document.createElement('tr'); r.className='det';
+    r.innerHTML=`<td colspan="5"><table style="width:100%"><tr><th style="text-align:left">Mês</th><th>Detail</th><th>Summary</th><th>Δ</th></tr>${x.m.map(o=>`<tr><td>${ml8(o.m)}</td><td class="cu">${fN(o.d)}</td><td>${fN(o.s)}</td><td>${fN(o.d-o.s)}</td></tr>`).join('')}</table></td>`; tr.after(r); });
+}
+$('#q9').oninput=e=>{ st9.q=e.target.value; page9(); };
+$('#o9').onchange=e=>{ st9.only=e.target.checked; page9(); };
+$('#exp9').onclick=()=>$('#exp2').click();
+
+const fK=v=>{ const x=Math.round(v/1000); if(!x) return '<span class="eq">-</span>'; const t=Math.abs(x).toLocaleString('pt-BR'); return x<0?`(${t})`:t; };
+const fP=v=>!isFinite(v)?'<span class="eq">-</span>':(v*100).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
+// =====================================================================
+// PÁGINA 11 — CapEx Dashboard (recriação da planilha "CapEx Dashboard - LatAm" a partir do arquivo atual)
+//  Base: linhas da CapEx Summary "desdobradas" como na tabela capex_forecast_latam (Spec × Non-Spec pelo % Spec Capex).
+//  Colunas que dependem de outros arquivos aparecem como "Dado externo"; colunas digitadas, como "Dado digitado".
+// =====================================================================
+const CD_ROWS=[['Brazil',['SP01','SP01B','SP02','SP03','SP04','SP05','SP06','SP07','SP08','RJ01','RJ02']],['Mexico',['QR01','QR01B','QR02','QR03','QR03B','QR03C','QR03D','QR03E','QR04']],
+  ['Chile',['ST01','ST02']],['Colombia',['BG01','BG01B','BG02','BG03','BG04']],['Peru',['LM01']],['Other',['OH','Land DD','OFE']]];
+const CD_NSP=['QR05','ST03'];
+// tipos derivados da Summary (mesmas regras observadas na capex_forecast_latam)
+function cdRecs(){ if(cdRecs.c) return cdRecs.c; const out={}, V=x=>x==='Mexico'?.16:x==='Chile'?.19:0;
+  // "Remaining CapEx" e "Finance Contingency" são linhas de ajuste da Summary (um único valor no último mês do horizonte);
+  // no Excel esses valores vêm do arquivo externo CapEx FC Expansions, então ficam fora para não distorcer o Total CapEx
+  const PLUG=/^(remaining capex|finance contingency)$/i;
+  (D.cdr||[]).forEach(r=>{ if(PLUG.test(r.p.trim())) return; const ph=r.p.toLowerCase(), t3=(r.cat==='Fitout'||r.cat==='Fitout Revenue')?'NRC':'MRC';
+    let t4; if(t3==='NRC') t4='Fitout_Future'; else if(r.t==='Reimbursement') t4='Reimbursement'; else if(ph.includes('maintenance')) t4='Maintenance';
+    else if(r.t==='Expansion') t4=ph.includes('finance contingency')?'Contingency_Fin':'Estimate'; else if(r.t==='Spec') t4='Approved'; else if(r.t==='Non-Spec') t4='Committed';
+    else if(r.t==='Non-spec'||r.t==='Misc.') t4='Approved'; else t4='0';
+    const ps=r.ps||0, t2=(t3==='NRC'||r.t==='Reimbursement'||r.t==='Misc.')?'Direct':(r.t==='Spec'||r.t==='Expansion'||ps>=1)?'Spec':ps<=0?'Direct':'Shared';
+    const cat=r.t==='Reimbursement'?'0':(r.cat==='Fitout Revenue'||r.cat==='Utility Revenue')?'Revenue':(r.cat||'Misc.'), vp=V(r.c);
+    [['Spec',ps],['Non-Spec',1-ps]].forEach(([t1,sh])=>{ if(!sh) return;
+      const amt=r.v.map(x=>-x*sh); (out[r.b]=out[r.b]||[]).push({b:r.b,p:r.p,t1,t2,t3,t4,cat,pr:r.pr||0,amt,vat:amt.map(a=>t4==='Fitout_Future'?0:-a*vp/(1+vp))}); }); });
+  return cdRecs.c=out; }
+// soma no estilo SUMIFS: sinal, campo, filtro do registro e filtro do mês
+function cdSum(recs,sg,f,cond,mf){ const M=D.months; let s=0; recs.forEach(r=>{ if(!cond(r)) return; const a=f==='pr'?r.amt.map(x=>x*r.pr):r[f]; for(let i=0;i<M.length;i++) if(mf(M[i])) s+=a[i]; }); return sg*s; }
+function cdCompute(recs,vatRow){
+  const R=D.cutoff, Y=String(CY), all=()=>true, le=m=>m<=R, gt=m=>m>R, yr=m=>m.slice(0,4)===Y, l4=r=>r.t4.toLowerCase();
+  const nb=r=>!['maintenance','reimbursement'].includes(l4(r)), o={};
+  if(!vatRow){
+    o.O=cdSum(recs,-1,'amt',r=>nb(r)&&r.t3!=='NRC',all); o.V=cdSum(recs,-1,'amt',r=>nb(r)&&r.t3!=='NRC',le);
+    o.AK=cdSum(recs,-1,'amt',r=>r.t1==='Non-Spec'&&r.t2==='Direct'&&r.t3==='MRC'&&nb(r),all); o.AL=cdSum(recs,-1,'amt',r=>r.t2==='Shared'&&r.t3==='MRC'&&nb(r),all);
+    o.AR=cdSum(recs,-1,'amt',r=>r.t1==='Non-Spec'&&r.t2==='Direct'&&r.t3==='MRC'&&nb(r),le); o.AS=cdSum(recs,-1,'amt',r=>r.t2==='Shared'&&r.t3==='MRC'&&nb(r),le);
+    o.BA=cdSum(recs,-1,'pr',r=>(r.t1==='Non-Spec'&&r.t3==='MRC'&&l4(r)==='committed')||(r.t1==='Spec'&&r.t2==='Shared'&&r.t3==='MRC'&&nb(r)),gt);
+    o.BF=cdSum(recs,-1,'amt',r=>nb(r)&&r.t3!=='NRC',le);
+    o.BG=cdSum(recs,-1,'amt',r=>(r.t1==='Non-Spec'&&r.t3==='MRC'&&l4(r)==='committed')||(r.t1==='Spec'&&r.t2==='Shared'&&r.t3==='MRC'&&nb(r))||(r.t1==='Spec'&&r.t2==='Spec'&&l4(r)==='approved')||(r.t1==='Non-Spec'&&l4(r)==='approved'),gt);
+    o.BM=cdSum(recs,-1,'amt',r=>r.t1==='Non-Spec'&&r.t2==='Direct'&&r.t3==='MRC'&&nb(r),yr); o.BN=cdSum(recs,-1,'amt',r=>r.t2==='Shared'&&r.t3==='MRC'&&nb(r),yr);
+    o.BR=cdSum(recs,-1,'amt',r=>r.t1==='Spec'&&r.cat==='OFE'&&nb(r),yr); o.BS=cdSum(recs,-1,'amt',r=>r.t1==='Spec'&&r.t2==='Spec'&&r.t4==='Approved'&&r.cat!=='OFE',yr);
+    o.BT=cdSum(recs,-1,'amt',r=>r.t1==='Spec'&&r.t4==='Estimate'&&r.cat!=='OFE',yr); o.BW=cdSum(recs,-1,'amt',r=>r.t1==='Spec'&&r.t2!=='Shared'&&nb(r),yr);
+    o.CG=cdSum(recs,1,'amt',r=>r.t3==='NRC'&&nb(r),all);
+    [['CJ','Fitout',le],['CK','Revenue',le],['CM','Fitout',gt],['CN','Revenue',gt]].forEach(([k,c,mf])=>o[k]=cdSum(recs,-1,'amt',r=>r.t3==='NRC'&&r.cat===c&&nb(r),mf));
+    [['CQ','Fitout',le],['CR','Fitout',gt],['CS','Revenue',le],['CT','Revenue',gt]].forEach(([k,c,mf])=>o[k]=cdSum(recs,-1,'amt',r=>r.t3==='NRC'&&r.cat===c&&nb(r),m=>yr(m)&&mf(m)));
+    o.BF-=0;
+  } else { // linha "VAT Reimbursement": mesmas fórmulas do Excel, com a coluna VAT e as linhas de reembolso
+    const rb=r=>l4(r).startsWith('reimbursement');
+    o.O=cdSum(recs,-1,'vat',r=>nb(r)&&r.t3!=='NRC',all); o.V=cdSum(recs,-1,'amt',r=>rb(r)&&r.t3!=='NRC',le);
+    o.AK=cdSum(recs,-1,'vat',r=>r.t1==='Non-Spec'&&r.t2==='Direct'&&r.t3==='MRC'&&nb(r),all); o.AL=cdSum(recs,-1,'vat',r=>r.t2==='Shared'&&r.t3==='MRC'&&nb(r),all);
+    o.AR=cdSum(recs,-1,'amt',r=>r.t1==='Non-Spec'&&r.t2==='Direct'&&r.t3==='MRC'&&rb(r),le); o.AS=cdSum(recs,-1,'amt',r=>r.t2==='Shared'&&r.t3==='MRC'&&rb(r),le);
+    o.BA=cdSum(recs,-1,'pr',r=>(r.t1==='Non-Spec'&&r.t3==='MRC'&&rb(r))||(r.t1==='Spec'&&r.t2==='Shared'&&r.t3==='MRC'&&rb(r)),gt); o.BF=0;
+    o.BG=cdSum(recs,-1,'vat',r=>(r.t1==='Non-Spec'&&r.t3==='MRC'&&l4(r)==='committed')||(r.t1==='Spec'&&r.t2==='Shared'&&r.t3==='MRC'&&nb(r))||(r.t1==='Spec'&&r.t2==='Spec'&&l4(r)==='approved'),gt)
+        -cdSum(recs,-1,'vat',r=>nb(r)&&r.t3!=='NRC',le) + cdSum(recs,1,'amt',r=>rb(r)&&r.t3!=='NRC',le);
+    o.BM=cdSum(recs,-1,'amt',r=>r.t1==='Non-Spec'&&r.t2==='Direct'&&r.t3==='MRC'&&rb(r),yr); o.BN=cdSum(recs,-1,'amt',r=>r.t2==='Shared'&&r.t3==='MRC'&&rb(r),yr);
+    o.BR=cdSum(recs,-1,'amt',r=>r.t1==='Spec'&&r.cat==='OFE'&&rb(r),yr); o.BS=cdSum(recs,-1,'amt',r=>r.t1==='Spec'&&r.t2==='Spec'&&rb(r)&&r.cat!=='OFE',yr);
+    o.BT=cdSum(recs,-1,'amt',r=>r.t1==='Spec'&&rb(r)&&r.cat!=='OFE',yr); o.BW=cdSum(recs,-1,'amt',r=>r.t1==='Spec'&&r.t2!=='Shared'&&rb(r),yr);
+    o.CG=0; o.CJ=0; o.CK=0;
+    o.CM=-cdSum(recs,1,'vat',r=>r.t1==='Non-Spec'&&r.t3==='NRC'&&r.cat==='Fitout'&&nb(r),all); o.CN=-cdSum(recs,1,'vat',r=>r.t1==='Non-Spec'&&r.t3==='NRC'&&r.cat==='Revenue'&&nb(r),all);
+    o.CQ=o.CR=o.CS=o.CT=0; }
+  o.W=o.O?Math.min(o.V/o.O,1):0; o.AN=o.AK+o.AL; o.AU=o.AR+o.AS; o.AY=o.AN-o.AU; o.BC=0; o.BB=o.AY-o.BA-o.BC; o.BD=o.AN?o.BC/o.AN:0;
+  if(!vatRow) o.BF-=o.AU; o.BP=o.BM+o.BN; o.BU=o.BW-(o.BR+o.BS+o.BT); o.BY=o.BP+o.BW;
+  o.CF=o.CJ+o.CM; o.CH=o.CF?o.CG/o.CF:null; o.CL=o.CJ+o.CK; o.CO=o.CM+o.CN; o.CU=o.CQ+o.CR+o.CS+o.CT; return o; }
+// colunas visíveis do relatório (as ocultas no Excel ficam de fora). kind: n=US$ mil, mw=MW, pct=%, pct1=0,0%, ext=dado externo, typ=dado digitado
+function cdCols(){ return [
+ {g0:'',g1:'Capacity (MWs)',k:'E',h:'End State',kind:'ext'},{k:'F',h:'Deployed',kind:'ext'},{k:'H',h:'∆',kind:'ext'},{k:'I',h:'Leased',kind:'mw'},{k:'J',h:'Remaining',kind:'ext'},
+ {g1:'Campus Status',k:'L',h:'Status',kind:'ext'},{k:'M',h:'Notes',kind:'typ'},
+ {g1:'Total Campus Cost',k:'O',h:'Total CapEx (Macro Adj)',kind:'n'},{k:'S',h:'Total CapEx',kind:'n'},{k:'T',h:'$ / MW',kind:'ext'},{k:'V',h:'Total Spent',kind:'n'},{k:'W',h:'%',kind:'pct'},
+ {g1:'Previous Estimate',k:'Y',h:'Prev Est (Macro Adj)',kind:'ext'},{k:'AC',h:'Prev CapEx',kind:'ext'},{k:'AD',h:'∆ CapEx (Macro Adj)',kind:'ext'},{k:'AH',h:'∆ CapEx',kind:'ext'},
+ {g0:'Contracted Leasing',g1:'Total Committed',k:'AK',h:'Leased',kind:'n'},{k:'AL',h:'Shared',kind:'n'},{k:'AN',h:'Total',kind:'n'},
+ {g1:'Total Spent Through '+(D.cutoff_label||''),k:'AR',h:'Leased',kind:'n'},{k:'AS',h:'Shared',kind:'n'},{k:'AU',h:'Total',kind:'n'},{k:'AW',h:'Check',kind:'ext'},
+ {g1:'Total Remaining',k:'AY',h:'Total',kind:'n'},{k:'BA',h:'Contracted',kind:'n'},{k:'BB',h:'Not Cont.',kind:'n'},{k:'BC',h:'Contingency',kind:'typ'},{k:'BD',h:'%',kind:'pct'},
+ {g1:'Remaining CapEx to Full Build',k:'BF',h:'Total Spent',kind:'n'},{k:'BG',h:'Approved',kind:'n'},{k:'BH',h:'Pending',kind:'ext'},{k:'BI',h:'Contingency*',kind:'ext'},{k:'BJ',h:'%',kind:'ext'},
+ {g0:CY+' Forecast',g1:'Non-Speculative',k:'BM',h:'Allocated',kind:'n'},{k:'BN',h:'Shared',kind:'n'},{k:'BP',h:'Non-Spec',kind:'n'},
+ {g1:'Speculative',k:'BR',h:'OFE',kind:'n'},{k:'BS',h:'Approved',kind:'n'},{k:'BT',h:'Estimate',kind:'n'},{k:'BU',h:'Other',kind:'n'},{k:'BW',h:'Speculative',kind:'n'},
+ {g1:'Total',k:'BY',h:CY+' FC',kind:'n'},{g1:'Previous CapEx FC',k:'CA',h:"'"+String(CY).slice(2)+' FC',kind:'ext'},{k:'CB',h:'∆',kind:'ext'},{g1:'',k:'CD',h:CY+' Forecast Notes',kind:'typ'},
+ {g0:'NRC Summary',g1:'Total Project',k:'CF',h:'Budget',kind:'n'},{k:'CG',h:'Fee',kind:'n'},{k:'CH',h:'Margin',kind:'pct1'},
+ {g1:'Total To Date',k:'CJ',h:'Spend',kind:'n'},{k:'CK',h:'Reim',kind:'n'},{k:'CL',h:'Net',kind:'n'},
+ {g1:'Total FC',k:'CM',h:'Spend',kind:'n'},{k:'CN',h:'Reim',kind:'n'},{k:'CO',h:'Net',kind:'n'},
+ {g1:CY+' ACT/FC',k:'CQ',h:'Spend ACT',kind:'n'},{k:'CR',h:'Spend FC',kind:'n'},{k:'CS',h:'Reim ACT',kind:'n'},{k:'CT',h:'Reim FC',kind:'n'},{k:'CU',h:'Net',kind:'n'},{g0:'',g1:'',k:'CW',h:'Notes',kind:'typ'}]; }
+function cdVal(c,o){ const v=o[c.k];
+  if((c.k==='I'||c.k==='S')&&v===null) return '<td></td>';
+  if(c.kind==='ext') return '<td class="x">Dado externo</td>'; if(c.kind==='typ') return '<td class="x">Dado digitado</td>';
+  if(v==null||!isFinite(v)) return '<td><span class="eq">-</span></td>';
+  if(c.kind==='mw') return `<td>${Math.abs(v)<0.05?'<span class="eq">-</span>':(v<0?'('+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+')':v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}))}</td>`;
+  if(c.kind==='pct'||c.kind==='pct1') return `<td>${(v*100).toLocaleString('pt-BR',{minimumFractionDigits:c.kind==='pct1'?1:0,maximumFractionDigits:c.kind==='pct1'?1:0})}%</td>`;
+  return `<td>${fK(v)}</td>`; }
+const st11={open:new Set()};
+function page11(){
+  const T=$('#t11'); if(!D.cdr){ T.innerHTML='<tbody><tr><td class="dl">Refaça a comparação na aba Início para carregar os dados desta aba.</td></tr></tbody>'; return; }
+  cdRecs.c=null; const RC=cdRecs(), E=D.est||{kw:{},pd:{},vat:0}, COLS=cdCols();
+  const one=b=>{ const o=cdCompute(RC[b]||[],false); o.I=(E.kw[b]||0)/1000; o.S=E.pd[b]||0; return o; };
+  const sumRows=L=>{ const o={}; COLS.forEach(c=>{ if(c.kind==='n'||c.kind==='mw') o[c.k]=L.reduce((t,x)=>t+(x[c.k]||0),0); });
+    o.W=o.O?Math.min(o.V/o.O,1):0; o.BD=0; o.CH=o.CF?o.CG/o.CF:null; return o; };
+  const row=(label,o,cls='',attr='')=>`<tr class="${cls}" ${attr}><td class="bl">${label}</td>${COLS.map(c=>cdVal(c,o)).join('')}</tr>`;
+  // subitens: um por projeto (Phase/Project) do site, com as mesmas fórmulas; Leased e Total CapEx (S) só existem por site
+  const projRows=b=>{ const byP=new Map(); (RC[b]||[]).forEach(r=>{ (byP.get(r.p)||byP.set(r.p,[]).get(r.p)).push(r); });
+    return [...byP.entries()].map(([pn,recs])=>{ const o=cdCompute(recs,false); o.I=null; o.S=null; return {pn,o}; })
+      .filter(x=>['O','V','AN','AU','BG','BY','CF','CG'].some(k=>Math.abs(x.o[k]||0)>=500)); };
+  const spans=key=>{ const out=[]; let cur=null; COLS.forEach(c=>{ if(c[key]!==undefined){ cur={t:c[key],n:1}; out.push(cur); } else if(cur) cur.n++; else { cur={t:'',n:1}; out.push(cur); } }); return out; };
+  let b='<thead><tr class="g0"><th class="bl"></th>'+spans('g0').map(s=>`<th colspan="${s.n}" class="${s.t?'gs':''}">${esc(s.t)}</th>`).join('')+'</tr>'
+    +'<tr class="g1"><th class="bl"></th>'+spans('g1').map(s=>`<th colspan="${s.n}" class="${s.t?'gs':''}">${esc(s.t)}</th>`).join('')+'</tr>'
+    +'<tr class="hh"><th class="bl">Bldg</th>'+COLS.map(c=>`<th class="${c.kind==='ext'||c.kind==='typ'?'hx':''}">${esc(c.h)}</th>`).join('')+'</tr></thead><tbody>';
+  const n=COLS.length+1, main=[];
+  const siteBlock=x=>{ const o=one(x), P=projRows(x), op=st11.open.has(x);
+    let h=row(`<span class="tw">${P.length?(op?'▾':'▸'):'&nbsp;'}</span>${esc(x)}${P.length?` <span class="dl">(${P.length})</span>`:''}`,o,P.length?'site':'',P.length?`data-s="${esc(x)}"`:'');
+    if(op) P.forEach(q=>h+=row(`<span class="pj">${esc(q.pn)}</span>`,q.o,'proj'));
+    return [h,o]; };
+  CD_ROWS.forEach(([ctry,list])=>{ b+=`<tr class="grp"><td class="bl">${esc(ctry)}</td><td colspan="${n-1}"></td></tr>`; list.forEach(x=>{ const [h,o]=siteBlock(x); main.push(o); b+=h; }); });
+  const t1=sumRows(main); b+=row('Total',t1,'tot');
+  b+=`<tr class="grp"><td class="bl">Sites Not In Strat Plan</td><td colspan="${n-1}"></td></tr>`; const nsp=CD_NSP.map(x=>{ const [h,o]=siteBlock(x); b+=h; return o; });
+  const t2=sumRows(nsp); b+=row('Total',t2,'tot'); const tg=sumRows([t1,t2]); b+=row('Total - Gross Capex',tg,'tot');
+  const all=[].concat(...Object.values(RC)), vat=cdCompute(all,true); vat.S=E.vat||0; vat.I=0; b+=row('VAT Reimbursement',vat,'vat');
+  b+=row('Total',sumRows([tg,vat]),'sum');
+  T.innerHTML=b+'</tbody>';
+  T.querySelectorAll('tr.site').forEach(tr=>tr.onclick=()=>{ const k=tr.dataset.s; st11.open.has(k)?st11.open.delete(k):st11.open.add(k); page11(); });
+  $('#n11').textContent=`Clique no site para ver os projetos · Expansion usa a CapEx Summary (no Excel vem do arquivo externo CapEx FC Expansions); as linhas de ajuste Remaining CapEx e Finance Contingency ficam fora · US$ mil · data de corte ${D.cutoff_label} · fonte: ${D.file.replace(/\.xlsx?$/i,'')}`;
+}
+$('#exp11').onclick=()=>$('#exp2').click();
+
 // ---------- navegação entre páginas
 let PAGE=1;
-$('#d3').value=$('#d1').value; $('#d4').value=$('#d2').value;
-$('#d3').onchange=$('#d4').onchange=refresh2;
+$('#d3').value=CY+'-01-01'; $('#d4').value=CY+'-12-31';
+(()=>{ const ys=[...new Set(P2.cur.months.map(m=>m.slice(0,4)))].filter(y=>+y<=2032);
+  $('#y2').innerHTML=ys.map(y=>`<option ${+y===CY?'selected':''}>${y}</option>`).join('')+'<option value="">Período personalizado</option>'; })();
+const TL2 = timeline($('#tl2'), P2.cur.months.filter(m=>m<='2032-12'), $('#d3'), $('#d4'), ()=>{ $('#y2').value=''; refresh2(); });
+$('#y2').onchange=e=>{ const y=e.target.value; if(!y) return; $('#d3').value=y+'-01-01'; $('#d4').value=y+'-12-31'; TL2.sync(); refresh2(); };
+$('#d3').onchange=$('#d4').onchange=()=>{ $('#y2').value=''; TL2.sync(); refresh2(); };
+$('#exp3').onclick=()=>$('#exp2').click();
+$('#exp4').onclick=()=>$('#exp2').click();
+$('#exp2').onclick=()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([htmlWith(ALL)],{type:'text/html'}));
+  a.download=`Capex_Comparison_${P2.prev.cutoff_label||'anterior'}_x_${P2.cur.cutoff_label||'atual'}.html`; document.body.appendChild(a); a.click(); a.remove(); };
 $('#clearSel2').onclick=clear2;
 function header(){
-  $('#upd').style.visibility = PAGE===0 ? 'hidden' : 'visible';
-  if(PAGE===7){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').textContent='Nova aba'; return; }
-  if(PAGE===6){ $('#file').innerHTML=esc(D.file.replace(/\.xlsx?$/i,'')); $('#file').className='file'; $('h1').innerHTML='Odata CapEx Control<small>Visão Geral</small>';
+  $('#upd').style.visibility = (PAGE===0||PAGE===2||PAGE===3||PAGE===4||PAGE===6||PAGE===8||PAGE===9||PAGE===11) ? 'hidden' : 'visible';   // Início e Visão Geral sem o 'Last Update' do topo
+  if(PAGE===6){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').textContent='Current Overview';   // nome do arquivo só à direita, na barra da página
     $('#rep6').textContent=D.file.replace(/\.xlsx?$/i,''); $('#upd6').textContent='Última atualização: '+D.last_update; $('#cut6').textContent=D.cutoff_label; return; }
+  if(PAGE===11){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').innerHTML='Dashboard FP&amp;A<small>CapEx Dashboard LatAm · current file</small>';
+    $('#cf11').textContent=D.file.replace(/\.xlsx?$/i,''); $('#cu11').textContent='Última atualização: '+D.last_update; $('#cc11').textContent=D.cutoff_label; return; }
+  if(PAGE===9){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').textContent='Current Checks';
+    const nm=d=>d.file.replace(/\.xlsx?$/i,'');
+    $('#pf9').textContent=nm(P2.prev); $('#pf9').title=nm(P2.prev); $('#pu9').textContent='Última atualização: '+P2.prev.last_update; $('#pc9').textContent=P2.prev.cutoff_label;
+    $('#cf9').textContent=nm(D); $('#cf9').title=nm(D); $('#cu9').textContent='Última atualização: '+D.last_update; $('#cc9').textContent=D.cutoff_label; return; }
+  if(PAGE===8){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').textContent='Comparison by Project';
+    const nm=d=>d.file.replace(/\.xlsx?$/i,'');
+    $('#pf8').textContent=nm(P2.prev); $('#pf8').title=nm(P2.prev); $('#pu8').textContent='Última atualização: '+P2.prev.last_update;
+    $('#cf8').textContent=nm(P2.cur); $('#cf8').title=nm(P2.cur); $('#cu8').textContent='Última atualização: '+P2.cur.last_update;
+    $('#pc8').textContent=P2.prev.cutoff_label; $('#cc8').textContent=P2.cur.cutoff_label; return; }
+  if(PAGE===2){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').textContent='Capex Comparison';
+    const nm=d=>d.file.replace(/\.xlsx?$/i,'');
+    $('#pf2').textContent=nm(P2.prev); $('#pf2').title=nm(P2.prev); $('#pu2').textContent='Última atualização: '+P2.prev.last_update;
+    $('#cf2').textContent=nm(P2.cur); $('#cf2').title=nm(P2.cur); $('#cu2').textContent='Última atualização: '+P2.cur.last_update;
+    $('#pc2').textContent=P2.prev.cutoff_label; $('#cc2').textContent=P2.cur.cutoff_label; return; }
   if(PAGE===0){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').textContent='Início'; return; }   // sem nomes de arquivo na tela inicial
   if(PAGE===5){ $('#file').innerHTML=`<div class="pink">${esc(P2.prev.file.replace(/\.xlsx?$/i,''))}</div><div class="blue">${esc(P2.cur.file.replace(/\.xlsx?$/i,''))}</div>`; $('#file').className='file file2'; $('h1').innerHTML='Building Projects<small>Budget × EFC + Contingency + Saving</small>'; return; }
-  if(PAGE===4){ $('#file').innerHTML=`<div class="pink">${esc(P2.prev.file.replace(/\.xlsx?$/i,''))}</div><div class="blue">${esc(P2.cur.file.replace(/\.xlsx?$/i,''))}</div>`; $('#file').className='file file2'; $('h1').innerHTML=`<span class="cutl pink">${esc(P2.prev.cutoff_label)}</span>Capex Comparison<small>w/o FX Variation</small><span class="cutl blue">${esc(P2.cur.cutoff_label)}</span>`; return; }
-  if(PAGE===3){ $('#file').innerHTML=`<div class="pink">${esc(P2.prev.file.replace(/\.xlsx?$/i,''))}</div><div class="blue">${esc(P2.cur.file.replace(/\.xlsx?$/i,''))}</div>`; $('#file').className='file file2'; $('h1').textContent='Change Details'; return; }
+  if(PAGE===4){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').innerHTML='Capex Comparison<small>w/o FX Variation</small>';
+    const nm=d=>d.file.replace(/\.xlsx?$/i,'');
+    $('#pf4').textContent=nm(P2.prev); $('#pf4').title=nm(P2.prev); $('#pu4').textContent='Última atualização: '+P2.prev.last_update;
+    $('#cf4').textContent=nm(P2.cur); $('#cf4').title=nm(P2.cur); $('#cu4').textContent='Última atualização: '+P2.cur.last_update;
+    $('#pc4').textContent=P2.prev.cutoff_label; $('#cc4').textContent=P2.cur.cutoff_label; return; }
+  if(PAGE===3){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').textContent='Change Details';
+    const nm=d=>d.file.replace(/\.xlsx?$/i,'');
+    $('#pf3').textContent=nm(P2.prev); $('#pf3').title=nm(P2.prev); $('#pu3').textContent='Última atualização: '+P2.prev.last_update;
+    $('#cf3').textContent=nm(P2.cur); $('#cf3').title=nm(P2.cur); $('#cu3').textContent='Última atualização: '+P2.cur.last_update;
+    $('#pc3').textContent=P2.prev.cutoff_label; $('#cc3').textContent=P2.cur.cutoff_label; return; }
   if(PAGE===1){ $('#file').innerHTML=esc(D.file.replace(/\.xlsx?$/i,'')); $('#file').className='file'; $('h1').textContent='Odata CapEx Control'; }
   else { $('#file').innerHTML=`<div class="pink">${esc(P2.prev.file.replace(/\.xlsx?$/i,''))}</div><div class="blue">${esc(P2.cur.file.replace(/\.xlsx?$/i,''))}</div>`; $('#file').className='file file2'; $('h1').textContent='Capex Comparison'; }
 }
 function goPage(n){
-  PAGE=n; $('#pg0').hidden = n!==0; $('#pg1').hidden = n!==1; $('#pg2').hidden = n!==2; $('#pg3').hidden = n!==3; $('#pg4').hidden = n!==4; $('#pg5').hidden = n!==5; $('#pg6').hidden = n!==6; $('#pg7').hidden = n!==7;
+  PAGE=n; $('#pg0').hidden = n!==0; $('#pg1').hidden = n!==1; $('#pg2').hidden = n!==2; $('#pg3').hidden = n!==3; $('#pg4').hidden = n!==4; $('#pg5').hidden = n!==5; $('#pg6').hidden = n!==6; $('#pg8').hidden = n!==8; $('#pg9').hidden = n!==9; $('#pg11').hidden = n!==11;
   document.querySelectorAll('.pages button').forEach(b=>b.classList.toggle('on', +b.dataset.pg===n));
-  $('#hdrDates2').hidden = n!==2;
-  header(); n===0 ? confirmBox() : n===1 ? refresh() : n===2 ? refresh2() : n===3 ? page3() : n===4 ? page4() : n===5 ? page5() : n===6 ? page6() : null;
+  header(); n===0 ? confirmBox() : n===1 ? refresh() : n===2 ? refresh2() : n===3 ? page3() : n===4 ? page4() : n===5 ? page5() : n===6 ? page6() : n===8 ? page8() : n===9 ? page9() : n===11 ? page11() : null;
 }
 document.querySelectorAll('.pages button').forEach(b=>{ if(EMPTY&&b.dataset.pg!=='0'){ b.disabled=true; b.title='Faça a comparação na aba Início'; } b.onclick=()=>goPage(+b.dataset.pg); });
 document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return;
   if(PAGE===1 && (selMonths.size||selTypes.size||selProj.size)) clearSel();
   if(PAGE===2 && Object.values(sel2).some(s=>s.size)) clear2();
   if(PAGE===4 && sel4.size){ sel4.clear(); page4(); }
+  if(PAGE===8 && sel8m.size){ sel8m.clear(); page8(); }
   if(PAGE===6 && Object.values(sel6).some(x=>x.size)) clr6(); });
-let rt; window.addEventListener('resize',()=>{ if(GEN!==window.__dashGen) return; fit(); clearTimeout(rt);rt=setTimeout(()=>PAGE===0?null:PAGE===1?refresh():PAGE===2?refresh2():PAGE===3?page3():PAGE===4?page4():PAGE===5?page5():PAGE===6?page6():null,150);});
+let rt; window.addEventListener('resize',()=>{ if(GEN!==window.__dashGen) return; fit(); clearTimeout(rt);rt=setTimeout(()=>PAGE===0?null:PAGE===1?refresh():PAGE===2?refresh2():PAGE===3?page3():PAGE===4?page4():PAGE===5?page5():PAGE===6?page6():PAGE===8?page8():PAGE===9?page9():PAGE===11?page11():null,150);});
 goPage(0);
 })();
 </script>
