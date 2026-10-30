@@ -381,7 +381,7 @@
   #td9 tr.exp{cursor:pointer} #td9 tr.exp:hover td{filter:brightness(1.25)} #td9 tr.det td{background:#0A1830!important}
   #td9 .tg{margin-right:6px}
   #t9{font-size:12.5px} #t9 th{vertical-align:bottom;line-height:1.3}
-  #t9 th.cu,#t9 td.cu{color:#6FB0FF} #t9 th.pv,#t9 td.pv{color:#F07AC0} #t9 th small{display:block;font-size:12px;font-weight:700;margin-top:2px}
+  #t9 th.cu,#t9 td.cu,#td9 th.cu,#td9 td.cu{color:#6FB0FF} #t9 tr.sum td.cu{color:#fff} #t9 th.pv,#t9 td.pv{color:#F07AC0} #t9 th small{display:block;font-size:12px;font-weight:700;margin-top:2px}
   #t9 td.ok{color:#E8EEF8;text-align:right} #t9 td.bad{background:#E5484D!important;color:#fff;font-weight:700}
   #t9 .sep{border-left:2px solid rgba(255,255,255,.14)}
   #t9 td:first-child{max-width:230px;white-space:normal}
@@ -1567,19 +1567,24 @@ function setFile(k,file){
     const nm=e.dataTransfer.getData('text/x-funding'); if(nm) return setFromList(k,nm);
     const f=[...(e.dataTransfer.files||[])].find(x=>XLRE.test(x.name)); if(f) setFile(k,f); else msg('Solte um arquivo Excel (.xlsx).'); };
 });
-async function connect(fromClick){
+async function connect(fromClick, change){
   if(!('showDirectoryPicker' in window)){ if(fromClick){ $('#dir0').click(); return; } st0('Este navegador não mantém a pasta conectada; clique em <b>Conectar pasta</b> para listar os arquivos (sem atualização automática). Para atualizar sozinha, use o Chrome ou o Edge.'); return; }
   try{
-    if(!DIR||fromClick){ const saved=!fromClick&&await kvGet('dir');
-      if(saved){ DIR=saved; }
-      else if(!fromClick){ return; }   // primeira visita: espera o clique em "Conectar pasta" (o navegador exige um clique)
-      else { DIR=await window.showDirectoryPicker({id:'funding',mode:'read'}); st0('Pasta <b>'+esc(DIR.name)+'</b> selecionada. Lendo os arquivos…'); kvSet('dir',DIR); } }
+    // 1) pasta lembrada da visita anterior (IndexedDB)
+    if(!DIR&&!change){ const saved=await kvGet('dir'); if(saved&&saved.queryPermission) DIR=saved; }
+    // 2) sem pasta lembrada (ou "Trocar pasta"): abre o seletor, só com clique
+    if(!DIR||change){ if(!fromClick){ return; }
+      DIR=await window.showDirectoryPicker({id:'funding',mode:'read'}); st0('Pasta <b>'+esc(DIR.name)+'</b> selecionada. Lendo os arquivos…'); await kvSet('dir',DIR); }
+    // 3) permissão: no Chrome 122+ o aviso tem "Permitir em todas as visitas"; depois disso a lista abre sozinha
     let perm=await DIR.queryPermission({mode:'read'});
     if(perm!=='granted'&&fromClick) perm=await DIR.requestPermission({mode:'read'});
-    if(perm!=='granted'){ st0(`Pasta <b>${esc(DIR.name)}</b> lembrada. Clique em "Reconectar pasta" para liberar a leitura (o navegador pede uma confirmação).`); $('#conn0').textContent='Reconectar pasta'; return; }
-    $('#conn0').textContent='Trocar pasta'; await scan();
-  }catch(e){ DIR=null;
-    st0(`Não foi possível conectar a pasta${e&&e.name==='AbortError'?' (a seleção foi cancelada ou bloqueada pelo navegador)':''}: <i>${esc((e&&e.name?e.name+' – ':'')+(e&&e.message||String(e)))}</i>.<br>
+    if(perm!=='granted'){ st0(`Pasta <b>${esc(DIR.name)}</b> lembrada. Clique em <b>Reconectar pasta</b> e, no aviso do navegador, escolha <b>"Permitir em todas as visitas"</b> para não precisar repetir isso.`);
+      $('#conn0').textContent='Reconectar pasta'; $('#conn0').onclick=()=>connect(true,false); $('#rf0').hidden=true; return; }
+    $('#conn0').textContent='Trocar pasta'; $('#conn0').onclick=()=>connect(true,true); await scan();
+  }catch(e){
+    if(e&&e.name==='AbortError'&&DIR){ st0(`Seleção cancelada. A pasta <b>${esc(DIR.name)}</b> continua lembrada; clique em <b>Reconectar pasta</b>.`); $('#conn0').textContent='Reconectar pasta'; $('#conn0').onclick=()=>connect(true,false); return; }
+    DIR=null;
+    st0(`Não foi possível conectar a pasta: <i>${esc((e&&e.name?e.name+' – ':'')+(e&&e.message||String(e)))}</i>.<br>
       Tente o <a href="#" id="simple0" class="lnk">modo simples</a>: você escolhe a pasta e o navegador lista os arquivos (sem atualização automática; para atualizar, escolha a pasta de novo).`);
     const a=$('#simple0'); if(a) a.onclick=ev=>{ ev.preventDefault(); $('#dir0').click(); }; }
 }
@@ -1589,10 +1594,10 @@ $('#dir0').onchange=e=>{ const fs=[...e.target.files].filter(f=>XLRE.test(f.name
   FLIST=fs.map(f=>({name:f.name,file:f,mod:f.lastModified,size:f.size})).sort(fileOrder);
   drawList(); $('#upd0').textContent='Modo simples: para atualizar a lista, clique em "Escolher pasta de novo".';
   $('#conn0').textContent='Escolher pasta de novo'; $('#conn0').onclick=()=>$('#dir0').click(); e.target.value=''; };
-$('#conn0').onclick=()=>connect(true);
+$('#conn0').onclick=()=>connect(true,false);
 $('#rf0').onclick=()=>scan();
 st0('Clique em <b>Conectar pasta</b> e escolha a pasta <b>01. Funding</b> sincronizada no seu computador (OneDrive). Isso é feito uma vez só; depois a lista atualiza sozinha.');
-connect(false);
+connect(false,false);
 setInterval(()=>{ if(GEN===window.__dashGen&&PAGE===0&&DIR&&document.visibilityState==='visible') scan(); },20000);
 window.addEventListener('focus',()=>{ if(GEN===window.__dashGen&&PAGE===0&&DIR) scan(); });
 function steps(list){ const p=$('#prog0'); p.hidden=false; p.innerHTML=list.map(([t,s])=>`<div class="st ${s}"><i></i><span>${esc(t)}</span></div>`).join(''); }
@@ -1912,11 +1917,11 @@ function page9(){
   const nb=all.filter(r=>r.country===st9.c), n1=nb.filter(r=>r.c1!=null).length, n2=nb.filter(r=>r.c2!=null).length;
   $('#sum9').textContent=`${nb.length} projetos · PO < Spent: ${n1} · PO > Spent + Remaining: ${n2} · valores em US$`;
   const ar=k=>S.k===k?(S.d<0?' ▾':' ▴'):'', f=v=>v==null?'':fN(v);
-  let h=`<thead><tr><th data-s="p" style="text-align:left">Project${ar('p')}</th><th class="pv" data-s="pv">PO Value<br>Previous${ar('pv')}<small>${esc(P2.prev.cutoff_label)}</small></th><th class="cu" data-s="po">PO Value<br>Current${ar('po')}<small>${esc(D.cutoff_label)}</small></th><th class="ar"></th><th data-s="var">Var. PO<br>Value${ar('var')}</th><th class="sep" data-s="sp">Spent to Date<br>Current${ar('sp')}</th><th data-s="c1">Check<br>PO &lt; Spent${ar('c1')}</th><th class="sep" data-s="efc">Spent +<br>remaining${ar('efc')}</th><th data-s="c2">Check<br>PO &gt; Spent+Rem${ar('c2')}</th></tr></thead><tbody>`;
-  L.forEach(r=>h+=`<tr><td title="${esc(r.n)}">${esc(r.n)}${r.gone?' <span class="tg rem">só no anterior</span>':''}</td><td class="pv">${f(r.pv)}</td><td class="cu">${f(r.po)}</td><td class="ar">${arrow(r.v)}</td><td>${fN(Math.abs(r.v))}</td><td class="sep">${f(r.sp)}</td>${r.gone?'<td></td>':r.c1==null?'<td class="ok">OK</td>':`<td class="bad" title="PO − Spent">${fN(r.c1)}</td>`}<td class="sep">${f(r.efc)}</td>${r.gone?'<td></td>':r.c2==null?'<td class="ok">OK</td>':`<td class="bad" title="PO − (Spent + Remaining)">${fN(r.c2)}</td>`}</tr>`);
+  let h=`<thead><tr><th data-s="p" style="text-align:left">Project${ar('p')}</th><th class="pv" data-s="pv">PO Value<br>Previous${ar('pv')}<small>${esc(P2.prev.cutoff_label)}</small></th><th class="cu" data-s="po">PO Value<br>Current${ar('po')}<small>${esc(D.cutoff_label)}</small></th><th class="ar"></th><th data-s="var">Var. PO<br>Value${ar('var')}</th><th class="sep cu" data-s="sp">Spent to Date<br>Current${ar('sp')}</th><th data-s="c1">Check<br>PO &lt; Spent${ar('c1')}</th><th class="sep cu" data-s="efc">Spent +<br>remaining${ar('efc')}</th><th data-s="c2">Check<br>PO &gt; Spent+Rem${ar('c2')}</th></tr></thead><tbody>`;
+  L.forEach(r=>h+=`<tr><td title="${esc(r.n)}">${esc(r.n)}${r.gone?' <span class="tg rem">só no anterior</span>':''}</td><td class="pv">${f(r.pv)}</td><td class="cu">${f(r.po)}</td><td class="ar">${arrow(r.v)}</td><td>${fN(Math.abs(r.v))}</td><td class="sep cu">${f(r.sp)}</td>${r.gone?'<td></td>':r.c1==null?'<td class="ok">OK</td>':`<td class="bad" title="PO − Spent">${fN(r.c1)}</td>`}<td class="sep cu">${f(r.efc)}</td>${r.gone?'<td></td>':r.c2==null?'<td class="ok">OK</td>':`<td class="bad" title="PO − (Spent + Remaining)">${fN(r.c2)}</td>`}</tr>`);
   if(!L.length) h+='<tr><td colspan="9" class="dl">Nenhum projeto.</td></tr>';
   const T=k=>L.reduce((t,r)=>t+z(r[k]),0), b1=L.filter(r=>r.c1!=null).length, b2=L.filter(r=>r.c2!=null).length, dv=T('po')-T('pv');
-  h+=`<tr class="sum"><td>Total</td><td>${fN(T('pv'))}</td><td>${fN(T('po'))}</td><td class="ar">${Math.abs(dv)<1?'-':dv>0?'▲':'▼'}</td><td>${fN(Math.abs(dv))}</td><td class="sep">${fN(T('sp'))}</td><td class="${b1?'bad':'ok'}">${b1?b1+' div.':'OK'}</td><td class="sep">${fN(T('efc'))}</td><td class="${b2?'bad':'ok'}">${b2?b2+' div.':'OK'}</td></tr></tbody>`;
+  h+=`<tr class="sum"><td>Total</td><td>${fN(T('pv'))}</td><td>${fN(T('po'))}</td><td class="ar">${Math.abs(dv)<1?'-':dv>0?'▲':'▼'}</td><td>${fN(Math.abs(dv))}</td><td class="sep cu">${fN(T('sp'))}</td><td class="${b1?'bad':'ok'}">${b1?b1+' div.':'OK'}</td><td class="sep cu">${fN(T('efc'))}</td><td class="${b2?'bad':'ok'}">${b2?b2+' div.':'OK'}</td></tr></tbody>`;
   const t=$('#t9'); t.innerHTML=h;
   t.querySelectorAll('th[data-s]').forEach(th=>th.onclick=()=>{ const k=th.dataset.s; st9.sort=S.k===k?{k,d:-S.d}:{k,d:k==='p'?1:-1}; page9(); });
   dchk9();
@@ -1924,8 +1929,8 @@ function page9(){
 function dchk9(){
   const L=D.dchk||[], nm=L.filter(x=>x.st==='missing').length, nf=L.length-nm;
   $('#sumd9').textContent=L.length?`${nm} fora da Summary · ${nf} com fluxo diferente · clique para ver os meses`:'nenhuma inconsistência';
-  let h=`<thead><tr><th style="text-align:left">Project (Detail)</th><th>Problema</th><th>Total Detail</th><th>Total Summary</th><th>Diferença<br>(soma |Δ|)</th></tr></thead><tbody>`;
-  L.forEach((x,i)=>h+=`<tr class="exp" data-i="${i}"><td title="${esc(x.site+' '+x.ph)}">${esc(x.site+' '+x.ph)}</td><td style="text-align:left">${x.st==='missing'?'<span class="tg rem">fora da Summary</span>':`<span class="tg att">fluxo diferente</span>${x.n} mês(es)`}</td><td class="cu">${fN(x.dt)}</td><td>${x.st==='missing'?'–':fN(x.sm)}</td><td class="bad" style="text-align:right">${fN(x.diff)}</td></tr>`);
+  let h=`<thead><tr><th style="text-align:left">Project (Detail)</th><th style="text-align:left">Problema</th><th class="cu">Total Capex<br>Detail</th><th class="cu">Total Capex<br>Summary</th><th>Diferença<br>(soma |Δ|)</th></tr></thead><tbody>`;
+  L.forEach((x,i)=>h+=`<tr class="exp" data-i="${i}"><td title="${esc(x.site+' '+x.ph)}">${esc(x.site+' '+x.ph)}</td><td style="text-align:left">${x.st==='missing'?'<span class="tg rem">fora da Summary</span>':`<span class="tg att">fluxo diferente</span>${x.n} mês(es)`}</td><td class="cu">${fN(x.dt)}</td><td class="cu">${x.st==='missing'?'–':fN(x.sm)}</td><td class="bad" style="text-align:right">${fN(x.diff)}</td></tr>`);
   if(!L.length) h+='<tr><td colspan="5" class="ok" style="text-align:left">Todos os projetos da CapEx Detail USD estão na CapEx Summary com o mesmo fluxo mensal.</td></tr>';
   const t=$('#td9'); t.innerHTML=h+'</tbody>';
   t.querySelectorAll('tr.exp').forEach(tr=>tr.onclick=()=>{ const nx=tr.nextElementSibling; if(nx&&nx.classList.contains('det')){nx.remove();return;}
