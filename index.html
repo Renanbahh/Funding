@@ -61,13 +61,13 @@
   .chip.on{display:inline-flex}
   .hint{font-size:10px;color:var(--mut);align-self:center}
   /* linha do tempo (mês a mês) — substitui as caixas de data visíveis */
-  .tl{position:relative;flex:1;height:50px;margin:0 22px 0 14px;min-width:300px;user-select:none;touch-action:none}
+  .tl{position:relative;flex:1;height:50px;margin:0 22px 0 14px;min-width:300px;user-select:none;touch-action:none;contain:layout style paint}
   .tl-track{position:absolute;left:0;right:0;top:28px;height:4px;border-radius:2px;background:rgba(201,214,238,.35);cursor:pointer}
-  .tl-fill{position:absolute;top:28px;height:4px;border-radius:2px;background:#2D8CFF;pointer-events:none}
+  .tl-fill{position:absolute;top:28px;height:4px;border-radius:2px;background:#2D8CFF;pointer-events:none;will-change:left,width}
   .tl-tick{position:absolute;top:25px;width:1px;height:10px;margin-left:-.5px;background:rgba(201,214,238,.45);pointer-events:none}
   .tl-tick.y{height:16px;top:22px;width:2px;margin-left:-1px;background:rgba(201,214,238,.85)}
   .tl-lab{position:absolute;top:38px;font-size:10px;color:#C9D6EE;transform:translateX(-50%);pointer-events:none;white-space:nowrap}
-  .tl-h{position:absolute;top:21px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:#E8EEF8;border:3px solid #2D8CFF;cursor:grab;box-shadow:0 1px 6px rgba(0,0,0,.5);z-index:2}
+  .tl-h{position:absolute;top:21px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:#E8EEF8;border:3px solid #2D8CFF;cursor:grab;box-shadow:0 1px 6px rgba(0,0,0,.5);z-index:2;will-change:left}
   .tl-h:active{cursor:grabbing}
   .tl-h span{position:absolute;bottom:21px;left:50%;background:#0A1A3A;border:1px solid #4A78C2;border-radius:4px;padding:1px 6px;font-size:11px;white-space:nowrap;pointer-events:none}
   .tl-h[data-h=a] span{transform:translateX(-80%)} .tl-h[data-h=b] span{transform:translateX(-20%)}
@@ -387,6 +387,17 @@
   #t9 td:first-child{max-width:230px;white-space:normal}
   #t9 tr.sum td{position:sticky;bottom:0;background:#123068}
   .tabs9 button{min-width:110px}
+  /* página 12 — Formula Checks */
+  .tg.warn{background:rgba(255,214,10,.18);color:#FFD60A}.tg.inf{background:rgba(111,176,255,.2);color:#9CC8FF}
+  .g12{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:10px}
+  #sv12 button{min-width:110px;display:flex;align-items:center;gap:6px;justify-content:center}
+  #sv12 button:not(.on){opacity:.45}
+  .t12{font-size:12px} .t12 td,.t12 th{padding:4px 6px} .t12 td:first-child{white-space:normal;max-width:200px}
+  .t12 td.cel{text-align:center;font-family:Consolas,monospace;color:#C9D6EE} .t12 td.dt{max-width:260px;overflow:hidden;text-overflow:ellipsis;color:#C9D6EE}
+  .t12 tr.exp{cursor:pointer} .t12 tr.exp:hover td{filter:brightness(1.25)} .t12 tr.det td{background:#0A1830!important;white-space:normal;font-family:Consolas,monospace;font-size:11.5px}
+  .t12 .full{word-break:break-all}
+  .bar9 select{background:#0A1830;color:var(--txt);border:1px solid #33507F;border-radius:7px;padding:5px 8px;font:inherit;font-size:12px;max-width:260px}
+  .bar9 input.q12{background:#0A1830;color:var(--txt);border:1px solid #33507F;border-radius:7px;padding:5px 9px;font:inherit;font-size:12px;width:170px}
   /* página 11 — CapEx Dashboard */
   #t11{font-size:11.5px;width:max-content;min-width:100%} #t11 td,#t11 th{padding:3px 7px;white-space:nowrap}
   #t11 th{text-align:right;vertical-align:bottom;background:#0A1830} #t11 tr.g0 th,#t11 tr.g1 th{text-align:center}
@@ -718,6 +729,23 @@
     </div>
   </div>
 </div>
+<div class="wrap9" id="pg12" hidden>
+  <div class="top3"><div class="tabs9" id="ct12"></div><div class="tabs9" id="sv12" style="margin-right:0"></div>
+    <div class="rt2"><div class="fn2 bl"><b id="cf12"></b><span id="cu12"></span></div></div>
+    <button class="ic2" id="exp12" title="Baixar este dashboard (.html)">Exportar ⤓</button><span class="cut2 bl" id="cc12"></span></div>
+  <div class="g12">
+    <div class="l9">
+      <div class="bar9"><div class="bar-title" style="flex:1"><span>CapEx Detail USD</span><span class="hint" style="color:#C9D6EE;font-weight:400" id="sumA12"></span></div>
+        <input class="q12" id="qA12" placeholder="Buscar projeto"><select id="kA12"></select></div>
+      <div class="ctab t9"><table id="tA12" class="t12"></table></div>
+    </div>
+    <div class="l9">
+      <div class="bar9"><div class="bar-title" style="flex:1"><span>CapEx Summary</span><span class="hint" style="color:#C9D6EE;font-weight:400" id="sumB12"></span></div>
+        <input class="q12" id="qB12" placeholder="Buscar projeto"><select id="kB12"></select></div>
+      <div class="ctab t9"><table id="tB12" class="t12"></table></div>
+    </div>
+  </div>
+</div>
 <div class="wrap9" id="pg9" hidden>
   <div class="top3"><div class="tabs9" id="ct9"></div>
     <div class="rt2"><div class="fn2 pk"><b id="pf9"></b><span id="pu9"></span></div><div class="fn2 bl"><b id="cf9"></b><span id="cu9"></span></div></div>
@@ -741,7 +769,7 @@
   <div class="bar-title"><span>CapEx Dashboard - LatAm</span><span class="hint" style="color:#C9D6EE;font-weight:400" id="n11"></span></div>
   <div class="ctab t9" style="overflow:auto"><table id="t11"></table></div>
 </div>
-<nav class="pages"><button data-pg="0" class="on">Início</button><button data-pg="6">Current Overview</button><button data-pg="2">Capex Comparison</button><button data-pg="8">Comparison by Project</button><button data-pg="3">Change Details</button><button data-pg="4">Comparison w/o FX</button><button data-pg="5">Building Budget</button><button data-pg="9">Current Checks</button><button data-pg="11" class="fpa">Dashboard FP&amp;A</button></nav>
+<nav class="pages"><button data-pg="0" class="on">Início</button><button data-pg="6">Current Overview</button><button data-pg="2">Capex Comparison</button><button data-pg="8">Comparison by Project</button><button data-pg="3">Change Details</button><button data-pg="4">Comparison w/o FX</button><button data-pg="5">Building Budget</button><button data-pg="9">Current Checks</button><button data-pg="12">Formula Checks</button><button data-pg="11" class="fpa">Dashboard FP&amp;A</button></nav>
 </div>
 <div class="tip" id="tip"></div>
 <script id="dash-data" type="application/json">null</script>
@@ -957,13 +985,15 @@ function timeline(el, months, inA, inB, onChange){
     H.a.firstChild.textContent=br(months[ia]+'-01'); H.b.firstChild.textContent=br(mEnd(months[ib])); }
   function sync(){ ia=toIdx(inA.value); ib=toIdx(inB.value); if(ia>ib)[ia,ib]=[ib,ia]; draw(); }
   function commit(){ inA.value=months[ia]+'-01'; inB.value=mEnd(months[ib]); draw(); onChange(); }
-  const bnd=e=>{ const r=el.getBoundingClientRect(); return Math.max(0,Math.min(n,Math.round((e.clientX-r.left)/r.width*n))); };
+  let R=null, raf=0;
+  const bnd=e=>{ const r=R||el.getBoundingClientRect(); return Math.max(0,Math.min(n,Math.round((e.clientX-r.left)/r.width*n))); };
+  const sched=()=>{ if(!raf) raf=requestAnimationFrame(()=>{ raf=0; draw(); }); };
   Object.entries(H).forEach(([k,hd])=>{
-    hd.onpointerdown=e=>{ e.preventDefault(); hd.setPointerCapture(e.pointerId); hd.classList.add('drag');
+    hd.onpointerdown=e=>{ e.preventDefault(); hd.setPointerCapture(e.pointerId); hd.classList.add('drag'); R=el.getBoundingClientRect();
       hd.onpointermove=ev=>{ const b=bnd(ev);
-        if(k==='a'){ const v=Math.max(0,Math.min(b,ib)); if(v!==ia){ ia=v; draw(); } }
-        else { const v=Math.min(n-1,Math.max(b-1,ia)); if(v!==ib){ ib=v; draw(); } } };
-      hd.onpointerup=()=>{ hd.onpointermove=null; hd.onpointerup=null; hd.classList.remove('drag'); commit(); }; }; });
+        if(k==='a'){ const v=Math.max(0,Math.min(b,ib)); if(v!==ia){ ia=v; sched(); } }
+        else { const v=Math.min(n-1,Math.max(b-1,ia)); if(v!==ib){ ib=v; sched(); } } };
+      hd.onpointerup=()=>{ hd.onpointermove=null; hd.onpointerup=null; hd.classList.remove('drag'); R=null; if(raf){ cancelAnimationFrame(raf); raf=0; } commit(); }; }; });
   el.querySelector('.tl-track').onclick=e=>{ const b=bnd(e);
     if(Math.abs(b-ia)<=Math.abs(b-(ib+1))) ia=Math.max(0,Math.min(b,ib)); else ib=Math.min(n-1,Math.max(b-1,ia)); commit(); };
   sync();
@@ -1420,9 +1450,154 @@ async function readBook(file){
   const mod=/<dcterms:modified[^>]*>([^<]+)</.exec(out['docProps/core.xml']||'');
   const res={modified: mod?new Date(mod[1]).getTime():null, sheets:{}};
   for(const n of SHEETS){ const pth=sheetPath[n]; if(!pth||!dir[pth]){ res.sheets[n]=null; continue; }
-    const x=(await unzipParts(buf,[pth])).out[pth]; res.sheets[n]=parseSheet(x,ss,isDateStyle); }
+    const x=(await unzipParts(buf,[pth])).out[pth]; res.sheets[n]=parseSheet(x,ss,isDateStyle);
+    if(FX_SHEETS.includes(n)) (res.fx||(res.fx={}))[n]=parseSheetF(x,ss); }
   return res;
 }
+// ---- checks de fórmulas (mesma lógica do formula_checks.py) ----
+const FX_SHEETS=['CapEx Detail USD','CapEx Summary'];
+const FREF=/(?:(?:'[^']+'|[A-Za-z0-9_.]+)!)?(\$?)([A-Z]{1,3})(\$?)(\d+)(?![\d(A-Za-z_])/g;
+const cI1=s=>{ let n=0; for(const ch of s) n=n*26+ch.charCodeAt(0)-64; return n; };
+const cL1=n=>{ let s=''; while(n){ const r=(n-1)%26; s=String.fromCharCode(65+r)+s; n=Math.floor((n-1)/26); } return s; };
+const fStrip=f=>f.replace(/"[^"]*"/g,'""');
+const fParts=(f,fn)=>f.split(/("[^"]*")/).map(p=>p.startsWith('"')?p:p.replace(FREF,fn)).join('');
+const fShift=(f,dr,dc)=>fParts(f,(m,a,col,b,row)=>{ const pre=m.slice(0,m.length-(a+col+b+row).length); let c=cI1(col), r=+row; if(!a) c+=dc; if(!b) r+=dr; return pre+a+cL1(c)+b+r; });
+const fNorm=(f,row)=>fParts(f,(m,a,col,b,row2)=>{ const pre=m.slice(0,m.length-(a+col+b+row2).length), r=+row2; return pre+a+col+(b?'$'+r:r===row?'R':'R'+(r-row>0?'+':'')+(r-row)); });
+function fOther(f,row){ const o=new Set(); for(const m of fStrip(f).matchAll(FREF)){ if(m[0].includes('!')) continue; if(m[3]) continue; const r=+m[4]; if(r!==row) o.add(r); } return o; }
+const fZero=f=>/\*\s*0(?![.\d])/.test(fStrip(f));
+const fSerial=v=>{ const d=new Date(Date.UTC(1899,11,30)+Math.round(v)*864e5); return {y:d.getUTCFullYear(),m:d.getUTCMonth()+1}; };
+const fNum=v=>typeof v==='number'&&isFinite(v);
+const fNext=(a,b)=>{ if(!fNum(a)||!fNum(b)) return false; const x=fSerial(a),y=fSerial(b); return (y.y*12+y.m)-(x.y*12+x.m)===1; };
+const fSumifEnd=f=>{ const m=/SUMIF\(\$?[A-Z]+\$?\d+:\$?([A-Z]+)\$?\d+/.exec(f||''); return m?cI1(m[1]):null; };
+const fKk=v=>v==null?'0':Math.round(v).toLocaleString('pt-BR');
+const SUBT=/SUBTOTAL\(9,\$?[A-Z]+\$?(\d+)(?::\$?[A-Z]+\$?(\d+))?\)/;
+// células com fórmula (expande shared formulas): Map r*4096+c -> {v,f,t}
+function parseSheetF(xml, ss){
+  const M=new Map(), shared={}, re=/<c\b([^>]*?)(\/>|>([\s\S]*?)<\/c>)/g; let m;
+  while((m=re.exec(xml))){ const at=m[1], ref=/\br="([A-Z]+)(\d+)"/.exec(at); if(!ref) continue; const c=cI1(ref[1]), r=+ref[2];
+    const t=attr(at,'t')||'n', inner=m[3]||''; let v=null; const vm=/<v>([\s\S]*?)<\/v>/.exec(inner);
+    if(vm){ v=xdec(vm[1]); if(t==='s') v=ss[+v]; else if(t==='n'){ const x=+v; if(isFinite(x)) v=x; } else if(t==='b') v=v==='1'; }
+    const fm=/<f\b([^>]*)(?:\/>|>([\s\S]*?)<\/f>)/.exec(inner); let f=null;
+    if(fm){ const fa=fm[1], ft=xdec(fm[2]||''), si=/\bsi="(\d+)"/.exec(fa);
+      if(/t="shared"/.test(fa)&&si){ if(ft){ shared[si[1]]=[ft,r,c]; f=ft; } else if(shared[si[1]]){ const [mf,mr,mc]=shared[si[1]]; f=fShift(mf,r-mr,c-mc); } }
+      else f=ft; }
+    if(v==null&&f==null) continue; M.set(r*4096+c,{v,f,t}); }
+  return M;
+}
+function fchkCountry(S){ const E={v:null,f:null,t:null}, g=(r,c)=>S.get(r*4096+c)||E, out={}; let mx=0; S.forEach((x,k)=>{ const r=Math.floor(k/4096); if(r>mx) mx=r; });
+  let hrow=0; for(let r=1;r<40;r++) if(g(r,1).v==='Site'&&g(r,2).v==='Phase/Project'){ hrow=r; break; } if(!hrow) return out;
+  let cC=0; for(let c=1;c<40;c++) if(g(hrow,c).v==='Country'){ cC=c; break; } if(!cC) return out;
+  for(let r=hrow+1;r<=mx;r++){ const a=g(r,1).v, b=g(r,2).v, c=g(r,cC).v; if(a&&b&&c&&!(String(a) in out)) out[String(a)]=String(c); } return out; }
+function fchkDetail(S,cmap={}){
+  const E={v:null,f:null,t:null}, g=(r,c)=>S.get(r*4096+c)||E; let mx=0; S.forEach((x,k)=>{ const r=Math.floor(k/4096); if(r>mx) mx=r; });
+  let hrow=0; for(let r=1;r<40;r++) if(g(r,3).v==='Site'&&g(r,6).v==='Category'){ hrow=r; break; } if(!hrow) return {out:[],info:null};
+  const hdr={}; for(let c=1;c<15;c++){ const v=g(hrow,c).v; if(typeof v==='string'&&!(v.trim() in hdr)) hdr[v.trim()]=c; }
+  const cS=hdr['Site'], cP=hdr['Phase/Project'], cCat=hdr['Category'], cI=hdr['Total Budget'], cK=hdr['Saving/Overrun'], cL=hdr['PO Value'], cM=hdr['Spent to Date'], cN=hdr['Remaining'];
+  let c0=cN+1; while(c0<400&&!fNum(g(hrow,c0).v)) c0++;
+  const d0=fSerial(g(hrow,c0).v), mc=[c0]; let c=c0+1; while(fNum(g(hrow,c).v)&&fNext(g(hrow,c-1).v,g(hrow,c).v)){ mc.push(c); c++; }
+  let cut=null; for(let r=hrow-3;r<hrow;r++){ const v=g(r,cM).v; if(fNum(v)) cut=fSerial(v); }
+  const ym=k=>{ const t=d0.y*12+(d0.m-1)+k; return [Math.floor(t/12),t%12+1]; }, cutv=cut?cut.y*12+cut.m:9999*12+12, lastL=cL1(mc[mc.length-1]), firstL=cL1(mc[0]);
+  const std={[cM]:`SUMIF($${firstL}$${hrow}:$${lastL}$${hrow},"<="&$${cL1(cM)}$${hrow-1},$${firstL}R:$${lastL}R)`, [cN]:`SUMIF($${firstL}$${hrow}:$${lastL}$${hrow},">"&$${cL1(cM)}$${hrow-1},$${firstL}R:$${lastL}R)`};
+  const out=[], add=(r,sev,chk,det,col='')=>out.push({site:String(g(r,cS).v??''),ph:String(g(r,cP).v??''),cat:String(g(r,cCat).v??''),row:r,col,sev,chk,det,country:cmap[String(g(r,cS).v??'')]||'(vazio)'});
+  const rows=[]; for(let r=hrow+1;r<=mx;r++) if(g(r,cS).v&&g(r,cP).v&&g(r,2).v!=='TOTAL') rows.push(r);
+  const rc={}; rows.forEach(r=>{ const e=fSumifEnd(g(r,cM).f); if(e) rc[e]=(rc[e]||0)+1; }); let rend=mc[mc.length-1], best=0; Object.entries(rc).forEach(([k,n])=>{ if(n>best){ best=n; rend=+k; } });
+  const mcIn=mc.filter(c=>c<=rend), mcOut=mc.filter(c=>c>rend);
+  const num=v=>fNum(v)?v:0, lst=(a,n)=>a.slice(0,n).join(', ')+(a.length>n?` … (${a.length})`:'');
+  rows.forEach(r=>{
+    const outv=mcOut.filter(c=>fNum(g(r,c).v)&&Math.abs(g(r,c).v)>=1).map(cL1);
+    if(outv.length) add(r,'erro','Mês fora do intervalo somado em Spent/Remaining',`Intervalo vai até ${cL1(rend)}; valor em: ${outv.slice(0,6).join(', ')}`,outv[0]);
+    const errs=[]; for(let c=1;c<=mc[mc.length-1];c++) if(g(r,c).t==='e') errs.push(cL1(c));
+    if(errs.length) add(r,'erro','Erro de cálculo (#REF!, #N/A…)','Células: '+lst(errs,8),errs[0]);
+    if(!g(r,2).v) add(r,'erro','Chave (coluna B) ausente','A coluna B deveria ter =C&D&F&H','B');
+    [cM,cN].forEach(c=>{ const {v,f}=g(r,c); if(!f||fNorm(f,r)!==std[c]) add(r,'erro','Spent/Remaining sem a fórmula padrão',f?'Fórmula: ='+f:`Valor digitado: ${v==null?'vazio':v}`,cL1(c)); });
+    const s=mcIn.reduce((t,c)=>t+num(g(r,c).v),0), mn=num(g(r,cM).v)+num(g(r,cN).v);
+    if(Math.abs(s-mn)>=1) add(r,'erro','Soma dos meses ≠ Spent + Remaining',`Meses: ${fKk(s)} | Spent+Remaining: ${fKk(mn)}`,cL1(cM));
+    if(cK){ const {v:kv,f:kf}=g(r,cK), iv=num(g(r,cI).v);
+      if(kf&&fOther(kf,r).size) add(r,'info','Saving/Overrun soma outras linhas','='+kf,cL1(cK));
+      else if(fNum(kv)&&Math.abs(kv-(iv-mn))>=1) add(r,'atencao','Saving ≠ Budget − Spent − Remaining',`Saving: ${fKk(kv)} | Budget−Spent−Rem: ${fKk(iv-mn)}`,cL1(cK)); }
+    [[cI,'Budget'],[cL,'PO Value']].forEach(([c,nm])=>{ const {f}=g(r,c); if(!f) return;
+      if(f.includes('_old')) add(r,'atencao',nm+' vinculado à aba _old','='+f.slice(0,120),cL1(c));
+      if(fZero(f)) add(r,'atencao',nm+' com fórmula anulada (*0)','='+f.slice(0,120),cL1(c));
+      const o=[...fOther(f,r)].sort((a,b)=>a-b); if(o.length) add(r,'info',nm+' derivado de outra linha',`=${f.slice(0,120)} (linhas ${o.slice(0,5).join(', ')})`,cL1(c)); });
+    let seenF=false; const typed=[], rowmis=[], zm=[], old=[];
+    mc.forEach((c,k)=>{ const {v,f}=g(r,c), [y,mo]=ym(k), past=y*12+mo<=cutv;
+      if(f){ if(past) seenF=true; if(fOther(f,r).size) rowmis.push(cL1(c)); if(fZero(f)) zm.push(cL1(c)); if(f.includes('_old')) old.push(cL1(c)); }
+      else if(fNum(v)&&v!==0&&past&&seenF) typed.push(cL1(c)); });
+    if(rowmis.length) add(r,String(g(r,cCat).v??'').toUpperCase().includes('FX')?'atencao':'erro','Fórmula de mês aponta outra linha desta aba','Células: '+lst(rowmis,8),rowmis[0]);
+    if(false&&typed.length) add(r,'atencao','Mês realizado digitado em linha com fórmula',`${typed.length} mês(es): `+lst(typed,8),typed[0]);
+    if(zm.length) add(r,'atencao','Meses com fórmula anulada (*0)',`${zm.length} célula(s): `+lst(zm,6),zm[0]);
+    if(old.length) add(r,'atencao','Meses vinculados à aba _old',`${old.length} célula(s): `+lst(old,6),old[0]);
+  });
+  let prev=hrow;
+  for(let r=hrow+1;r<=mx;r++){ if(g(r,2).v!=='TOTAL') continue;
+    const blk=[]; for(let x=prev+1;x<r;x++) if(g(x,cS).v&&g(x,cP).v) blk.push(x);
+    const bad={}; [cI,cL,cM,cN,...mc].forEach(c=>{ const {f}=g(r,c); if(!f) return; const m=SUBT.exec(f);
+      if(!m){ if([cI,cL,cM,cN].includes(c)) (bad['sem SUBTOTAL']||(bad['sem SUBTOTAL']=[])).push(cL1(c)); return; }
+      const a=+m[1], b=+(m[2]||m[1]); const miss=blk.filter(x=>(x<a||x>b)&&fNum(g(x,c).v)&&Math.abs(g(x,c).v)>=1);
+      if(miss.length){ const k='não cobre linha(s) '+miss.slice(0,4).join(', '); (bad[k]||(bad[k]=[])).push(cL1(c)); } });
+    const site=blk.length?g(blk[0],cS).v:'', ph=blk.length?g(blk[0],cP).v:'';
+    Object.entries(bad).forEach(([k,cols])=>out.push({site:String(site??''),ph:String(ph??''),cat:'TOTAL',row:r,col:cols[0],sev:'atencao',chk:'Linha TOTAL '+k,det:'Colunas: '+lst(cols,8),country:cmap[String(site??'')]||'(vazio)'}));
+    prev=r; }
+  return {out,info:{d0,c0,n:mc.length}};
+}
+function fchkSummary(S,info){
+  const E={v:null,f:null,t:null}, g=(r,c)=>S.get(r*4096+c)||E; let mx=0; S.forEach((x,k)=>{ const r=Math.floor(k/4096); if(r>mx) mx=r; });
+  let hrow=0; for(let r=1;r<40;r++) if(g(r,1).v==='Site'&&g(r,2).v==='Phase/Project'){ hrow=r; break; } if(!hrow) return [];
+  const hdr={}; for(let c=1;c<40;c++){ const v=g(hrow,c).v; if(typeof v==='string'&&!(v.trim() in hdr)) hdr[v.trim()]=c; }
+  const cCom=hdr['Commit?'], cS_=hdr['Total Budget'], cT=hdr['EFC'], cU=hdr['Spend to Date'], cV=hdr['Remaining Capex'], cCo=hdr['Country'], ctry=r=>cCo?String(g(r,cCo).v||'(vazio)'):'(vazio)';
+  const mc=[]; for(let c=cV+1;c<800;c++){ const v=g(hrow,c).v; if(fNum(v)&&(!mc.length||fNext(g(hrow,c-1).v,v))) mc.push(c); else if(mc.length) break; }
+  const d0=fSerial(g(hrow,mc[0]).v), out=[], add=(r,sev,chk,det,col='')=>out.push({site:String(g(r,1).v??''),ph:String(g(r,2).v??''),row:r,col,sev,chk,det,country:ctry(r)});
+  const rows=[]; for(let r=hrow+1;r<=mx;r++){ const a=g(r,1), b=g(r,2).v; if(a.v&&!b&&!a.f) break; if(a.v&&b) rows.push(r); }
+  const rc={}; rows.forEach(r=>{ const e=fSumifEnd(g(r,cU).f); if(e) rc[e]=(rc[e]||0)+1; }); let rend=mc[mc.length-1], best=0; Object.entries(rc).forEach(([k,n])=>{ if(n>best){ best=n; rend=+k; } });
+  const mcIn=mc.filter(c=>c<=rend), mcOut=mc.filter(c=>c>rend), num=v=>fNum(v)?v:0, lst=(a,n)=>a.slice(0,n).join(', ')+(a.length>n?` … (${a.length})`:'');
+  for(let c=3;c<mc[0];c++){ if(c===cCom||typeof g(hrow,c).v!=='string') continue;
+    const pats={}, cell={}; rows.forEach(r=>{ const {v,f}=g(r,c); const key=f?'F|'+fNorm(f,r):'V|'+(v==null?'empty':'const'); pats[key]=(pats[key]||0)+1; cell[r]=[key,v,f]; });
+    let dom='',n=0; Object.entries(pats).forEach(([k,x])=>{ if(x>n){ n=x; dom=k; } });
+    if(!dom.startsWith('F|')||n<0.7*rows.length) continue;
+    const nm=String(g(hrow,c).v).trim().replace(/\n/g,' ');
+    rows.forEach(r=>{ const [key,v,f]=cell[r]; if(key===dom) return;
+      if(key.startsWith('F|')) add(r,'atencao',nm+': fórmula fora do padrão da coluna','='+f.slice(0,110),cL1(c));
+      else if(v!=null) add(r,'atencao',nm+': valor digitado em coluna de fórmula','Valor: '+(fNum(v)?+v.toPrecision(4):v),cL1(c)); }); }
+  const DET="'CapEx Detail USD'!";
+  rows.forEach(r=>{
+    const errs=[]; for(let c=1;c<=mc[mc.length-1];c++) if(g(r,c).t==='e') errs.push(cL1(c));
+    if(errs.length) add(r,'erro','Erro de cálculo (#REF!, #N/A…)','Células: '+lst(errs,8),errs[0]);
+    const tv=num(g(r,cT).v), uv=num(g(r,cU).v), vv=num(g(r,cV).v);
+    if(Math.abs(tv-(uv+vv))>=1) add(r,'erro','EFC ≠ Spend to Date + Remaining',`EFC: ${fKk(tv)} | Spend+Rem: ${fKk(uv+vv)}`,cL1(cT));
+    const outv=mcOut.filter(c=>fNum(g(r,c).v)&&Math.abs(g(r,c).v)>=1).map(cL1);
+    if(outv.length) add(r,'erro','Mês fora do intervalo somado em Spend/Remaining',`Intervalo vai até ${cL1(rend)}; valor em: ${outv.slice(0,6).join(', ')}`,outv[0]);
+    const s=mcIn.reduce((t,c)=>t+num(g(r,c).v),0);
+    if(Math.abs(s-(uv+vv))>=1){ if(g(r,cU).f||g(r,cV).f) add(r,'erro','Soma dos meses ≠ Spend to Date + Remaining',`Meses: ${fKk(s)} | Spend+Rem: ${fKk(uv+vv)}`,cL1(cU));
+      else add(r,'info','Linha sem Spend to Date/Remaining (meses não somados)',`Meses: ${fKk(s)}`,cL1(cU)); }
+    let nf=0; const typed=[], rowmis=[], wrong=[], zm=[];
+    mc.forEach((c,k)=>{ const {v,f}=g(r,c);
+      if(f){ nf++; if(fOther(f,r).size) rowmis.push(cL1(c)); if(fZero(f)) zm.push(cL1(c));
+        if(info&&k>0&&f.includes(DET)){ const m=/'CapEx Detail USD'!\$?([A-Z]+)\$?\d*:\$?([A-Z]+)/.exec(f);
+          if(m){ const t=d0.y*12+(d0.m-1)+k, y=Math.floor(t/12), mo=t%12+1, exp=info.c0+(y-info.d0.y)*12+(mo-info.d0.m);
+            if(cI1(m[1])!==exp) wrong.push(`${cL1(c)}→${m[1]} (esperado ${cL1(exp)})`); } } }
+      else if(fNum(v)&&v!==0) typed.push(cL1(c)); });
+    if(wrong.length) add(r,'erro','Mês aponta coluna errada da CapEx Detail',lst(wrong,5),wrong[0].split('→')[0]);
+    if(rowmis.length) add(r,'erro','Fórmula de mês aponta outra linha desta aba','Células: '+lst(rowmis,8),rowmis[0]);
+    if(zm.length) add(r,'atencao','Meses com fórmula anulada (*0)',`${zm.length} célula(s): `+zm.slice(0,6).join(', '),zm[0]);
+    if(typed.length&&nf) add(r,'atencao','Mês digitado em linha com fórmula',`${typed.length} mês(es): `+lst(typed,8),typed[0]);
+    else if(typed.length&&!nf) add(r,'info','Linha toda digitada (sem fórmula nos meses)',`${typed.length} mês(es) com valor`,typed[0]);
+  });
+  let prev=hrow;
+  for(let r=hrow+1;r<=mx;r++){ if(g(r,cCom).v!=='Total') continue;
+    const blk=[]; for(let x=prev+1;x<r;x++) if(g(x,1).v&&g(x,2).v) blk.push(x);
+    const bad={}; [cS_,cT,cU,cV,...mc].forEach(c=>{ const {f}=g(r,c); if(!f) return; const m=SUBT.exec(f);
+      if(!m){ if([cS_,cT,cU,cV].includes(c)) (bad['sem SUBTOTAL']||(bad['sem SUBTOTAL']=[])).push(cL1(c)); return; }
+      const a=+m[1], b=+(m[2]||m[1]); const miss=blk.filter(x=>(x<a||x>b)&&fNum(g(x,c).v)&&Math.abs(g(x,c).v)>=1);
+      if(miss.length){ const k='não cobre linha(s) '+miss.slice(0,4).join(', '); (bad[k]||(bad[k]=[])).push(cL1(c)); } });
+    const site=blk.length?g(blk[0],1).v:'';
+    Object.entries(bad).forEach(([k,cols])=>out.push({site:String(site??''),ph:'Total',row:r,col:cols[0],sev:'atencao',chk:'Linha Total '+k,det:'Colunas: '+lst(cols,8),country:blk.length?ctry(blk[0]):'(vazio)'}));
+    prev=r; if(!blk.length) break; }
+  return out;
+}
+function fchkJS(fx){ if(!fx) return {detail:[],summary:[]};
+  const cmap=fx['CapEx Summary']?fchkCountry(fx['CapEx Summary']):{};
+  const d=fx['CapEx Detail USD']?fchkDetail(fx['CapEx Detail USD'],cmap):{out:[],info:null};
+  return {detail:d.out, summary:fx['CapEx Summary']?fchkSummary(fx['CapEx Summary'],d.info):[]}; }
 // ---- mesmas regras do build_dashboard.py ----
 const T=v=>v==null||v instanceof Date?'':String(v).trim();
 const N=v=>typeof v==='number'&&isFinite(v)?v:0;
@@ -1472,7 +1647,7 @@ function parseBook(out, fileName, lastMod){
   return {file:fileName, last_update:fmtDT(new Date(out.modified||lastMod)),
     file_date:m?`${m[1]}/${m[2]}/${m[3].slice(-2)}`:fmtDT(new Date(lastMod)).slice(0,8),
     cutoff:cy, cutoff_label:MPT0[+cy.slice(5)-1].replace(/^./,c=>c.toUpperCase())+'-'+cy.slice(2,4),
-    months:months.map(x=>x[1]), projects, keyrows, fit:parseFit(out.sheets['Fit-out']), cdr, est:parseEst(out.sheets), dchk:detailCheckJS(flM,summAll,months.length?months[0][1]:''), generated:fmtDT(new Date())};
+    months:months.map(x=>x[1]), projects, keyrows, fit:parseFit(out.sheets['Fit-out']), cdr, est:parseEst(out.sheets), dchk:detailCheckJS(flM,summAll,months.length?months[0][1]:''), fchk:fchkJS(out.fx), generated:fmtDT(new Date())};
 }
 // projetos da CapEx Detail USD que faltam na Summary ou cujo fluxo mensal difere (tolerância US$ 1); meses antes do 1º da Summary somam no 1º
 function detailCheckJS(det,summ,first){ const out=[];
@@ -1613,7 +1788,7 @@ $('#goCmp').onclick=async()=>{
     S[0][1]='ok'; S[1][1]='run'; steps(S); const bc=await readBook(FILES.cur); const cur=parseBook(bc,FILES.cur.name,FILES.cur.lastModified);
     S[1][1]='ok'; S[2][1]='run'; steps(S);
     const data={cur, prev, cmp:{renames:renamesJS(prev,cur)}, meta:{source:'browser', generated:fmtDT(new Date()), prev_link:'', cur_link:''}};
-    delete data.cur.keyrows; delete data.prev.keyrows; delete data.prev.dchk; delete data.prev.fit; delete data.prev.cdr; delete data.prev.est;
+    delete data.cur.keyrows; delete data.prev.keyrows; delete data.prev.dchk; delete data.prev.fchk; delete data.prev.fit; delete data.prev.cdr; delete data.prev.est;
     S[2][1]='ok'; steps(S);
     openWith(data);
   }catch(err){ const i=S.findIndex(x=>x[1]==='run'); if(i>=0) S[i][1]='err'; steps(S); msg('Não foi possível concluir a comparação: '+esc(err.message||String(err))); $('#goCmp').disabled=false; }
@@ -2072,12 +2247,47 @@ $('#exp4').onclick=()=>$('#exp2').click();
 $('#exp2').onclick=()=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([htmlWith(ALL)],{type:'text/html'}));
   a.download=`Capex_Comparison_${P2.prev.cutoff_label||'anterior'}_x_${P2.cur.cutoff_label||'atual'}.html`; document.body.appendChild(a); a.click(); a.remove(); };
 $('#clearSel2').onclick=clear2;
+// =====================================================================
+// PÁGINA 12 — Formula Checks (arquivo atual): CapEx Detail USD × CapEx Summary
+// =====================================================================
+const st12={sev:{erro:true,atencao:true,info:true}, q:{A:'',B:''}, k:{A:'',B:''}, c:''};
+const SEV12={erro:['rem','Erro'],atencao:['warn','Atenção'],info:['inf','Info']}, ORD12={erro:0,atencao:1,info:2};
+function page12(){
+  const F0=D.fchk||{detail:[],summary:[]}, all0=[...F0.detail,...F0.summary], cs=[...new Set(all0.map(x=>x.country||'(vazio)'))].sort();
+  $('#ct12').innerHTML=[['','Todos'],...cs.map(c=>[c,c])].map(([v,lb])=>{ const n=all0.filter(x=>(!v||x.country===v)&&x.sev==='erro').length; return `<button data-c="${esc(v)}" class="${v===st12.c?'on':''}">${esc(lb)}${n?`<span class="bd">${n}</span>`:''}</button>`; }).join('');
+  $('#ct12').querySelectorAll('button').forEach(b=>b.onclick=()=>{ st12.c=b.dataset.c; page12(); });
+  const byC=L=>st12.c?L.filter(x=>x.country===st12.c):L, F={detail:byC(F0.detail),summary:byC(F0.summary)}, all=[...F.detail,...F.summary];
+  $('#sv12').innerHTML=Object.entries(SEV12).map(([k,[cls,lb]])=>{ const n=all.filter(x=>x.sev===k).length; return `<button data-k="${k}" class="${st12.sev[k]?'on':''}"><span class="tg ${cls}">${lb}</span>${n}</button>`; }).join('');
+  $('#sv12').querySelectorAll('button').forEach(b=>b.onclick=()=>{ st12.sev[b.dataset.k]=!st12.sev[b.dataset.k]; page12(); });
+  tab12('A',F.detail,true); tab12('B',F.summary,false);
+}
+function tab12(id,L,isDet){
+  const sel=$('#k'+id+'12'), kinds=[...new Set(L.map(x=>x.chk))].sort((a,b)=>a.localeCompare(b));
+  if(sel.options.length!==kinds.length+1){ sel.innerHTML='<option value="">Todos os checks</option>'+kinds.map(k=>`<option value="${esc(k)}">${esc(k)}</option>`).join(''); sel.value=st12.k[id]; }
+  const q=st12.q[id].toLowerCase(), k=st12.k[id];
+  const R=L.filter(x=>st12.sev[x.sev]&&(!k||x.chk===k)&&(!q||(x.site+' '+x.ph+' '+(x.cat||'')).toLowerCase().includes(q)))
+    .sort((a,b)=>ORD12[a.sev]-ORD12[b.sev]||a.row-b.row);
+  const ne=L.filter(x=>x.sev==='erro').length, na=L.filter(x=>x.sev==='atencao').length, ni=L.filter(x=>x.sev==='info').length;
+  $('#sum'+id+'12').textContent=L.length?`${ne} erros · ${na} atenção · ${ni} info · ${R.length} exibidos`:'nenhuma inconsistência de fórmula';
+  let h=`<thead><tr><th style="text-align:left">Project</th>${isDet?'<th style="text-align:left">Linha (Category)</th>':''}<th>Célula</th><th style="text-align:left">Problema</th><th style="text-align:left">Detalhe</th></tr></thead><tbody>`;
+  R.forEach((x,i)=>{ const [cls,lb]=SEV12[x.sev]; const nm=(x.site+' '+x.ph).trim();
+    h+=`<tr class="exp" data-i="${i}"><td title="${esc(nm)}">${esc(nm)}</td>${isDet?`<td title="${esc(x.cat)}">${esc(x.cat)}</td>`:''}<td class="cel">${esc(x.col)}${x.row}</td><td><span class="tg ${cls}">${lb}</span>${esc(x.chk)}</td><td class="dt" title="${esc(x.det)}">${esc(x.det)}</td></tr>`; });
+  if(!R.length) h+=`<tr><td colspan="${isDet?5:4}" class="${L.length?'dl':'ok'}" style="text-align:left">${L.length?'Nenhum item com os filtros atuais.':'Nenhuma inconsistência de fórmula encontrada.'}</td></tr>`;
+  const t=$('#t'+id+'12'); t.innerHTML=h+'</tbody>';
+  t.querySelectorAll('tr.exp').forEach(tr=>tr.onclick=()=>{ const nx=tr.nextElementSibling; if(nx&&nx.classList.contains('det')){ nx.remove(); return; }
+    const x=R[+tr.dataset.i], r=document.createElement('tr'); r.className='det';
+    r.innerHTML=`<td colspan="${isDet?5:4}"><b>${esc(x.col)}${x.row}</b> · ${esc(x.chk)}<br><span class="full">${esc(x.det)}</span></td>`; tr.after(r); });
+}
+['A','B'].forEach(id=>{ $('#q'+id+'12').oninput=e=>{ st12.q[id]=e.target.value; page12(); }; $('#k'+id+'12').onchange=e=>{ st12.k[id]=e.target.value; page12(); }; });
+$('#exp12').onclick=()=>$('#exp2').click();
 function header(){
-  $('#upd').style.visibility = (PAGE===0||PAGE===2||PAGE===3||PAGE===4||PAGE===6||PAGE===8||PAGE===9||PAGE===11) ? 'hidden' : 'visible';   // Início e Visão Geral sem o 'Last Update' do topo
+  $('#upd').style.visibility = (PAGE===0||PAGE===2||PAGE===3||PAGE===4||PAGE===6||PAGE===8||PAGE===9||PAGE===11||PAGE===12) ? 'hidden' : 'visible';   // Início e Visão Geral sem o 'Last Update' do topo
   if(PAGE===6){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').textContent='Current Overview';   // nome do arquivo só à direita, na barra da página
     $('#rep6').textContent=D.file.replace(/\.xlsx?$/i,''); $('#upd6').textContent='Última atualização: '+D.last_update; $('#cut6').textContent=D.cutoff_label; return; }
   if(PAGE===11){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').innerHTML='Dashboard FP&amp;A<small>CapEx Dashboard LatAm · current file</small>';
     $('#cf11').textContent=D.file.replace(/\.xlsx?$/i,''); $('#cu11').textContent='Última atualização: '+D.last_update; $('#cc11').textContent=D.cutoff_label; return; }
+  if(PAGE===12){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').innerHTML='Formula Checks<small>CapEx Detail USD × CapEx Summary · current file</small>';
+    $('#cf12').textContent=D.file.replace(/\.xlsx?$/i,''); $('#cu12').textContent='Última atualização: '+D.last_update; $('#cc12').textContent=D.cutoff_label; return; }
   if(PAGE===9){ $('#file').innerHTML=''; $('#file').className='file'; $('h1').textContent='Current Checks';
     const nm=d=>d.file.replace(/\.xlsx?$/i,'');
     $('#pf9').textContent=nm(P2.prev); $('#pf9').title=nm(P2.prev); $('#pu9').textContent='Última atualização: '+P2.prev.last_update; $('#pc9').textContent=P2.prev.cutoff_label;
@@ -2108,9 +2318,9 @@ function header(){
   else { $('#file').innerHTML=`<div class="pink">${esc(P2.prev.file.replace(/\.xlsx?$/i,''))}</div><div class="blue">${esc(P2.cur.file.replace(/\.xlsx?$/i,''))}</div>`; $('#file').className='file file2'; $('h1').textContent='Capex Comparison'; }
 }
 function goPage(n){
-  PAGE=n; $('#pg0').hidden = n!==0; $('#pg1').hidden = n!==1; $('#pg2').hidden = n!==2; $('#pg3').hidden = n!==3; $('#pg4').hidden = n!==4; $('#pg5').hidden = n!==5; $('#pg6').hidden = n!==6; $('#pg8').hidden = n!==8; $('#pg9').hidden = n!==9; $('#pg11').hidden = n!==11;
+  PAGE=n; $('#pg0').hidden = n!==0; $('#pg1').hidden = n!==1; $('#pg2').hidden = n!==2; $('#pg3').hidden = n!==3; $('#pg4').hidden = n!==4; $('#pg5').hidden = n!==5; $('#pg6').hidden = n!==6; $('#pg8').hidden = n!==8; $('#pg9').hidden = n!==9; $('#pg11').hidden = n!==11; $('#pg12').hidden = n!==12;
   document.querySelectorAll('.pages button').forEach(b=>b.classList.toggle('on', +b.dataset.pg===n));
-  header(); n===0 ? confirmBox() : n===1 ? refresh() : n===2 ? refresh2() : n===3 ? page3() : n===4 ? page4() : n===5 ? page5() : n===6 ? page6() : n===8 ? page8() : n===9 ? page9() : n===11 ? page11() : null;
+  header(); n===0 ? confirmBox() : n===1 ? refresh() : n===2 ? refresh2() : n===3 ? page3() : n===4 ? page4() : n===5 ? page5() : n===6 ? page6() : n===8 ? page8() : n===9 ? page9() : n===11 ? page11() : n===12 ? page12() : null;
 }
 document.querySelectorAll('.pages button').forEach(b=>{ if(EMPTY&&b.dataset.pg!=='0'){ b.disabled=true; b.title='Faça a comparação na aba Início'; } b.onclick=()=>goPage(+b.dataset.pg); });
 document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return;
@@ -2119,7 +2329,7 @@ document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return;
   if(PAGE===4 && sel4.size){ sel4.clear(); page4(); }
   if(PAGE===8 && sel8m.size){ sel8m.clear(); page8(); }
   if(PAGE===6 && Object.values(sel6).some(x=>x.size)) clr6(); });
-let rt; window.addEventListener('resize',()=>{ if(GEN!==window.__dashGen) return; fit(); clearTimeout(rt);rt=setTimeout(()=>PAGE===0?null:PAGE===1?refresh():PAGE===2?refresh2():PAGE===3?page3():PAGE===4?page4():PAGE===5?page5():PAGE===6?page6():PAGE===8?page8():PAGE===9?page9():PAGE===11?page11():null,150);});
+let rt; window.addEventListener('resize',()=>{ if(GEN!==window.__dashGen) return; fit(); clearTimeout(rt);rt=setTimeout(()=>PAGE===0?null:PAGE===1?refresh():PAGE===2?refresh2():PAGE===3?page3():PAGE===4?page4():PAGE===5?page5():PAGE===6?page6():PAGE===8?page8():PAGE===9?page9():PAGE===11?page11():PAGE===12?page12():null,150);});
 goPage(0);
 })();
 </script>
