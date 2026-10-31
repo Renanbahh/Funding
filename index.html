@@ -15,7 +15,7 @@
   html,body{margin:0;height:100%}
   body{font-family:'Kumbh Sans','Segoe UI',Arial,sans-serif;color:var(--txt);font-size:12px;
        background:radial-gradient(ellipse at 85% 0%,#4A2470 0%,rgba(74,36,112,0) 45%),linear-gradient(160deg,#0A1A3A 0%,#0E2350 55%,#2A1850 100%)}
-  header{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:22px;padding:8px 16px;
+  header{display:grid;grid-template-columns:auto 1fr auto auto auto;align-items:center;gap:22px;padding:8px 16px;
          background:linear-gradient(90deg,#0A1E45,#1A2E66 60%,#3A2266)}
   .logo{font-size:22px;font-weight:700;letter-spacing:.5px;line-height:1}
   .logo small{display:block;font-size:8px;font-weight:400;opacity:.8;letter-spacing:.3px}
@@ -23,6 +23,7 @@
   header h1{margin:0;font-size:20px;font-weight:500;text-align:center;grid-column:2}
   .upd{font-size:11px;color:var(--txt)}
   .odata{font-size:18px;font-weight:700;letter-spacing:6px;text-align:right;line-height:1}
+  .lang{display:flex;gap:6px;margin-right:6px} .lang button{width:32px;height:32px;border-radius:50%;background:transparent;border:1.5px solid #8FA6CC;color:#C9D6EE;font:inherit;font-size:11px;font-weight:700;cursor:pointer;padding:0} .lang button:hover{border-color:#fff;color:#fff} .lang button.on{background:#2F7BFF;border-color:#2F7BFF;color:#fff}
   .odata small{display:block;font-size:7px;letter-spacing:.2px;font-weight:400;opacity:.8}
   .wrap{display:grid;grid-template-columns:220px 1fr 390px;gap:8px;padding:8px;height:calc(var(--appH) - 52px);min-height:620px}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px}
@@ -481,6 +482,7 @@
   <div style="display:flex;align-items:center;gap:26px"><div class="logo">Aligned<small>Adaptive Data Centers</small></div><div class="file" id="file"></div></div>
   <h1>Odata CapEx Control</h1>
   <div class="upd" id="upd"></div>
+  <div class="lang" id="lang" title="Idioma / Language"><button data-l="pt">PT</button><button data-l="en">EN</button><button data-l="es">ES</button></div>
   <div class="odata">ODATA<small>An Aligned Data Centers Company</small></div>
 </header>
 <div class="wrap0" id="pg0" hidden>
@@ -626,6 +628,7 @@
   <div class="main4">
     <div class="top3"><button class="chip" id="clearSel4" title="Limpar seleção (Esc)" style="margin-right:auto"></button>
       <div class="rt2"><div class="fn2 pk"><b id="pf4"></b><span id="pu4"></span></div><div class="fn2 bl"><b id="cf4"></b><span id="cu4"></span></div></div>
+      <label class="only9" title="Só projetos com variação em Budget, EFC, Contingency ou Saving"><input type="checkbox" id="o4only"> Só divergências</label>
       <button class="ic2" id="exp4" title="Baixar este dashboard (.html)">Exportar ⤓</button><span class="cut2 pk" id="pc4"></span><span class="cut2 bl" id="cc4"></span></div>
     <div class="tabs4">
       <div class="sec4"><div class="bar-title"><span>Budget</span></div><div class="ctab"><table id="t4-bud"></table></div></div>
@@ -649,6 +652,7 @@
       <input id="q5" placeholder="Buscar projeto">
       <select id="o5"><option value="n">Ordenar: nome</option><option value="bud">Ordenar: maior Budget</option><option value="sav">Ordenar: menor Saving (estouro primeiro)</option><option value="cont">Ordenar: maior Contingency</option><option value="pct">Ordenar: maior % do Budget consumido</option></select>
       <span class="lg"><span><i style="background:#00A9CE"></i>Budget (Approved)</span><span><i style="background:#A6A8AB"></i>EFC</span><span><i style="background:#11BF79"></i>Contingency</span><span><i style="background:#E3B53A"></i>Saving</span><span><i style="background:#E5484D"></i>Estouro (Saving negativo)</span></span>
+      <label class="only9" style="margin-left:auto" title="Só projetos com alteração vs o outro arquivo (ou novos/removidos) ou com estouro"><input type="checkbox" id="o5only"> Só divergências</label>
     </div>
     <div class="list5" id="list5"></div>
   </div>
@@ -782,6 +786,231 @@
 const GEN = window.__dashGen = (window.__dashGen||0) + 1;
 // cópia da página como foi carregada: base para abrir o dashboard com outros arquivos (página Início)
 const SRC = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+// =====================================================================
+// IDIOMA — PT (original) / EN / ES. Tradução aplicada sobre o DOM renderizado:
+// dicionário de textos exatos (DICT) + regras com regex para textos dinâmicos (RULES).
+// A escolha fica em localStorage ('capex-lang'). Os textos em português no código continuam sendo a fonte.
+// =====================================================================
+let LANG=(()=>{ try{ const v=localStorage.getItem('capex-lang'); return ['pt','en','es'].includes(v)?v:'pt'; }catch(e){ return 'pt'; } })();
+let LOC={pt:'pt-BR',en:'en-US',es:'es-ES'}[LANG];
+const MON_I18N={pt:['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],es:['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']};
+const DICT={
+// cabeçalho / navegação
+'Início':['Home','Inicio'],
+'Faça a comparação na aba Início':['Run the comparison on the Home tab','Haga la comparación en la pestaña Inicio'],
+'Exportar ⤓':['Export ⤓','Exportar ⤓'],
+'Baixar este dashboard (.html)':['Download this dashboard (.html)','Descargar este dashboard (.html)'],
+'Last Update:':['Last Update:','Última actualización:'],
+// página inicial
+'Comparação de arquivos de Funding (PLA-FOR-010)':['Funding file comparison (PLA-FOR-010)','Comparación de archivos de Funding (PLA-FOR-010)'],
+'Arraste um arquivo da lista para o campo':['Drag a file from the list to the','Arrastre un archivo de la lista al campo'],
+'Arquivo anterior':['Previous file','Archivo anterior'],
+'e outro para o campo':['field and another one to the','y otro al campo'],
+'Arquivo atual':['Current file','Archivo actual'],
+', e clique em "Realizar comparação". Os arquivos são lidos só no seu navegador: nada é enviado para a internet.':[' field, then click "Run comparison". Files are read only in your browser: nothing is sent to the internet.',', y haga clic en "Realizar comparación". Los archivos se leen solo en su navegador: nada se envía a internet.'],
+'Arquivos da pasta Funding':['Files in the Funding folder','Archivos de la carpeta Funding'],
+'Conectar pasta':['Connect folder','Conectar carpeta'],
+'Reconectar pasta':['Reconnect folder','Reconectar carpeta'],
+'Trocar':['Change','Cambiar'],
+'Atualizar agora':['Refresh now','Actualizar ahora'],
+'Escolher pasta de novo':['Choose folder again','Elegir carpeta de nuevo'],
+'modo simples':['simple mode','modo simple'],
+'Tente o':['Try the','Pruebe el'],
+'Clique em':['Click','Haga clic en'],
+'e escolha a pasta':['and choose the','y elija la carpeta'],
+'sincronizada no seu computador (OneDrive). Isso é feito uma vez só; depois a lista atualiza sozinha.':['folder synced on your computer (OneDrive). This is done only once; afterwards the list refreshes by itself.','sincronizada en su computadora (OneDrive). Esto se hace una sola vez; después la lista se actualiza sola.'],
+'Este navegador não mantém a pasta conectada; clique em':['This browser does not keep the folder connected; click','Este navegador no mantiene la carpeta conectada; haga clic en'],
+'para listar os arquivos (sem atualização automática). Para atualizar sozinha, use o Chrome ou o Edge.':['to list the files (no automatic refresh). For automatic refresh, use Chrome or Edge.','para listar los archivos (sin actualización automática). Para que se actualice sola, use Chrome o Edge.'],
+'Modo simples: para atualizar a lista, clique em "Escolher pasta de novo".':['Simple mode: to refresh the list, click "Choose folder again".','Modo simple: para actualizar la lista, haga clic en "Elegir carpeta de nuevo".'],
+'Não foi possível ler a pasta. Clique em "Reconectar pasta".':['Could not read the folder. Click "Reconnect folder".','No se pudo leer la carpeta. Haga clic en "Reconectar carpeta".'],
+'Seleção cancelada. A pasta':['Selection cancelled. The folder','Selección cancelada. La carpeta'],
+'continua lembrada; clique em':['is still remembered; click','sigue recordada; haga clic en'],
+'lembrada. Clique em':['remembered. Click','recordada. Haga clic en'],
+'e, no aviso do navegador, escolha':['and, in the browser prompt, choose','y, en el aviso del navegador, elija'],
+'"Permitir em todas as visitas"':['"Allow on every visit"','"Permitir en todas las visitas"'],
+'Permitir em todas as visitas':['Allow on every visit','Permitir en todas las visitas'],
+'selecionada. Lendo os arquivos…':['selected. Reading files…','seleccionada. Leyendo los archivos…'],
+'Nenhum arquivo .xlsx nesta pasta.':['No .xlsx files in this folder.','No hay archivos .xlsx en esta carpeta.'],
+'versão consolidada (Cons)':['consolidated version (Cons)','versión consolidada (Cons)'],
+'versão PROD':['PROD version','versión PROD'],
+'Arraste aqui um arquivo da lista':['Drag a file from the list here','Arrastre aquí un archivo de la lista'],
+'ou do Explorador de Arquivos, ou':['or from File Explorer, or','o del Explorador de archivos, o'],
+'procure no computador':['browse your computer','busque en la computadora'],
+'Usar como arquivo anterior':['Use as previous file','Usar como archivo anterior'],
+'Usar como arquivo atual':['Use as current file','Usar como archivo actual'],
+'Remover':['Remove','Quitar'],
+'Realizar comparação':['Run comparison','Realizar comparación'],
+'Comparando e montando as abas':['Comparing and building the tabs','Comparando y armando las pestañas'],
+'Coloque um arquivo no campo Anterior (rosa) e outro no Atual (azul).':['Put one file in the Previous (pink) field and another in the Current (blue) field.','Coloque un archivo en el campo Anterior (rosa) y otro en Actual (azul).'],
+'Solte um arquivo Excel (.xlsx).':['Drop an Excel file (.xlsx).','Suelte un archivo Excel (.xlsx).'],
+'Parece que os arquivos estão invertidos: o anterior tem "PROD" no nome e o atual tem "Cons". Continuar mesmo assim?':['The files look swapped: the previous one has "PROD" in its name and the current one has "Cons". Continue anyway?','Parece que los archivos están invertidos: el anterior tiene "PROD" en el nombre y el actual tiene "Cons". ¿Continuar de todos modos?'],
+'Este navegador não consegue abrir .xlsx. Use o Chrome ou o Edge atualizados.':['This browser cannot open .xlsx files. Use an up-to-date Chrome or Edge.','Este navegador no puede abrir .xlsx. Use Chrome o Edge actualizados.'],
+'O arquivo não parece ser um .xlsx válido.':['The file does not look like a valid .xlsx.','El archivo no parece ser un .xlsx válido.'],
+'Nenhuma comparação carregada ainda. Selecione o arquivo anterior (rosa) e o atual (azul) e clique em "Realizar comparação". As outras abas são liberadas depois disso.':['No comparison loaded yet. Select the previous (pink) and current (blue) files and click "Run comparison". The other tabs unlock after that.','Todavía no hay comparación cargada. Seleccione el archivo anterior (rosa) y el actual (azul) y haga clic en "Realizar comparación". Las demás pestañas se habilitan después.'],
+'Comparação realizada entre os arquivos':['Comparison completed between the files','Comparación realizada entre los archivos'],
+'Anterior':['Previous','Anterior'],'Atual':['Current','Actual'],
+'Data de corte':['Cut-off date','Fecha de corte'],
+'Último salvamento':['Last saved','Último guardado'],
+'Projetos':['Projects','Proyectos'],'Projeto':['Project','Proyecto'],
+'Refaça a comparação na aba Início para carregar os dados desta aba.':['Run the comparison again on the Home tab to load this tab.','Vuelva a hacer la comparación en la pestaña Inicio para cargar esta pestaña.'],
+// filtros
+'Selecionar tudo':['Select all','Seleccionar todo'],
+'Country':['Country','País'],'Other':['Other','Otro'],'Type':['Type','Tipo'],'Category':['Category','Categoría'],'Project':['Project','Proyecto'],'Projects':['Projects','Proyectos'],'Site':['Site','Site'],
+'Todos':['All','Todos'],'Todos os checks':['All checks','Todos los checks'],
+'Limpar seleção (Esc)':['Clear selection (Esc)','Limpiar selección (Esc)'],
+'Buscar projeto':['Search project','Buscar proyecto'],
+'Search site or project':['Search site or project','Buscar site o proyecto'],
+'Período personalizado':['Custom period','Período personalizado'],
+'Data inicial':['Start date','Fecha inicial'],'Data final':['End date','Fecha final'],
+'Arraste as bolinhas: a esquerda vai para o 1º dia do mês, a direita para o último dia':['Drag the handles: left snaps to the 1st day of the month, right to the last day','Arrastre los círculos: el izquierdo va al 1.º día del mes, el derecho al último'],
+'Arraste: a esquerda vai para o 1º dia do mês, a direita para o último dia':['Drag: left snaps to the 1st day of the month, right to the last day','Arrastre: el izquierdo va al 1.º día del mes, el derecho al último'],
+'Só divergências':['Only discrepancies','Solo divergencias'],
+'Só projetos com alteração vs o outro arquivo (ou novos/removidos) ou com estouro':['Only projects changed vs the other file (or new/removed) or over budget','Solo proyectos con cambios vs el otro archivo (o nuevos/eliminados) o con sobrecosto'],
+'Só projetos com variação em Budget, EFC, Contingency ou Saving':['Only projects with a variation in Budget, EFC, Contingency or Saving','Solo proyectos con variación en Budget, EFC, Contingency o Saving'],
+// Current Overview
+'Total CapEx':['Total CapEx','CapEx total'],
+'Incorrido':['Incurred','Incurrido'],'Incorrido (YTD)':['Incurred (YTD)','Incurrido (YTD)'],'Incurred':['Incurred','Incurrido'],
+'Forecast (Restante)':['Forecast (Remaining)','Forecast (restante)'],
+'Nº de Projetos':['No. of Projects','N.º de proyectos'],
+'Evolução do CapEx':['CapEx evolution','Evolución del CapEx'],
+'Incorrido vs. Forecast (M) · clique num mês para filtrar':['Incurred vs. Forecast (M) · click a month to filter','Incurrido vs. Forecast (M) · haga clic en un mes para filtrar'],
+'Anual':['Annual','Anual'],'Mensal':['Monthly','Mensual'],'Linha':['Line','Línea'],'Barra':['Bar','Barra'],
+'Barra: empilha por mês os 5 maiores projetos + Outros':['Bar: stacks the 5 largest projects + Others per month','Barra: apila por mes los 5 proyectos mayores + Otros'],
+'Outros':['Others','Otros'],
+'Top Projetos por Investimento':['Top projects by investment','Top proyectos por inversión'],
+'Total no período selecionado':['Total in the selected period','Total en el período seleccionado'],
+'Ver todos os projetos →':['See all projects →','Ver todos los proyectos →'],
+'CapEx por Tipo':['CapEx by Type','CapEx por tipo'],'CapEx por Categoria':['CapEx by Category','CapEx por categoría'],
+'Total Anual':['Annual total','Total anual'],'← Realizado':['← Actual','← Realizado'],'Planejado →':['Planned →','Planificado →'],
+'Sem meses no período.':['No months in the period.','Sin meses en el período.'],'Sem valores.':['No values.','Sin valores.'],
+'Valores em US$ milhões (M) · Fonte: PLA-FOR-010, aba CapEx Summary · Incorrido = meses até a data de corte; Forecast = meses seguintes':['Values in US$ million (M) · Source: PLA-FOR-010, CapEx Summary sheet · Incurred = months up to the cut-off date; Forecast = following months','Valores en US$ millones (M) · Fuente: PLA-FOR-010, hoja CapEx Summary · Incurrido = meses hasta la fecha de corte; Forecast = meses siguientes'],
+'Odata · An Aligned Data Centers Company':['Odata · An Aligned Data Centers Company','Odata · An Aligned Data Centers Company'],
+'Clique num mês ou numa linha para filtrar · Ctrl+clique para vários':['Click a month or a row to filter · Ctrl+click for several','Haga clic en un mes o una fila para filtrar · Ctrl+clic para varios'],
+'Insights Gerenciais':['Management insights','Insights gerenciales'],'Calculados a partir dos dados e filtros atuais':['Computed from the current data and filters','Calculados con los datos y filtros actuales'],'Insight não calculado':['Insight not computed','Insight no calculado'],
+// comparação
+'Mês':['Month','Mes'],'Ano':['Year','Año'],'Variation':['Variation','Variación'],'Check':['Check','Check'],'Field':['Field','Campo'],'Status':['Status','Estado'],'Value':['Value','Valor'],
+'Previous':['Previous','Anterior'],'Current':['Current','Actual'],'Monthly Comparison':['Monthly Comparison','Comparación mensual'],'Period Comparison':['Period Comparison','Comparación del período'],'Annual total':['Annual total','Total anual'],
+'By Country':['By Country','Por país'],'All countries':['All countries','Todos los países'],'Variation by Country - Monthly':['Variation by Country - Monthly','Variación por país - mensual'],'Variation by Country - Period':['Variation by Country - Period','Variación por país - período'],
+'Total in the period':['Total in the period','Total en el período'],'Top 10 variations':['Top 10 variations','Top 10 variaciones'],'N Projects:':['N Projects:','N proyectos:'],
+'● previous':['● previous','● anterior'],'● current':['● current','● actual'],
+'Projects with changed values':['Projects with changed values','Proyectos con valores modificados'],'New, removed and possibly renamed projects':['New, removed and possibly renamed projects','Proyectos nuevos, eliminados y posiblemente renombrados'],
+'New projects':['New projects','Proyectos nuevos'],'Removed projects':['Removed projects','Proyectos eliminados'],'Possible renames':['Possible renames','Posibles renombres'],'Relevant changes':['Relevant changes','Cambios relevantes'],'Other changes':['Other changes','Otros cambios'],
+'only in current file':['only in current file','solo en el archivo actual'],'only in previous file':['only in previous file','solo en el archivo anterior'],'· renamed = same site and block':['· renamed = same site and block','· renombrado = mismo site y bloque'],'same site and block':['same site and block','mismo site y bloque'],'renamed?':['renamed?','¿renombrado?'],
+'new':['new','nuevo'],'removed':['removed','eliminado'],'novo/alterado':['new/changed','nuevo/modificado'],'novo':['new','nuevo'],'não existe no atual':['not in current file','no existe en el actual'],
+'≥ US$ 0,5 M or ≥ 5% of Budget':['≥ US$ 0.5 M or ≥ 5% of Budget','≥ US$ 0,5 M o ≥ 5% del Budget'],
+'EFC w/o FX Variation':['EFC w/o FX Variation','EFC sin FX Variation'],'Saving = Budget − EFC − Contingency':['Saving = Budget − EFC − Contingency','Saving = Budget − EFC − Contingency'],
+'Budget · EFC (w/o FX) · Contingency · Saving — previous × current':['Budget · EFC (w/o FX) · Contingency · Saving — previous × current','Budget · EFC (sin FX) · Contingency · Saving — anterior × actual'],
+'Sites Not In Strat Plan':['Sites Not In Strat Plan','Sites fuera del Strat Plan'],
+// Building Budget
+'Projetos Building':['Building projects','Proyectos Building'],'arquivo atual (PROD)':['current file (PROD)','archivo actual (PROD)'],'arquivo anterior (Cons)':['previous file (Cons)','archivo anterior (Cons)'],
+'soma dos projetos':['sum of projects','suma de los proyectos'],'% do Budget':['% of Budget','% del Budget'],'Mudanças relevantes':['Relevant changes','Cambios relevantes'],
+'Projetos com estouro':['Projects over budget','Proyectos con sobrecosto'],'nenhum':['none','ninguno'],
+'Current file':['Current file','Archivo actual'],'Previous file':['Previous file','Archivo anterior'],'Escala por projeto':['Scale per project','Escala por proyecto'],'Escala comum':['Common scale','Escala común'],
+'Ordenar: nome':['Sort: name','Ordenar: nombre'],'Ordenar: maior Budget':['Sort: largest Budget','Ordenar: mayor Budget'],'Ordenar: menor Saving (estouro primeiro)':['Sort: lowest Saving (over budget first)','Ordenar: menor Saving (sobrecosto primero)'],'Ordenar: maior Contingency':['Sort: largest Contingency','Ordenar: mayor Contingency'],'Ordenar: maior % do Budget consumido':['Sort: highest % of Budget used','Ordenar: mayor % del Budget consumido'],
+'Estouro (Saving negativo)':['Over budget (negative Saving)','Sobrecosto (Saving negativo)'],'Estouro':['Over budget','Sobrecosto'],
+'Nenhum projeto Building com os filtros atuais.':['No Building project with the current filters.','Ningún proyecto Building con los filtros actuales.'],
+'vs anterior':['vs previous','vs anterior'],'vs atual':['vs current','vs actual'],'sem alteração vs anterior':['no change vs previous','sin cambios vs anterior'],'sem alteração vs atual':['no change vs current','sin cambios vs actual'],
+// Current Checks
+'Spent to Date':['Spent to Date','Spent to Date'],'Spent +':['Spent +','Spent +'],'Var. PO':['PO Var.','Var. PO'],
+'Nenhum projeto.':['No projects.','Ningún proyecto.'],'só no anterior':['previous only','solo en el anterior'],
+'CapEx Detail × CapEx Summary':['CapEx Detail × CapEx Summary','CapEx Detail × CapEx Summary'],'Project (Detail)':['Project (Detail)','Proyecto (Detail)'],'Problema':['Issue','Problema'],
+'Diferença':['Difference','Diferencia'],'(soma |Δ|)':['(sum |Δ|)','(suma |Δ|)'],'fora da Summary':['not in Summary','fuera de la Summary'],'fluxo diferente':['different flow','flujo diferente'],
+'nenhuma inconsistência':['no inconsistencies','ninguna inconsistencia'],
+'Todos os projetos da CapEx Detail USD estão na CapEx Summary com o mesmo fluxo mensal.':['All CapEx Detail USD projects are in the CapEx Summary with the same monthly flow.','Todos los proyectos de CapEx Detail USD están en la CapEx Summary con el mismo flujo mensual.'],
+// Formula Checks
+'Erro':['Error','Error'],'Atenção':['Warning','Atención'],'Info':['Info','Info'],
+'Linha (Category)':['Row (Category)','Fila (Category)'],'Célula':['Cell','Celda'],'Detalhe':['Detail','Detalle'],
+'nenhuma inconsistência de fórmula':['no formula inconsistencies','ninguna inconsistencia de fórmula'],'Nenhuma inconsistência de fórmula encontrada.':['No formula inconsistencies found.','No se encontraron inconsistencias de fórmula.'],'Nenhum item com os filtros atuais.':['No items with the current filters.','Ningún ítem con los filtros actuales.'],
+'Erro de cálculo (#REF!, #N/A…)':['Calculation error (#REF!, #N/A…)','Error de cálculo (#REF!, #N/A…)'],
+'Chave (coluna B) ausente':['Key (column B) missing','Clave (columna B) ausente'],'A coluna B deveria ter =C&D&F&H':['Column B should contain =C&D&F&H','La columna B debería tener =C&D&F&H'],
+'Spent/Remaining sem a fórmula padrão':['Spent/Remaining without the standard formula','Spent/Remaining sin la fórmula estándar'],
+'Soma dos meses ≠ Spent + Remaining':['Sum of months ≠ Spent + Remaining','Suma de los meses ≠ Spent + Remaining'],'Soma dos meses ≠ Spend to Date + Remaining':['Sum of months ≠ Spend to Date + Remaining','Suma de los meses ≠ Spend to Date + Remaining'],
+'Mês fora do intervalo somado em Spent/Remaining':['Month outside the range summed in Spent/Remaining','Mes fuera del rango sumado en Spent/Remaining'],'Mês fora do intervalo somado em Spend/Remaining':['Month outside the range summed in Spend/Remaining','Mes fuera del rango sumado en Spend/Remaining'],
+'Saving ≠ Budget − Spent − Remaining':['Saving ≠ Budget − Spent − Remaining','Saving ≠ Budget − Spent − Remaining'],'Saving/Overrun soma outras linhas':['Saving/Overrun sums other rows','Saving/Overrun suma otras filas'],
+'Budget vinculado à aba _old':['Budget linked to the _old sheet','Budget vinculado a la hoja _old'],'PO Value vinculado à aba _old':['PO Value linked to the _old sheet','PO Value vinculado a la hoja _old'],'Meses vinculados à aba _old':['Months linked to the _old sheet','Meses vinculados a la hoja _old'],
+'Budget com fórmula anulada (*0)':['Budget with formula neutralised (*0)','Budget con fórmula anulada (*0)'],'PO Value com fórmula anulada (*0)':['PO Value with formula neutralised (*0)','PO Value con fórmula anulada (*0)'],'Meses com fórmula anulada (*0)':['Months with formula neutralised (*0)','Meses con fórmula anulada (*0)'],
+'Budget derivado de outra linha':['Budget derived from another row','Budget derivado de otra fila'],'PO Value derivado de outra linha':['PO Value derived from another row','PO Value derivado de otra fila'],
+'Fórmula de mês aponta outra linha desta aba':['Month formula points to another row of this sheet','Fórmula de mes apunta a otra fila de esta hoja'],
+'Mês realizado digitado em linha com fórmula':['Actual month typed in a row with formulas','Mes realizado digitado en fila con fórmula'],'Mês digitado em linha com fórmula':['Month typed in a row with formulas','Mes digitado en fila con fórmula'],
+'Mês aponta coluna errada da CapEx Detail':['Month points to the wrong CapEx Detail column','Mes apunta a la columna equivocada de CapEx Detail'],
+'EFC ≠ Spend to Date + Remaining':['EFC ≠ Spend to Date + Remaining','EFC ≠ Spend to Date + Remaining'],
+'Linha sem Spend to Date/Remaining (meses não somados)':['Row without Spend to Date/Remaining (months not summed)','Fila sin Spend to Date/Remaining (meses no sumados)'],'Linha toda digitada (sem fórmula nos meses)':['Row fully typed (no formulas in months)','Fila toda digitada (sin fórmula en los meses)'],
+'Linha TOTAL sem SUBTOTAL':['TOTAL row without SUBTOTAL','Fila TOTAL sin SUBTOTAL'],'Linha Total sem SUBTOTAL':['Total row without SUBTOTAL','Fila Total sin SUBTOTAL'],
+// Dashboard FP&A
+'Dado externo':['External data','Dato externo'],'Dado digitado':['Typed data','Dato digitado'],
+'= vem de outro arquivo (MOR Data Sources, dashboards anteriores, Site Estimates, CapEx FC Expansions) ·':['= comes from another file (MOR Data Sources, previous dashboards, Site Estimates, CapEx FC Expansions) ·','= viene de otro archivo (MOR Data Sources, dashboards anteriores, Site Estimates, CapEx FC Expansions) ·'],
+'= texto ou valor digitado no Excel':['= text or value typed in Excel','= texto o valor digitado en Excel'],
+'em Forecast':['in Forecast','en Forecast'],
+};
+const RULES=[
+ [/^Última atualização: (.*)$/, m=>'Last update: '+m[1], m=>'Última actualización: '+m[1]],
+ [/^modificado (.*)$/, m=>'modified '+m[1], m=>'modificado '+m[1]],
+ [/^Lendo o arquivo anterior: (.*)$/, m=>'Reading the previous file: '+m[1], m=>'Leyendo el archivo anterior: '+m[1]],
+ [/^Lendo o arquivo atual: (.*)$/, m=>'Reading the current file: '+m[1], m=>'Leyendo el archivo actual: '+m[1]],
+ [/^Não foi possível abrir (.*?)\. Se o arquivo estiver só na nuvem.*$/, m=>`Could not open ${m[1]}. If the file is cloud-only, right-click it in File Explorer and choose "Always keep on this device".`, m=>`No se pudo abrir ${m[1]}. Si el archivo está solo en la nube, haga clic derecho en el Explorador y elija "Mantener siempre en este dispositivo".`],
+ [/^Não foi possível concluir a comparação: (.*)$/, m=>'Could not complete the comparison: '+m[1], m=>'No se pudo concluir la comparación: '+m[1]],
+ [/^(Comparação feita neste navegador|Comparação gerada pelo Claude) em (.*)$/, m=>(m[1].includes('navegador')?'Comparison made in this browser':'Comparison generated by Claude')+' on '+m[2], m=>(m[1].includes('navegador')?'Comparación hecha en este navegador':'Comparación generada por Claude')+' el '+m[2]],
+ [/^meses até (.*) \(data de corte\)$/, m=>`months up to ${m[1]} (cut-off date)`, m=>`meses hasta ${m[1]} (fecha de corte)`],
+ [/^meses após (.*)$/, m=>'months after '+m[1], m=>'meses después de '+m[1]],
+ [/^US\$ · (\S+) a (\S+)$/, m=>`US$ · ${m[1]} to ${m[2]}`, m=>`US$ · ${m[1]} a ${m[2]}`],
+ [/^(\S+) a (\S+)( · meses selecionados)?$/, m=>`${m[1]} to ${m[2]}${m[3]?' · selected months':''}`, m=>`${m[1]} a ${m[2]}${m[3]?' · meses seleccionados':''}`],
+ [/^Até (\d{4})$/, m=>'Up to '+m[1], m=>'Hasta '+m[1]],
+ [/^Realizado: (.*)$/, m=>'Actual: '+m[1], m=>'Realizado: '+m[1]],
+ [/^Total \((\d+) projetos\)$/, m=>`Total (${m[1]} projects)`, m=>`Total (${m[1]} proyectos)`],
+ [/^(\d+) projetos · PO < Spent: (\d+) · PO > Spent \+ Remaining: (\d+) · valores em US\$$/, m=>`${m[1]} projects · PO < Spent: ${m[2]} · PO > Spent + Remaining: ${m[3]} · values in US$`, m=>`${m[1]} proyectos · PO < Spent: ${m[2]} · PO > Spent + Remaining: ${m[3]} · valores en US$`],
+ [/^(\d+) fora da Summary · (\d+) com fluxo diferente · clique para ver os meses$/, m=>`${m[1]} not in Summary · ${m[2]} with a different flow · click to see the months`, m=>`${m[1]} fuera de la Summary · ${m[2]} con flujo diferente · haga clic para ver los meses`],
+ [/^(\d+) mês\(es\)$/, m=>`${m[1]} month(s)`, m=>`${m[1]} mes(es)`],
+ [/^(\d+) mês\(es\): (.*)$/, m=>`${m[1]} month(s): ${m[2]}`, m=>`${m[1]} mes(es): ${m[2]}`],
+ [/^(\d+) mês\(es\) com valor$/, m=>`${m[1]} month(s) with a value`, m=>`${m[1]} mes(es) con valor`],
+ [/^(\d+) célula\(s\): (.*)$/, m=>`${m[1]} cell(s): ${m[2]}`, m=>`${m[1]} celda(s): ${m[2]}`],
+ [/^Células: (.*)$/, m=>'Cells: '+m[1], m=>'Celdas: '+m[1]],
+ [/^Colunas: (.*)$/, m=>'Columns: '+m[1], m=>'Columnas: '+m[1]],
+ [/^Fórmula: (.*)$/, m=>'Formula: '+m[1], m=>'Fórmula: '+m[1]],
+ [/^Valor digitado: (.*)$/, m=>'Typed value: '+m[1], m=>'Valor digitado: '+m[1]],
+ [/^Valor: (.*)$/, m=>'Value: '+m[1], m=>'Valor: '+m[1]],
+ [/^Meses: (.*) \| Spent\+Remaining: (.*)$/, m=>`Months: ${m[1]} | Spent+Remaining: ${m[2]}`, m=>`Meses: ${m[1]} | Spent+Remaining: ${m[2]}`],
+ [/^Meses: (.*) \| Spend\+Rem: (.*)$/, m=>`Months: ${m[1]} | Spend+Rem: ${m[2]}`, m=>`Meses: ${m[1]} | Spend+Rem: ${m[2]}`],
+ [/^Meses: (.*)$/, m=>'Months: '+m[1], m=>'Meses: '+m[1]],
+ [/^Intervalo vai até (\S+); valor em: (.*)$/, m=>`Range ends at ${m[1]}; value in: ${m[2]}`, m=>`El rango llega hasta ${m[1]}; valor en: ${m[2]}`],
+ [/^(.*) \(linhas (.*)\)$/, m=>`${m[1]} (rows ${m[2]})`, m=>`${m[1]} (filas ${m[2]})`],
+ [/^Linha (TOTAL|Total) não cobre linha\(s\) (.*)$/, m=>`${m[1]} row does not cover row(s) ${m[2]}`, m=>`Fila ${m[1]} no cubre fila(s) ${m[2]}`],
+ [/^(.*): fórmula fora do padrão da coluna$/, m=>`${m[1]}: formula differs from the column pattern`, m=>`${m[1]}: fórmula fuera del patrón de la columna`],
+ [/^(.*): valor digitado em coluna de fórmula$/, m=>`${m[1]}: typed value in a formula column`, m=>`${m[1]}: valor digitado en columna de fórmula`],
+ [/^(\d+) erros · (\d+) atenção · (\d+) info · (\d+) exibidos$/, m=>`${m[1]} errors · ${m[2]} warnings · ${m[3]} info · ${m[4]} shown`, m=>`${m[1]} errores · ${m[2]} atención · ${m[3]} info · ${m[4]} mostrados`],
+ [/^(.*) · total no período (.*)$/, m=>`${m[1]} · total in the period ${m[2]}`, m=>`${m[1]} · total en el período ${m[2]}`],
+ [/^Outros \((\d+) projetos\)(.*) do mês$/, m=>`Others (${m[1]} projects)${m[2]} of the month`, m=>`Otros (${m[1]} proyectos)${m[2]} del mes`],
+ [/^(.*) do mês$/, m=>m[1]+' of the month', m=>m[1]+' del mes'],
+ [/^(.*) · Incorrido$/, m=>m[1]+' · Incurred', m=>m[1]+' · Incurrido'],
+ [/^(.*) · variação$/, m=>m[1]+' · variation', m=>m[1]+' · variación'],
+ [/^Clique no site para ver os projetos · .* · data de corte (.*?) · fonte: (.*)$/, m=>`Click a site to see its projects · Expansion uses the CapEx Summary (in Excel it comes from the external CapEx FC Expansions file); the Remaining CapEx and Finance Contingency adjustment rows are excluded · US$ thousand · cut-off date ${m[1]} · source: ${m[2]}`, m=>`Haga clic en el site para ver los proyectos · Expansion usa la CapEx Summary (en Excel viene del archivo externo CapEx FC Expansions); las filas de ajuste Remaining CapEx y Finance Contingency quedan fuera · US$ mil · fecha de corte ${m[1]} · fuente: ${m[2]}`],
+ [/^No (.*) changes\.$/, m=>`No ${m[1]} changes.`, m=>`Sin cambios en ${m[1]}.`],
+ [/^Sort by Δ (.*)$/, m=>`Sort by Δ ${m[1]}`, m=>`Ordenar por Δ ${m[1]}`],
+ // meses: 'Set-26', 'set/26', 'set', 'Set'
+ [/^([A-Za-z]{3})([-\/]\d{2})$/, m=>{ const i=MON_I18N.pt.indexOf(m[1].toLowerCase()); return i<0?null:MON_I18N.en[i]+m[2]; }, m=>{ const i=MON_I18N.pt.indexOf(m[1].toLowerCase()); return i<0?null:(m[1][0]===m[1][0].toUpperCase()?MON_I18N.es[i].replace(/^./,c=>c.toUpperCase()):MON_I18N.es[i])+m[2]; }],
+ [/^([a-z]{3})$/, m=>{ const i=MON_I18N.pt.indexOf(m[1]); return i<0?null:MON_I18N.en[i]; }, m=>{ const i=MON_I18N.pt.indexOf(m[1]); return i<0?null:MON_I18N.es[i]; }],
+ [/^([a-z]{3})(\/\d{2})$/, m=>{ const i=MON_I18N.pt.indexOf(m[1]); return i<0?null:MON_I18N.en[i]+m[2]; }, m=>{ const i=MON_I18N.pt.indexOf(m[1]); return i<0?null:MON_I18N.es[i]+m[2]; }],
+ [/^([A-Z][a-z]{2})$/, m=>{ const i=MON_I18N.pt.indexOf(m[1].toLowerCase()); return i<0?null:MON_I18N.en[i]; }, m=>{ const i=MON_I18N.pt.indexOf(m[1].toLowerCase()); return i<0?null:MON_I18N.es[i].replace(/^./,c=>c.toUpperCase()); }],
+];
+function tr(t){ if(LANG==='pt'||!t) return t; const k=t.trim(); if(!k) return t; const i=LANG==='en'?0:1;
+  const d=DICT[k]; if(d) return t.replace(k,d[i]);
+  for(const r of RULES){ const m=r[0].exec(k); if(m){ const v=r[1+i](m); if(v!=null) return t.replace(k,v); } }
+  return t; }
+let TRX=false;
+function trNode(n){ if(n.nodeType===3){ if(n.__pt==null) n.__pt=n.nodeValue; const v=tr(n.__pt); if(v!==n.nodeValue){ TRX=true; n.nodeValue=v; TRX=false; } return; }
+  if(n.nodeType!==1&&n.nodeType!==11) return;
+  if(n.nodeType===1) for(const a of ['title','placeholder']){ if(n.hasAttribute(a)){ const k='__pt_'+a; if(n[k]==null) n[k]=n.getAttribute(a); const v=tr(n[k]); if(v!==n.getAttribute(a)) n.setAttribute(a,v); } }
+  for(const c of n.childNodes) trNode(c); }
+new MutationObserver(ms=>{ if(TRX||LANG==='pt') return; for(const m of ms){ if(m.type==='characterData'){ m.target.__pt=m.target.nodeValue; trNode(m.target); } else m.addedNodes.forEach(trNode); } })
+  .observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+function setLang(l){ try{ localStorage.setItem('capex-lang',l); }catch(e){} LANG=l; LOC={pt:'pt-BR',en:'en-US',es:'es-ES'}[l];
+  document.documentElement.lang={pt:'pt-BR',en:'en',es:'es'}[l];
+  document.querySelectorAll('#lang button').forEach(b=>b.classList.toggle('on',b.dataset.l===l));
+  // estáticos: volta ao original (__pt) e traduz de novo; dinâmicos: a página se redesenha
+  (function walk(n){ if(n.nodeType===3){ if(n.__pt!=null){ TRX=true; n.nodeValue=tr(n.__pt); TRX=false; } return; } for(const a of ['title','placeholder']){ const k='__pt_'+a; if(n[k]!=null) n.setAttribute(a,tr(n[k])); } for(const c of n.childNodes||[]) walk(c); })(document.body);
+  if(typeof goPage==='function'&&typeof PAGE!=='undefined') goPage(PAGE); }
+document.querySelectorAll('#lang button').forEach(b=>{ b.classList.toggle('on',b.dataset.l===LANG); b.onclick=()=>setLang(b.dataset.l); });
+document.documentElement.lang={pt:'pt-BR',en:'en',es:'es'}[LANG];
+trNode(document.body);   // textos estáticos já carregados
 // dados embutidos; sem dados (página publicada vazia, ex.: GitHub Pages), só a aba Início funciona até a primeira comparação
 let ALL = null; try { ALL = JSON.parse(document.getElementById('dash-data').textContent); } catch(e) {}
 const EMPTY = !ALL || !ALL.cur;
@@ -796,7 +1025,7 @@ const D = ALL.cur;   // página 1 usa só o arquivo PROD
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const MPT = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-const fM = v => (v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' M';
+const fM = v => (v/1e6).toLocaleString(LOC,{minimumFractionDigits:1,maximumFractionDigits:1})+' M';
 const CUT = D.cutoff, CY = +CUT.slice(0,4);
 
 $('#file').textContent = D.file.replace(/\.xlsx?$/i,'');
@@ -1017,7 +1246,7 @@ const sel2 = Object.fromEntries(['m',...K2].map(k=>[k,new Set()]));   // seleç�
 const sort2 = {p:{k:'abs',d:-1}, type2:{k:'abs',d:-1}, cat:{k:'abs',d:-1}, country:{k:'abs',d:-1}};
 const ME2 = {prev: P2.prev.months.map(mEnd), cur: P2.cur.months.map(mEnd)};
 const pass2 = (side,p,skip) => K2.every(k => k===skip || !off2[side][k].has(p[k]));
-const fM2 = v => (v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' M';
+const fM2 = v => (v/1e6).toLocaleString(LOC,{minimumFractionDigits:2,maximumFractionDigits:2})+' M';
 
 function drawFilter2(side,k){
   const before = K2.slice(0, K2.indexOf(k));   // cascata de cima para baixo
@@ -1279,6 +1508,7 @@ function page4(){
 function tab4(id,label,rows,metrics){
   const z=v=>Math.abs(v||0)<0.5;
   let L=rows.filter(r=>metrics.some(m=>!z(r[m][0])||!z(r[m][1])));
+  if(window._only4) L=L.filter(r=>metrics.some(m=>Math.abs((r[m][1]||0)-(r[m][0]||0))>=1));   // só divergências
   const st=sort4[id], m0=metrics[0], d=(r,m)=>(r[m][1]||0)-(r[m][0]||0);
   const key=r=> st.k==='n'?r.n : st.k==='abs'?Math.abs(d(r,m0)) : st.k==='sabs'?Math.abs(d(r,'sav')) : st.k.endsWith('P')? (r[st.k.slice(0,-1)][0]||0) : (r[st.k.slice(0,-1)][1]||0);
   L.sort((a,b)=> st.k==='n'? st.d*a.n.localeCompare(b.n) : st.d*(key(a)-key(b)));
@@ -1300,13 +1530,14 @@ function tab4(id,label,rows,metrics){
   t.querySelectorAll('tr.pick').forEach(tr=>tr.onclick=e=>{ window._src4=id; toggle4(tr.dataset.v,isMulti(e)); });
 }
 $('#clearSel4').onclick=()=>{ sel4.clear(); page4(); };
+$('#o4only').onchange=e=>{ window._only4=e.target.checked; page4(); };
 
 // =====================================================================
 // PÁGINA 5 — Building: Budget (Approved) × Current = EFC + Contingency + Saving
 // =====================================================================
 const K5=['country','other','type2','site'];
 const off5=Object.fromEntries(K5.map(k=>[k,new Set()]));
-const st5={file:'cur', scale:'own', q:'', o:'n'};   // padrão: ordem por nome
+const st5={file:'cur', scale:'own', q:'', o:'n', only:false};   // padrão: ordem por nome
 const isBld=p=>p.cat==='Building' && (Math.abs(p.bud)>=1||Math.abs(p.efc)>=1||Math.abs(p.cont)>=1);
 const pass5=p=>K5.every(k=>!off5[k].has(p[k]));
 function drawFilter5(k){
@@ -1324,27 +1555,28 @@ const REL5={abs:5e5, pct:.05};
 function diff5(p){
   const other=st5.file==='cur'?'prev':'cur', vs=st5.file==='cur'?'vs anterior':'vs atual';
   const o=P2[other].projects.find(x=>x.p===p.p);
-  if(!o) return {big:true, html:`<span class="tg ${st5.file==='cur'?'new':'rem'}">${st5.file==='cur'?'novo':'não existe no atual'}</span><span class="dl">${vs}</span>`};
+  if(!o) return {big:true, changed:true, html:`<span class="tg ${st5.file==='cur'?'new':'rem'}">${st5.file==='cur'?'novo':'não existe no atual'}</span><span class="dl">${vs}</span>`};
   const sv=x=>x.bud-x.efc-x.cont, M=[['Budget',p.bud-o.bud],['EFC',p.efc-o.efc],['Cont.',p.cont-o.cont],['Saving',sv(p)-sv(o)]];
   const lim=Math.max(REL5.abs, Math.abs(o.bud||p.bud)*REL5.pct);
   const parts=M.filter(([,d])=>Math.abs(d)>=1000).map(([n,d])=>{ const rel=Math.abs(d)>=lim;
     return `<span style="margin-left:10px;${rel?'font-weight:800':'font-weight:500;opacity:.85'}">${n} <span class="${d>0?'up':'dn'}">${d>0?'▲ +':'▼ '}${fM2(d)}</span></span>`; });
   const big=M.some(([,d])=>Math.abs(d)>=lim);
-  return {big, html: parts.length ? parts.join('')+`<span class="dl" style="margin-left:8px">${vs}</span>` : `<span class="dl">sem alteração ${vs}</span>`};
+  return {big, changed:parts.length>0, html: parts.length ? parts.join('')+`<span class="dl" style="margin-left:8px">${vs}</span>` : `<span class="dl">sem alteração ${vs}</span>`};
 }
 function page5(){
   K5.forEach(drawFilter5);
   const q=st5.q.toLowerCase();
   let L=P2[st5.file].projects.filter(p=>isBld(p)&&pass5(p)&&(!q||p.p.toLowerCase().includes(q)))
         .map(p=>({p, s:p.bud-p.efc-p.cont, used:p.bud?((p.efc+p.cont)/p.bud):0}));
+  if(st5.only) L=L.filter(r=>r.s<-0.5||diff5(r.p).changed);   // só divergências: mudou vs o outro arquivo, novo/removido ou estouro
   const O=st5.o; L.sort((a,b)=> O==='n'?a.p.p.localeCompare(b.p.p,'pt-BR',{numeric:true,sensitivity:'base'}) : O==='sav'?a.s-b.s : O==='cont'?b.p.cont-a.p.cont : O==='pct'?b.used-a.used : b.p.bud-a.p.bud);
   // cartões
   const T=k=>L.reduce((t,r)=>t+(k==='s'?r.s:r.p[k]),0), over=L.filter(r=>r.s<-0.5);
   const card=(l,v,s,c)=>`<div class="kc"><div class="l">${l}</div><div class="v" ${c?`style="color:${c}"`:''}>${v}</div><div class="s">${s}</div></div>`;
   $('#kp5').innerHTML = card('Projetos Building', L.length, st5.file==='cur'?'arquivo atual (PROD)':'arquivo anterior (Cons)')
     + card('Budget (Approved)', fM2(T('bud')), 'soma dos projetos', '#00C2EA')
-    + card('EFC', fM2(T('efc')), (T('bud')?(T('efc')/T('bud')*100).toLocaleString('pt-BR',{maximumFractionDigits:1}):'0')+'% do Budget', '#C9CBCE')
-    + card('Contingency', fM2(T('cont')), (T('bud')?(T('cont')/T('bud')*100).toLocaleString('pt-BR',{maximumFractionDigits:1}):'0')+'% do Budget', '#11BF79')
+    + card('EFC', fM2(T('efc')), (T('bud')?(T('efc')/T('bud')*100).toLocaleString(LOC,{maximumFractionDigits:1}):'0')+'% do Budget', '#C9CBCE')
+    + card('Contingency', fM2(T('cont')), (T('bud')?(T('cont')/T('bud')*100).toLocaleString(LOC,{maximumFractionDigits:1}):'0')+'% do Budget', '#11BF79')
     + card('Saving', fM2(T('s')), 'Budget − EFC − Contingency', T('s')<0?'#E5484D':'#E3B53A')
     + card('Mudanças relevantes', L.filter(r=>diff5(r.p).big).length, `${st5.file==='cur'?'vs anterior':'vs atual'} · ≥ US$ 0,5 M ou ≥ 5% do Budget`, L.some(r=>diff5(r.p).big)?'#E5484D':'#5BC07A')
     + card('Projetos com estouro', over.length, over.length?`soma ${fM2(over.reduce((t,r)=>t+r.s,0))}`:'nenhum', over.length?'#E5484D':'#5BC07A');
@@ -1385,6 +1617,7 @@ document.querySelectorAll('#file5 button').forEach(b=>b.onclick=()=>{ st5.file=b
 document.querySelectorAll('#scale5 button').forEach(b=>b.onclick=()=>{ st5.scale=b.dataset.s; page5(); });
 $('#q5').oninput=e=>{ st5.q=e.target.value; page5(); };
 $('#o5').onchange=e=>{ st5.o=e.target.value; page5(); };
+$('#o5only').onchange=e=>{ st5.only=e.target.checked; page5(); };
 
 // =====================================================================
 // PÁGINA 0 — Início: escolher os arquivos, comparar no navegador e confirmar
@@ -1473,7 +1706,7 @@ const fSerial=v=>{ const d=new Date(Date.UTC(1899,11,30)+Math.round(v)*864e5); r
 const fNum=v=>typeof v==='number'&&isFinite(v);
 const fNext=(a,b)=>{ if(!fNum(a)||!fNum(b)) return false; const x=fSerial(a),y=fSerial(b); return (y.y*12+y.m)-(x.y*12+x.m)===1; };
 const fSumifEnd=f=>{ const m=/SUMIF\(\$?[A-Z]+\$?\d+:\$?([A-Z]+)\$?\d+/.exec(f||''); return m?cI1(m[1]):null; };
-const fKk=v=>v==null?'0':Math.round(v).toLocaleString('pt-BR');
+const fKk=v=>v==null?'0':Math.round(v).toLocaleString(LOC);
 const SUBT=/SUBTOTAL\(9,\$?[A-Z]+\$?(\d+)(?::\$?[A-Z]+\$?(\d+))?\)/;
 // células com fórmula (expande shared formulas): Map r*4096+c -> {v,f,t}
 function parseSheetF(xml, ss){
@@ -1699,7 +1932,7 @@ function fileKey(n){ const prod=/\bprod\b/i.test(n)?0:1;
   else { const d=/(\d{2})-(\d{2})-(\d{2,4})/.exec(n); if(d){ const y=+d[3]; k=(y<100?2000+y:y)*100+(+d[2]); } }
   return [prod,k]; }
 function fileOrder(a,b){ const x=fileKey(a.name), y=fileKey(b.name); return x[0]-y[0]||y[1]-x[1]||a.name.localeCompare(b.name); }
-const kb=n=>n>1048576?(n/1048576).toLocaleString('pt-BR',{maximumFractionDigits:1})+' MB':Math.round(n/1024)+' KB';
+const kb=n=>n>1048576?(n/1048576).toLocaleString(LOC,{maximumFractionDigits:1})+' MB':Math.round(n/1024)+' KB';
 const idb=()=>new Promise((res,rej)=>{ const r=indexedDB.open('capex-funding',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); });
 async function kvSet(k,v){ try{ const db=await idb(); await new Promise(r=>{ const t=db.transaction('kv','readwrite'); t.objectStore('kv').put(v,k); t.oncomplete=r; t.onerror=r; }); }catch(e){} }
 async function kvGet(k){ try{ const db=await idb(); return await new Promise(r=>{ const q=db.transaction('kv').objectStore('kv').get(k); q.onsuccess=()=>r(q.result); q.onerror=()=>r(null); }); }catch(e){ return null; } }
@@ -1823,8 +2056,8 @@ const off6=Object.fromEntries(K6.map(k=>[k,new Set()]));
 const sel6={m:new Set(), type:new Set(), cat:new Set(), p:new Set()};
 const st6={mode:'m', view:'l', n:10, q:''};
 const PAL6=['#2F7BFF','#B06AD8','#19C6B5','#F5A623','#E5484D','#7FDB9A','#F07AC0','#FFD60A','#6FB0FF','#D2B4EA','#4DD0E1','#FF8A65'];
-const fM6=v=>(v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' M';
-const pct6=(a,b)=>b>0?(a/b*100).toLocaleString('pt-BR',{maximumFractionDigits:0})+'%':'–';
+const fM6=v=>(v/1e6).toLocaleString(LOC,{minimumFractionDigits:1,maximumFractionDigits:1})+' M';
+const pct6=(a,b)=>b>0?(a/b*100).toLocaleString(LOC,{maximumFractionDigits:0})+'%':'–';
 const pass6=(p,skip)=>K6.every(k=>k===skip||!off6[k].has(p[k]));
 function drawFilter6(k){
   const before=K6.slice(0,K6.indexOf(k));
@@ -1846,7 +2079,7 @@ const ok6=(p,skip)=>['type','cat','p'].every(k=>k===skip||!sel6[k].size||sel6[k]
 function sums6(list,idx){ let s=0,r=0; list.forEach(p=>idx.forEach(i=>{ D.months[i]<=CUT?s+=p.v[i]:r+=p.v[i]; })); return [s,r]; }
 const ICO={tot:'<svg viewBox="0 0 24 24" fill="none" stroke="#7FB2FF" stroke-width="1.8"><ellipse cx="12" cy="5.5" rx="7" ry="2.5"/><path d="M5 5.5v6c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-6M5 11.5v6c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-6"/></svg>',
   proj:'<svg viewBox="0 0 24 24" fill="none" stroke="#7FB2FF" stroke-width="1.8"><path d="M4 19h16M6 16l4-5 3 3 5-7"/></svg>'};
-function ring6(p,col){ const r=24,c=2*Math.PI*r, f=Math.max(0,Math.min(1,p)); return `<svg width="62" height="62" viewBox="0 0 62 62" style="flex:none"><circle cx="31" cy="31" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="7"/><circle cx="31" cy="31" r="${r}" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c*f} ${c}" transform="rotate(-90 31 31)"/><text x="31" y="35.5" text-anchor="middle" font-size="12.5" font-weight="800" fill="#fff">${(f*100).toLocaleString('pt-BR',{maximumFractionDigits:0})}%</text></svg>`; }
+function ring6(p,col){ const r=24,c=2*Math.PI*r, f=Math.max(0,Math.min(1,p)); return `<svg width="62" height="62" viewBox="0 0 62 62" style="flex:none"><circle cx="31" cy="31" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="7"/><circle cx="31" cy="31" r="${r}" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c*f} ${c}" transform="rotate(-90 31 31)"/><text x="31" y="35.5" text-anchor="middle" font-size="12.5" font-weight="800" fill="#fff">${(f*100).toLocaleString(LOC,{maximumFractionDigits:0})}%</text></svg>`; }
 function page6(){
   K6.forEach(drawFilter6);
   const base=D.projects.filter(p=>pass6(p));
@@ -1928,7 +2161,7 @@ function chart6(idx, list){
   el.querySelectorAll('.seg6b rect[data-p]').forEach(r=>r.onclick=e=>tog6(sel6.p,r.dataset.p,isMulti(e)));
 }
 function axisY6(W,H,pl,pt,pb,mn,mx){ let s=''; for(let k=0;k<=4;k++){ const v=mn+(mx-mn)*k/4, y=pt+(mx-v)/((mx-mn)||1)*(H-pt-pb);
-  s+=`<line x1="${pl}" x2="${W-8}" y1="${y}" y2="${y}" stroke="rgba(255,255,255,.06)"/><text x="${pl-8}" y="${y+4}" font-size="10.5" text-anchor="end" fill="#7F90AF">${Math.round(v/1e6).toLocaleString('pt-BR')}</text>`; } return s; }
+  s+=`<line x1="${pl}" x2="${W-8}" y1="${y}" y2="${y}" stroke="rgba(255,255,255,.06)"/><text x="${pl-8}" y="${y+4}" font-size="10.5" text-anchor="end" fill="#7F90AF">${Math.round(v/1e6).toLocaleString(LOC)}</text>`; } return s; }
 function top6(list, midx, Ttot){
   const rows=list.map(p=>{ let s=0,r=0; midx.forEach(i=>{ D.months[i]<=CUT?s+=p.v[i]:r+=p.v[i]; }); return {p:p.p,s,r,t:s+r}; }).sort((x,y)=>y.t-x.t);
   const L=rows.slice(0,st6.n), any=sel6.p.size>0, S=rows.reduce((t,r)=>t+r.s,0), R=rows.reduce((t,r)=>t+r.r,0);
@@ -1945,15 +2178,15 @@ function hbar6(sel,k,list,midx){
   const el=$(sel), W=el.clientWidth||400, H=el.clientHeight||220, lw=88, rw=58, pb=20, n=Math.max(keys.length,1), rh=Math.min(60,(H-pb-4)/n);   // barras crescem com a altura do quadro
   const mx=Math.max(1,...keys.map(x=>Math.max(0,g[x].s)+Math.max(0,g[x].r))), sc=v=>Math.max(0,v)/mx*(W-lw-rw), any=sel6[k].size>0;
   let s=`<svg width="${W}" height="${H}">`;
-  for(let t=0;t<=4;t++){ const xv=lw+(W-lw-rw)*t/4; s+=`<line x1="${xv}" x2="${xv}" y1="0" y2="${n*rh}" stroke="rgba(255,255,255,.05)"/><text x="${xv}" y="${n*rh+14}" font-size="10" text-anchor="middle" fill="#7F90AF">${Math.round(mx*t/4/1e6).toLocaleString('pt-BR')}</text>`; }
+  for(let t=0;t<=4;t++){ const xv=lw+(W-lw-rw)*t/4; s+=`<line x1="${xv}" x2="${xv}" y1="0" y2="${n*rh}" stroke="rgba(255,255,255,.05)"/><text x="${xv}" y="${n*rh+14}" font-size="10" text-anchor="middle" fill="#7F90AF">${Math.round(mx*t/4/1e6).toLocaleString(LOC)}</text>`; }
   keys.forEach((x,i)=>{ const y0=i*rh, ws=sc(g[x].s), wr=sc(g[x].r), bh=Math.max(10,rh*.62), by=y0+(rh-bh)/2, ty=y0+rh/2+4, op=(!any||sel6[k].has(x))?1:.3;
     s+=`<g class="hit6" data-v="${esc(x)}" opacity="${op}"><rect x="0" y="${y0}" width="${W}" height="${rh}" fill="transparent"/>
       <text x="${lw-8}" y="${ty}" font-size="12" text-anchor="end" fill="#D3DDF0">${esc(x.length>13?x.slice(0,12)+'…':x)}</text>
       <rect x="${lw}" y="${by}" width="${ws}" height="${bh}" rx="2" fill="#2F7BFF" data-t="${esc(x)} · Incorrido|${g[x].s}"/>
       <rect x="${lw+ws}" y="${by}" width="${wr}" height="${bh}" rx="2" fill="#B06AD8" data-t="${esc(x)} · Forecast|${g[x].r}"/>
-      ${ws>44?`<text x="${lw+ws/2}" y="${ty}" font-size="10.5" text-anchor="middle">${(g[x].s/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})}</text>`:''}
-      ${wr>44?`<text x="${lw+ws+wr/2}" y="${ty}" font-size="10.5" text-anchor="middle">${(g[x].r/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})}</text>`:''}
-      <text x="${W-4}" y="${ty}" font-size="12" font-weight="800" text-anchor="end">${((g[x].s+g[x].r)/1e6).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})}</text></g>`; });
+      ${ws>44?`<text x="${lw+ws/2}" y="${ty}" font-size="10.5" text-anchor="middle">${(g[x].s/1e6).toLocaleString(LOC,{maximumFractionDigits:1})}</text>`:''}
+      ${wr>44?`<text x="${lw+ws+wr/2}" y="${ty}" font-size="10.5" text-anchor="middle">${(g[x].r/1e6).toLocaleString(LOC,{maximumFractionDigits:1})}</text>`:''}
+      <text x="${W-4}" y="${ty}" font-size="12" font-weight="800" text-anchor="end">${((g[x].s+g[x].r)/1e6).toLocaleString(LOC,{minimumFractionDigits:1,maximumFractionDigits:1})}</text></g>`; });
   el.innerHTML=s+'</svg>'; tips(el);
   el.querySelectorAll('g.hit6').forEach(n=>n.onclick=e=>tog6(sel6[k],n.dataset.v,isMulti(e)));
 }
@@ -1969,7 +2202,7 @@ function annual6(list){
     <text x="${cx-6}" y="14" font-size="10.5" text-anchor="end" fill="#8DB8FF">← Realizado</text><text x="${cx+6}" y="14" font-size="10.5" fill="#D7A6F2">Planejado →</text>`; }
   years.forEach((y,k)=>{ const x=3+k*bw+bw*.14, w=bw*.72, hs=sc(g[k].s), hr=sc(g[k].r), y0=H-pb;
     s+=`<rect x="${x}" y="${y0-hs}" width="${w}" height="${hs}" rx="2" fill="#2F7BFF" data-t="${y} · Incorrido|${g[k].s}"/><rect x="${x}" y="${y0-hs-hr}" width="${w}" height="${hr}" rx="2" fill="#B06AD8" data-t="${y} · Forecast|${g[k].r}"/>
-      <text x="${x+w/2}" y="${y0-hs-hr-5}" font-size="10" font-weight="700" text-anchor="middle">${Math.round((g[k].s+g[k].r)/1e6).toLocaleString('pt-BR')}</text>
+      <text x="${x+w/2}" y="${y0-hs-hr-5}" font-size="10" font-weight="700" text-anchor="middle">${Math.round((g[k].s+g[k].r)/1e6).toLocaleString(LOC)}</text>
       <text x="${x+w/2}" y="${H-5}" font-size="10" text-anchor="middle" fill="#A9B8D3">${k===0?'Até '+y:y}</text>`; });
   el.innerHTML=s+'</svg>'; tips(el);
 }
@@ -2091,7 +2324,7 @@ $('#exp8').onclick=()=>$('#exp2').click();
 //  Check 1: PO ≥ Spent (senão mostra PO − Spent). Check 2: PO ≤ Spent + Remaining (senão mostra PO − (Spent+Rem)).
 // =====================================================================
 const st9={c:'',q:'',only:false,sort:{k:'var',d:-1}};
-const fN=v=>Math.round(v).toLocaleString('pt-BR');
+const fN=v=>Math.round(v).toLocaleString(LOC);
 function rows9(){
   // PO Value Previous vem do arquivo anterior; o resto (PO Current, Spent, Spent+Rem e checks) do arquivo atual
   const prev=new Map(); P2.prev.projects.forEach(p=>prev.set(p.p,(prev.get(p.p)||0)+p.po));
@@ -2138,8 +2371,8 @@ $('#q9').oninput=e=>{ st9.q=e.target.value; page9(); };
 $('#o9').onchange=e=>{ st9.only=e.target.checked; page9(); };
 $('#exp9').onclick=()=>$('#exp2').click();
 
-const fK=v=>{ const x=Math.round(v/1000); if(!x) return '<span class="eq">-</span>'; const t=Math.abs(x).toLocaleString('pt-BR'); return x<0?`(${t})`:t; };
-const fP=v=>!isFinite(v)?'<span class="eq">-</span>':(v*100).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
+const fK=v=>{ const x=Math.round(v/1000); if(!x) return '<span class="eq">-</span>'; const t=Math.abs(x).toLocaleString(LOC); return x<0?`(${t})`:t; };
+const fP=v=>!isFinite(v)?'<span class="eq">-</span>':(v*100).toLocaleString(LOC,{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
 // =====================================================================
 // PÁGINA 11 — CapEx Dashboard (recriação da planilha "CapEx Dashboard - LatAm" a partir do arquivo atual)
 //  Base: linhas da CapEx Summary "desdobradas" como na tabela capex_forecast_latam (Spec × Non-Spec pelo % Spec Capex).
@@ -2219,8 +2452,8 @@ function cdVal(c,o){ const v=o[c.k];
   if((c.k==='I'||c.k==='S')&&v===null) return '<td></td>';
   if(c.kind==='ext') return '<td class="x">Dado externo</td>'; if(c.kind==='typ') return '<td class="x">Dado digitado</td>';
   if(v==null||!isFinite(v)) return '<td><span class="eq">-</span></td>';
-  if(c.kind==='mw') return `<td>${Math.abs(v)<0.05?'<span class="eq">-</span>':(v<0?'('+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+')':v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}))}</td>`;
-  if(c.kind==='pct'||c.kind==='pct1') return `<td>${(v*100).toLocaleString('pt-BR',{minimumFractionDigits:c.kind==='pct1'?1:0,maximumFractionDigits:c.kind==='pct1'?1:0})}%</td>`;
+  if(c.kind==='mw') return `<td>${Math.abs(v)<0.05?'<span class="eq">-</span>':(v<0?'('+Math.abs(v).toLocaleString(LOC,{minimumFractionDigits:1,maximumFractionDigits:1})+')':v.toLocaleString(LOC,{minimumFractionDigits:1,maximumFractionDigits:1}))}</td>`;
+  if(c.kind==='pct'||c.kind==='pct1') return `<td>${(v*100).toLocaleString(LOC,{minimumFractionDigits:c.kind==='pct1'?1:0,maximumFractionDigits:c.kind==='pct1'?1:0})}%</td>`;
   return `<td>${fK(v)}</td>`; }
 const st11={open:new Set()};
 function page11(){
